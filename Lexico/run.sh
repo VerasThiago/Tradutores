@@ -1,4 +1,7 @@
 #!/bin/bash
+flex flex.l
+gcc lex.yy.c
+
 ERRORS_QNT=2
 i=1
 while [ $i -le $ERRORS_QNT ]
