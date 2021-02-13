@@ -1,0 +1,17 @@
+Basic type: int
+Identifier: main
+Expression delimiter: (
+Expression delimiter: )
+Block delimiter: {
+Basic type: int
+Identifier: x
+Assignment: =
+Integer: 0
+Command separator: ;
+Keyword: return
+Identifier: x
+Command separator: ;
+Block delimiter: }
+
+[32mCorrect program.
+[0m

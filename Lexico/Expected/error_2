@@ -1,0 +1,21 @@
+Basic type: int
+Identifier: main
+Expression delimiter: (
+Expression delimiter: )
+Block delimiter: {
+Basic type: int
+Identifier: x
+Assignment: =
+Integer: 10
+Logic operator: %
+Integer: 15
+Command separator: ;
+Keyword: return
+[31mERROR[0m line: 5 columns: 6 Undentified char: .
+[0mInteger: 21
+Command separator: ;
+Block delimiter: }
+
+[31mProgram analysis failed![0m
+[36mLexical analysis terminated with 1 error(s)
+[0m

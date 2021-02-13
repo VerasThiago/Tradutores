@@ -1939,10 +1939,10 @@ int main(int argc, char ** argv) {
     yylex();
     printf("\n");
     if(errors > 0){
-        printf("Incorrect program!\nLexical analysis terminated with %d error%s\n", errors, errors > 1 ? "s" : "");
+        printf("%sProgram analysis failed!%s\n%sLexical analysis terminated with %d error(s)\n"RESET, RED, RESET, CYAN, errors);
     }
     else{
-        printf("Correct program.\n");
+        printf("%sCorrect program.\n" RESET, GREEN);
     }
     return 0;
 }
