@@ -7,20 +7,20 @@ Basic type: int
 Identifier: xa
 [31mERROR[0m line: 3 columns: 5 Undentified char: #
 [0mAssignment: =
-Integer: 2
+Constant (Int): 2
 Command separator: ;
 Keyword: if
 Expression delimiter: (
 Identifier: xa
 [31mERROR[0m line: 5 columns: 5 Undentified char: #
 [0mAssignment: !=
-Integer: 2
+Constant (Int): 2
 Expression delimiter: )
 Keyword: return
-Integer: 1
+Constant (Int): 1
 Command separator: ;
 Keyword: return
-Integer: 0
+Constant (Int): 0
 Command separator: ;
 Block delimiter: }
 

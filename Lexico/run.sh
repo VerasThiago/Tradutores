@@ -14,7 +14,7 @@ do
     i=$((i + 1))
 done
 
-SUCCESS_QNT=1
+SUCCESS_QNT=2
 i=1
 while [ $i -le $SUCCESS_QNT ]
 do

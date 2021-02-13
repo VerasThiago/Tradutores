@@ -6,13 +6,13 @@ Block delimiter: {
 Basic type: int
 Identifier: x
 Assignment: =
-Integer: 10
+Constant (Int): 10
 Logic operator: %
-Integer: 15
+Constant (Int): 15
 Command separator: ;
 Keyword: return
 [31mERROR[0m line: 5 columns: 6 Undentified char: .
-[0mInteger: 21
+[0mConstant (Int): 21
 Command separator: ;
 Block delimiter: }
 

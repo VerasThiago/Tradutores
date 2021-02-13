@@ -6,7 +6,7 @@ Block delimiter: {
 Basic type: int
 Identifier: x
 Assignment: =
-Integer: 0
+Constant (Int): 0
 Command separator: ;
 Keyword: return
 Identifier: x

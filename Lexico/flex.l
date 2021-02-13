@@ -20,19 +20,23 @@ DIGIT                   [0-9]
 
 ID                      [a-zA-Z_][a-z0-9A-Z]*
 
+CONSTANT                EMPTY
+
 KEYWORD                 if|else|for|return
+
+INFIX_OPERATOR          in
 
 ARITMETIC_OPERATOR      [+*/-]
 
 LOGIC_OPERATOR          [!&|><%]
 
-BASIC_TYPE              int|float|elem|set
+BASIC_TYPE              int|float
 
 SET                     set
 
 ELEM                    elem
 
-SET_OPERATION           TODO
+SET_OPERATION           add|remove
 
 IN                      read
 
@@ -40,13 +44,24 @@ OUT                     write|writeln
 
 %%
 
-{DIGIT}+ {
-    printf("Integer: %s\n", yytext);
+{CONSTANT}|{DIGIT}+"."{DIGIT}+|{DIGIT}+ {
+    if(strchr(yytext, '.') != NULL){
+        printf("Constant (Float): %s\n", yytext);
+    } else if(yytext[0] == 'E'){
+        printf("Constant (Empty): %s\n", yytext);
+    } else {
+        printf("Constant (Int): %s\n", yytext);
+    }
     columns += yyleng;
 }
 
-{DIGIT}+"."{DIGIT}+ {
-    printf("Float: %s\n", yytext);
+{SET_OPERATION} {
+    printf("Set operator: %s\n", yytext);
+    columns += yyleng;
+}
+
+{INFIX_OPERATOR} {
+    printf("Infix operator: %s\n", yytext);
     columns += yyleng;
 }
 
@@ -67,6 +82,11 @@ OUT                     write|writeln
 
 {BASIC_TYPE} {
     printf("Basic type: %s\n", yytext);
+    columns += yyleng;
+}
+
+{SET}|{ELEM} {
+    printf("Custom type: %s\n", yytext);
     columns += yyleng;
 }
 
@@ -94,11 +114,6 @@ OUT                     write|writeln
     columns += yyleng;
 }
 
-"["|"]" {
-    printf("Array declaration/access: %s\n", yytext);
-    columns += yyleng;
-}
-
 ";" {
     printf("Command separator: %s\n", yytext);
     columns += yyleng;
@@ -115,7 +130,7 @@ OUT                     write|writeln
 }
 
 "," {
-    printf("Variable/Range separator: %s\n", yytext);
+    printf("Variable separator: %s\n", yytext);
     columns += yyleng;
 }
 

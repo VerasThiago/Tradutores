@@ -1,0 +1,41 @@
+Basic type: int
+Identifier: main
+Expression delimiter: (
+Expression delimiter: )
+Block delimiter: {
+Custom type: elem
+Identifier: a
+Variable separator: ,
+Identifier: b
+Variable separator: ,
+Identifier: c
+Command separator: ;
+Custom type: elem
+Identifier: x
+Assignment: =
+Constant (Int): 10
+Command separator: ;
+Basic type: float
+Identifier: y
+Assignment: =
+Constant (Float): 10.10
+Command separator: ;
+Custom type: set
+Identifier: a
+Assignment: =
+Constant (Empty): EMPTY
+Command separator: ;
+Set operator: add
+Expression delimiter: (
+Constant (Int): 2
+Infix operator: in
+Identifier: a
+Expression delimiter: )
+Command separator: ;
+Keyword: return
+Constant (Int): 0
+Command separator: ;
+Block delimiter: }
+
+[32mCorrect program.
+[0m
