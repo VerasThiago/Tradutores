@@ -1,0 +1,120 @@
+Basic type: int
+Identifier: main
+Expression delimiter: (
+Expression delimiter: )
+Block delimiter: {
+Custom type: set
+Identifier: s
+Command separator: ;
+Identifier: s
+Assignment: =
+Constant (Empty): EMPTY
+Command separator: ;
+Set operator: add
+Expression delimiter: (
+Constant (Int): 1
+Set operator: in
+Identifier: s
+Expression delimiter: )
+Command separator: ;
+Set operator: add
+Expression delimiter: (
+Constant (Int): 2
+Set operator: in
+Identifier: s
+Expression delimiter: )
+Command separator: ;
+Set operator: add
+Expression delimiter: (
+Constant (Int): 5
+Set operator: in
+Identifier: s
+Expression delimiter: )
+Command separator: ;
+Set operator: add
+Expression delimiter: (
+Constant (Int): 8
+Set operator: in
+Identifier: s
+Expression delimiter: )
+Command separator: ;
+Comment on line 19
+Custom type: set
+Identifier: possibleSums
+Command separator: ;
+Identifier: possibleSums
+Assignment: =
+Constant (Empty): EMPTY
+Command separator: ;
+Basic type: int
+Identifier: x
+Command separator: ;
+Set operator: forall
+Expression delimiter: (
+Identifier: x
+Set operator: in
+Identifier: s
+Expression delimiter: )
+Block delimiter: {
+Custom type: set
+Identifier: sumsWithX
+Command separator: ;
+Identifier: sumsWithX
+Assignment: =
+Constant (Empty): EMPTY
+Command separator: ;
+Basic type: int
+Identifier: val
+Command separator: ;
+Set operator: forall
+Expression delimiter: (
+Identifier: val
+Set operator: in
+Identifier: possibleSums
+Expression delimiter: )
+Set operator: add
+Expression delimiter: (
+Expression delimiter: (
+Identifier: x
+Aritmetic operator: +
+Identifier: val
+Expression delimiter: )
+Set operator: in
+Identifier: sumsWithX
+Expression delimiter: )
+Command separator: ;
+Set operator: forall
+Expression delimiter: (
+Identifier: val
+Set operator: in
+Identifier: sumsWithX
+Expression delimiter: )
+Set operator: add
+Expression delimiter: (
+Identifier: val
+Set operator: in
+Identifier: possibleSums
+Expression delimiter: )
+Command separator: ;
+Keyword: if
+Expression delimiter: (
+Constant (Int): 13
+Set operator: in
+Identifier: possibleSums
+Expression delimiter: )
+Write: writeln
+Expression delimiter: (
+String: 'y'
+Expression delimiter: )
+Command separator: ;
+Keyword: else
+Write: writeln
+Expression delimiter: (
+String: 'n'
+Expression delimiter: )
+Command separator: ;
+Block delimiter: }
+Block delimiter: }
+
+[32mCorrect program.
+[0m

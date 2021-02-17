@@ -1,0 +1,121 @@
+Comment on line 1
+Custom type: set
+Identifier: subsum
+Expression delimiter: (
+Custom type: set
+Identifier: s
+Variable separator: ,
+Basic type: int
+Identifier: target
+Variable separator: ,
+Basic type: int
+Identifier: cur_sum
+Variable separator: ,
+Custom type: set
+Identifier: ans
+Expression delimiter: )
+Block delimiter: {
+Keyword: if
+Expression delimiter: (
+Identifier: target
+Logic operator: ==
+Identifier: cur_sum
+Expression delimiter: )
+Keyword: return
+Identifier: ans
+Command separator: ;
+Keyword: else
+Keyword: if
+Expression delimiter: (
+Identifier: s
+Logic operator: ==
+Constant (Empty): EMPTY
+Expression delimiter: )
+Keyword: return
+Constant (Empty): EMPTY
+Command separator: ;
+Keyword: else
+Block delimiter: {
+Basic type: int
+Identifier: el
+Command separator: ;
+Set operator: remove
+Expression delimiter: (
+Expression delimiter: (
+Set operator: exists
+Expression delimiter: (
+Identifier: el
+Set operator: in
+Identifier: s
+Expression delimiter: )
+Expression delimiter: )
+Set operator: in
+Identifier: s
+Expression delimiter: )
+Command separator: ;
+Keyword: if
+Expression delimiter: (
+Identifier: subsum
+Expression delimiter: (
+Identifier: s
+Variable separator: ,
+Identifier: target
+Variable separator: ,
+Identifier: cur_sum
+Variable separator: ,
+Identifier: ans
+Expression delimiter: )
+Expression delimiter: )
+Keyword: return
+Identifier: ans
+Command separator: ;
+Identifier: cur_sum
+Aritmetic operator: +
+Assignment: =
+Identifier: el
+Command separator: ;
+Set operator: add
+Expression delimiter: (
+Identifier: el
+Set operator: in
+Identifier: ans
+Expression delimiter: )
+Command separator: ;
+Keyword: if
+Expression delimiter: (
+Identifier: subsum
+Expression delimiter: (
+Identifier: s
+Variable separator: ,
+Identifier: target
+Variable separator: ,
+Identifier: cur_sum
+Variable separator: ,
+Identifier: ans
+Expression delimiter: )
+Expression delimiter: )
+Keyword: return
+Identifier: ans
+Command separator: ;
+Set operator: add
+Expression delimiter: (
+Identifier: el
+Set operator: in
+Identifier: s
+Expression delimiter: )
+Command separator: ;
+Set operator: remove
+Expression delimiter: (
+Identifier: el
+Set operator: in
+Identifier: s
+Expression delimiter: )
+Command separator: ;
+Keyword: return
+Constant (Empty): EMPTY
+Command separator: ;
+Block delimiter: }
+Block delimiter: }
+
+[32mCorrect program.
+[0m
