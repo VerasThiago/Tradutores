@@ -1,0 +1,198 @@
+Comment on line 1
+Custom type: set
+Identifier: add_int
+Expression delimiter: (
+Custom type: set
+Identifier: s
+Expression delimiter: )
+Block delimiter: {
+Keyword: return
+Set operator: add
+Expression delimiter: (
+Constant (Int): 2
+Set operator: in
+Set operator: add
+Expression delimiter: (
+Constant (Int): 1
+Set operator: in
+Identifier: s
+Expression delimiter: )
+Expression delimiter: )
+Command separator: ;
+Comment on line 6
+Block delimiter: }
+Custom type: set
+Identifier: add_float
+Expression delimiter: (
+Custom type: set
+Identifier: s
+Expression delimiter: )
+Block delimiter: {
+Keyword: return
+Set operator: add
+Expression delimiter: (
+Constant (Float): 5.4
+Set operator: in
+Set operator: add
+Expression delimiter: (
+Constant (Float): 1.5
+Set operator: in
+Identifier: s
+Expression delimiter: )
+Expression delimiter: )
+Command separator: ;
+Block delimiter: }
+Custom type: set
+Identifier: add_set
+Expression delimiter: (
+Custom type: set
+Identifier: s
+Expression delimiter: )
+Block delimiter: {
+Custom type: set
+Identifier: newset
+Command separator: ;
+Identifier: newset
+Assignment: =
+Constant (Empty): EMPTY
+Command separator: ;
+Keyword: return
+Set operator: add
+Expression delimiter: (
+Identifier: add_int
+Expression delimiter: (
+Identifier: newset
+Expression delimiter: )
+Set operator: in
+Identifier: s
+Expression delimiter: )
+Command separator: ;
+Comment on line 27
+Block delimiter: }
+Basic type: int
+Identifier: main
+Expression delimiter: (
+Expression delimiter: )
+Block delimiter: {
+Custom type: set
+Identifier: s
+Command separator: ;
+Identifier: s
+Assignment: =
+Constant (Empty): EMPTY
+Command separator: ;
+Identifier: add_set
+Expression delimiter: (
+Identifier: s
+Expression delimiter: )
+Command separator: ;
+Comment on line 44
+Custom type: elem
+Identifier: el
+Command separator: ;
+Set operator: exists
+Expression delimiter: (
+Identifier: el
+Set operator: in
+Identifier: s
+Expression delimiter: )
+Command separator: ;
+Comment on line 51
+Identifier: add_float
+Expression delimiter: (
+Identifier: s
+Expression delimiter: )
+Command separator: ;
+Comment on line 56
+Set operator: exists
+Expression delimiter: (
+Identifier: el
+Set operator: in
+Identifier: s
+Expression delimiter: )
+Command separator: ;
+Comment on line 61
+Identifier: add_int
+Expression delimiter: (
+Identifier: s
+Expression delimiter: )
+Command separator: ;
+Comment on line 66
+Comment on line 67
+Basic type: int
+Identifier: acc
+Command separator: ;
+Basic type: float
+Identifier: accf
+Command separator: ;
+Identifier: acc
+Assignment: =
+Constant (Int): 0
+Command separator: ;
+Identifier: accf
+Assignment: =
+Constant (Int): 0
+Command separator: ;
+Custom type: elem
+Identifier: x
+Command separator: ;
+Set operator: forall
+Expression delimiter: (
+Identifier: x
+Set operator: in
+Identifier: s
+Expression delimiter: )
+Block delimiter: {
+Identifier: acc
+Assignment: =
+Identifier: acc
+Aritmetic operator: +
+Identifier: x
+Command separator: ;
+Comment on line 80
+Identifier: accf
+Assignment: =
+Identifier: accf
+Aritmetic operator: +
+Identifier: x
+Command separator: ;
+Block delimiter: }
+Comment on line 87
+Set operator: forall
+Expression delimiter: (
+Identifier: x
+Set operator: in
+Identifier: s
+Expression delimiter: )
+Block delimiter: {
+Keyword: if
+Expression delimiter: (
+Logic operator: !
+Set operator: is_set
+Expression delimiter: (
+Identifier: x
+Expression delimiter: )
+Expression delimiter: )
+Block delimiter: {
+Identifier: acc
+Assignment: =
+Identifier: acc
+Aritmetic operator: +
+Identifier: x
+Command separator: ;
+Identifier: accf
+Assignment: =
+Identifier: accf
+Aritmetic operator: +
+Identifier: x
+Command separator: ;
+Block delimiter: }
+Block delimiter: }
+Comment on line 104
+Keyword: return
+Constant (Int): 0
+Command separator: ;
+Block delimiter: }
+
+[32mCorrect program.
+[0m

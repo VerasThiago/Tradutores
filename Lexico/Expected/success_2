@@ -28,7 +28,7 @@ Command separator: ;
 Set operator: add
 Expression delimiter: (
 Constant (Int): 2
-Infix operator: in
+Set operator: in
 Identifier: a
 Expression delimiter: )
 Command separator: ;

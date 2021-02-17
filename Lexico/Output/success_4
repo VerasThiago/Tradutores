@@ -1,0 +1,104 @@
+Comment on line 1
+Custom type: set
+Identifier: copy_set
+Expression delimiter: (
+Custom type: set
+Identifier: s
+Expression delimiter: )
+Block delimiter: {
+Custom type: set
+Identifier: ans
+Command separator: ;
+Identifier: ans
+Assignment: =
+Constant (Empty): EMPTY
+Command separator: ;
+Set operator: forall
+Expression delimiter: (
+Identifier: x
+Set operator: in
+Identifier: s
+Expression delimiter: )
+Set operator: add
+Expression delimiter: (
+Identifier: x
+Set operator: in
+Identifier: ans
+Expression delimiter: )
+Command separator: ;
+Keyword: return
+Identifier: ans
+Command separator: ;
+Block delimiter: }
+Custom type: set
+Identifier: succ
+Expression delimiter: (
+Custom type: set
+Identifier: n
+Expression delimiter: )
+Block delimiter: {
+Custom type: set
+Identifier: next
+Command separator: ;
+Identifier: next
+Assignment: =
+Identifier: copy_set
+Expression delimiter: (
+Identifier: n
+Expression delimiter: )
+Command separator: ;
+Keyword: return
+Set operator: add
+Expression delimiter: (
+Identifier: n
+Set operator: in
+Identifier: next
+Expression delimiter: )
+Command separator: ;
+Block delimiter: }
+Basic type: int
+Identifier: main
+Expression delimiter: (
+Expression delimiter: )
+Block delimiter: {
+Custom type: set
+Identifier: zero
+Command separator: ;
+Custom type: set
+Identifier: one
+Command separator: ;
+Custom type: set
+Identifier: two
+Command separator: ;
+Custom type: set
+Identifier: three
+Command separator: ;
+Identifier: zero
+Assignment: =
+Constant (Empty): EMPTY
+Command separator: ;
+Identifier: one
+Assignment: =
+Identifier: succ
+Expression delimiter: (
+Identifier: zero
+Expression delimiter: )
+Command separator: ;
+Identifier: two
+Assignment: =
+Identifier: succ
+Expression delimiter: (
+Identifier: one
+Expression delimiter: )
+Command separator: ;
+Identifier: three
+Assignment: =
+Identifier: succ
+Expression delimiter: (
+Identifier: two
+Expression delimiter: )
+Command separator: ;
+Block delimiter: }
+
+[32mCorrect program.
+[0m

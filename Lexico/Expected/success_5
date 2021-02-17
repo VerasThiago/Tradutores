@@ -1,0 +1,74 @@
+Comment on line 1
+Custom type: set
+Identifier: add_int
+Expression delimiter: (
+Custom type: set
+Identifier: s
+Expression delimiter: )
+Block delimiter: {
+Keyword: return
+Set operator: add
+Expression delimiter: (
+Constant (Int): 2
+Set operator: in
+Set operator: add
+Expression delimiter: (
+Constant (Int): 1
+Set operator: in
+Identifier: s
+Expression delimiter: )
+Expression delimiter: )
+Command separator: ;
+Comment on line 70
+Block delimiter: }
+Custom type: set
+Identifier: add_float
+Expression delimiter: (
+Custom type: set
+Identifier: s
+Expression delimiter: )
+Block delimiter: {
+Keyword: return
+Set operator: add
+Expression delimiter: (
+Constant (Float): 5.4
+Set operator: in
+Set operator: add
+Expression delimiter: (
+Constant (Float): 1.5
+Set operator: in
+Identifier: s
+Expression delimiter: )
+Expression delimiter: )
+Command separator: ;
+Block delimiter: }
+Custom type: set
+Identifier: add_set
+Expression delimiter: (
+Custom type: set
+Identifier: s
+Expression delimiter: )
+Block delimiter: {
+Custom type: set
+Identifier: newset
+Command separator: ;
+Identifier: newset
+Assignment: =
+Constant (Empty): EMPTY
+Command separator: ;
+Keyword: return
+Set operator: add
+Expression delimiter: (
+Identifier: add_int
+Expression delimiter: (
+Identifier: newset
+Expression delimiter: )
+Set operator: in
+Identifier: s
+Expression delimiter: )
+Command separator: ;
+Comment on line 171
+Block delimiter: }
+
+[32mCorrect program.
+[0m

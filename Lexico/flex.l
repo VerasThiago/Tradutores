@@ -18,13 +18,11 @@
 
 DIGIT                   [0-9]
 
-ID                      [a-zA-Z_][a-z0-9A-Z]*
+ID                      [a-zA-Z_][a-z0-9A-Z_]*
 
 CONSTANT                EMPTY
 
 KEYWORD                 if|else|for|return
-
-INFIX_OPERATOR          in
 
 ARITMETIC_OPERATOR      [+*/-]
 
@@ -36,13 +34,21 @@ SET                     set
 
 ELEM                    elem
 
-SET_OPERATION           add|remove
+SET_OPERATION           add|remove|in|is_set|exists|forall
 
 IN                      read
 
 OUT                     write|writeln
 
+STRING                  \"[^\"]*\"|'[^']*'
+
+COMMENT                "//"
+
 %%
+
+{COMMENT}.* {
+    printf("Comment on line %d\n", lines);
+}
 
 {CONSTANT}|{DIGIT}+"."{DIGIT}+|{DIGIT}+ {
     if(strchr(yytext, '.') != NULL){
@@ -57,11 +63,6 @@ OUT                     write|writeln
 
 {SET_OPERATION} {
     printf("Set operator: %s\n", yytext);
-    columns += yyleng;
-}
-
-{INFIX_OPERATOR} {
-    printf("Infix operator: %s\n", yytext);
     columns += yyleng;
 }
 
@@ -85,8 +86,23 @@ OUT                     write|writeln
     columns += yyleng;
 }
 
+{STRING} {
+    printf("String: %s\n", yytext);
+    columns += yyleng;
+}
+
 {SET}|{ELEM} {
     printf("Custom type: %s\n", yytext);
+    columns += yyleng;
+}
+
+"++" {
+    printf("Icrement Op, %s", yytext);
+    columns += yyleng;
+}
+
+"--" {
+    printf("Decrement Op, %s", yytext);
     columns += yyleng;
 }
 
