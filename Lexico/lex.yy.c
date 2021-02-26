@@ -510,7 +510,8 @@ int yy_flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
 #line 1 "flex.l"
-#line 4 "flex.l"
+#define YY_NO_INPUT 1
+#line 5 "flex.l"
 
     #define RED     "\x1b[31m"
     #define GREEN   "\x1b[32m"
@@ -524,8 +525,8 @@ char *yytext;
     #include<stdlib.h>
     
     int lines = 1, errors = 0, columns = 0;
-#line 528 "lex.yy.c"
 #line 529 "lex.yy.c"
+#line 530 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -585,8 +586,6 @@ extern int yywrap ( void );
 #endif
 
 #ifndef YY_NO_UNPUT
-    
-    static void yyunput ( int c, char *buf_ptr  );
     
 #endif
 
@@ -742,10 +741,10 @@ YY_DECL
 		}
 
 	{
-#line 47 "flex.l"
+#line 48 "flex.l"
 
 
-#line 749 "lex.yy.c"
+#line 748 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -804,14 +803,14 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 49 "flex.l"
+#line 50 "flex.l"
 {
     printf("Comment on line %d\n", lines);
 }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 53 "flex.l"
+#line 54 "flex.l"
 {
     if(strchr(yytext, '.') != NULL){
         printf("Constant (Float): %s\n", yytext);
@@ -825,7 +824,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 64 "flex.l"
+#line 65 "flex.l"
 {
     printf("Set operator: %s\n", yytext);
     columns += yyleng;
@@ -833,7 +832,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 69 "flex.l"
+#line 70 "flex.l"
 {
     printf("Keyword: %s\n", yytext );
     columns += yyleng;
@@ -841,7 +840,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 74 "flex.l"
+#line 75 "flex.l"
 {
     printf("Write: %s\n", yytext);
     columns += yyleng;
@@ -849,7 +848,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 79 "flex.l"
+#line 80 "flex.l"
 {
     printf("Read: %s\n", yytext);
     columns += yyleng;
@@ -857,7 +856,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 84 "flex.l"
+#line 85 "flex.l"
 {
     printf("Basic type: %s\n", yytext);
     columns += yyleng;
@@ -866,7 +865,7 @@ YY_RULE_SETUP
 case 8:
 /* rule 8 can match eol */
 YY_RULE_SETUP
-#line 89 "flex.l"
+#line 90 "flex.l"
 {
     printf("String: %s\n", yytext);
     columns += yyleng;
@@ -874,7 +873,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 94 "flex.l"
+#line 95 "flex.l"
 {
     printf("Custom type: %s\n", yytext);
     columns += yyleng;
@@ -882,7 +881,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 99 "flex.l"
+#line 100 "flex.l"
 {
     printf("Icrement Op, %s", yytext);
     columns += yyleng;
@@ -890,7 +889,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 104 "flex.l"
+#line 105 "flex.l"
 {
     printf("Decrement Op, %s", yytext);
     columns += yyleng;
@@ -898,7 +897,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 109 "flex.l"
+#line 110 "flex.l"
 {
     if(yyleng >= 33) {
         printf("%sWARNING:%sThe idenfier length is too long, the idenfier was truncated to the first 33 characters\n" RESET, YELLOW, RESET);
@@ -910,7 +909,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 118 "flex.l"
+#line 119 "flex.l"
 {
     printf("Aritmetic operator: %s\n", yytext);
     columns += yyleng;
@@ -918,7 +917,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 123 "flex.l"
+#line 124 "flex.l"
 {
     printf("Logic operator: %s\n", yytext);
     columns += yyleng;
@@ -926,7 +925,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 128 "flex.l"
+#line 129 "flex.l"
 {
     printf("Assignment: %s\n", yytext);
     columns += yyleng;
@@ -934,7 +933,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 133 "flex.l"
+#line 134 "flex.l"
 {
     printf("Command separator: %s\n", yytext);
     columns += yyleng;
@@ -942,7 +941,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 138 "flex.l"
+#line 139 "flex.l"
 {
     printf("Block delimiter: %s\n", yytext);
     columns += yyleng;
@@ -950,7 +949,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 143 "flex.l"
+#line 144 "flex.l"
 {
     printf("Expression delimiter: %s\n", yytext);
     columns += yyleng;
@@ -958,7 +957,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 148 "flex.l"
+#line 149 "flex.l"
 {
     printf("Variable separator: %s\n", yytext);
     columns += yyleng;
@@ -966,13 +965,13 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 153 "flex.l"
+#line 154 "flex.l"
 
 	YY_BREAK
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
-#line 155 "flex.l"
+#line 156 "flex.l"
 {
     lines++;
     columns = 0;
@@ -980,7 +979,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 160 "flex.l"
+#line 161 "flex.l"
 {
     errors++;
     printf("%sERROR%s line: %d columns: %d Undentified char: %s\n" RESET, RED, RESET, lines, columns, yytext );
@@ -988,10 +987,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 165 "flex.l"
+#line 166 "flex.l"
 ECHO;
 	YY_BREAK
-#line 995 "lex.yy.c"
+#line 994 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1326,43 +1325,6 @@ static int yy_get_next_buffer (void)
 }
 
 #ifndef YY_NO_UNPUT
-
-    static void yyunput (int c, char * yy_bp )
-{
-	char *yy_cp;
-    
-    yy_cp = (yy_c_buf_p);
-
-	/* undo effects of setting up yytext */
-	*yy_cp = (yy_hold_char);
-
-	if ( yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2 )
-		{ /* need to shift things up to make room */
-		/* +2 for EOB chars. */
-		int number_to_move = (yy_n_chars) + 2;
-		char *dest = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[
-					YY_CURRENT_BUFFER_LVALUE->yy_buf_size + 2];
-		char *source =
-				&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move];
-
-		while ( source > YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
-			*--dest = *--source;
-
-		yy_cp += (int) (dest - source);
-		yy_bp += (int) (dest - source);
-		YY_CURRENT_BUFFER_LVALUE->yy_n_chars =
-			(yy_n_chars) = (int) YY_CURRENT_BUFFER_LVALUE->yy_buf_size;
-
-		if ( yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2 )
-			YY_FATAL_ERROR( "flex scanner push-back overflow" );
-		}
-
-	*--yy_cp = (char) c;
-
-	(yytext_ptr) = yy_bp;
-	(yy_hold_char) = *yy_cp;
-	(yy_c_buf_p) = yy_cp;
-}
 
 #endif
 
@@ -1996,7 +1958,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 165 "flex.l"
+#line 166 "flex.l"
 
 
 int main(int argc, char ** argv) {
@@ -2015,5 +1977,7 @@ int main(int argc, char ** argv) {
     else{
         printf("%sCorrect program.\n" RESET, GREEN);
     }
+    fclose(yyin);
+    yylex_destroy();
     return 0;
 }

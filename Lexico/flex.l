@@ -1,4 +1,5 @@
 %option noyywrap
+%option noinput nounput
 
 %{
 
@@ -180,5 +181,7 @@ int main(int argc, char ** argv) {
     else{
         printf("%sCorrect program.\n" RESET, GREEN);
     }
+    fclose(yyin);
+    yylex_destroy();
     return 0;
 }
