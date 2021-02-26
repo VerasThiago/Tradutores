@@ -19,7 +19,7 @@
 
 DIGIT                   [0-9]
 
-ID                      [a-zA-Z_][a-z0-9A-Z_]*
+ID                      [_a-zA-Z_][a-z0-9A-Z_]*
 
 CONSTANT                EMPTY
 

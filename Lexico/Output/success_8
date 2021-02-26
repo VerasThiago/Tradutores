@@ -1,0 +1,28 @@
+Basic type: int
+Identifier: main
+Expression delimiter: (
+Expression delimiter: )
+Block delimiter: {
+Basic type: int
+Constant (Int): 2
+Identifier: _teste
+Assignment: =
+Constant (Int): 2
+Command separator: ;
+Keyword: if
+Expression delimiter: (
+Constant (Int): 2
+Identifier: _teste
+Assignment: !=
+Constant (Int): 2
+Expression delimiter: )
+Keyword: return
+Constant (Int): 1
+Command separator: ;
+Keyword: return
+Constant (Int): 0
+Command separator: ;
+Block delimiter: }
+
+[32mCorrect program.
+[0m
