@@ -6,7 +6,7 @@ ERRORS_QNT=2
 i=1
 while [ $i -le $ERRORS_QNT ]
 do
-    ./a.out < "Input/error_$i.c" > "Output/error_$i"
+    ./a.out "Input/error_$i.c" > "Output/error_$i"
     result=$(diff Expected/error_$i Output/error_$i)
     if [ -z "$result" ]
     then
@@ -21,7 +21,7 @@ SUCCESS_QNT=8
 i=1
 while [ $i -le $SUCCESS_QNT ]
 do
-    ./a.out < "Input/success_$i.c" > "Output/success_$i"
+    ./a.out "Input/success_$i.c" > "Output/success_$i"
     result=$(diff Expected/success_$i Output/success_$i)
     if [ -z "$result" ]
     then
