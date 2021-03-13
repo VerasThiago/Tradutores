@@ -1,1 +1,4 @@
 Lexico/a.out
+*/*.o
+*/*.tab.c
+*/syntatic.output
