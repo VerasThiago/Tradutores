@@ -45,52 +45,44 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    T_Integer = 258,
-    T_Float = 259,
-    T_Bool = 260,
-    T_Return = 261,
+    T_Basic_type = 258,
+    T_Comma = 259,
+    T_Assignment = 260,
+    T_Elem = 261,
     T_If = 262,
-    T_LeftParentheses = 263,
-    T_RightParentheses = 264,
-    T_Else = 265,
-    T_While = 266,
-    T_Write = 267,
-    T_Read = 268,
-    T_Type = 269,
-    T_List = 270,
-    T_ListType = 271,
-    T_ListOperation = 272,
-    T_Id = 273,
-    T_Op1 = 274,
-    T_Op2 = 275,
-    T_Op3 = 276,
-    T_assignment = 277,
-    T_LeftBrace = 278,
-    T_RightBrace = 279,
-    T_LeftBracket = 280,
-    T_RightBracket = 281,
-    T_Semicolon = 282,
-    T_Comma = 283
+    T_Else = 263,
+    T_Empty = 264,
+    T_Id = 265,
+    T_LeftBrace = 266,
+    T_LeftParentheses = 267,
+    T_Period = 268,
+    T_RightBrace = 269,
+    T_RightParentheses = 270,
+    T_Semicolon = 271,
+    T_Set = 272,
+    digit = 273,
+    ENUMERATOR_OP = 274,
+    LOGICAL_AND_OP = 275,
+    LOGICAL_OR_OP = 276,
+    RELATIONAL_OP = 277,
+    MULTIPLICATIVE_OP = 278,
+    ADDITIVE_OP = 279,
+    T_String = 280,
+    identifiers_list = 281,
+    T_SET_OPERATION = 282,
+    T_SET_OPERATION_1 = 283,
+    T_SET_OPERATION_2 = 284,
+    T_SET_OPERATION_3 = 285,
+    T_For = 286,
+    T_Return = 287,
+    T_Write = 288,
+    T_Writeln = 289,
+    T_Read = 290,
+    T_In = 291
   };
 #endif
 
 /* Value type.  */
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-
-union YYSTYPE
-{
-#line 27 "syntatic.y" /* yacc.c:1909  */
-
-	Token token;
-	Nodo *nodo;
-
-#line 88 "syntatic.tab.h" /* yacc.c:1909  */
-};
-
-typedef union YYSTYPE YYSTYPE;
-# define YYSTYPE_IS_TRIVIAL 1
-# define YYSTYPE_IS_DECLARED 1
-#endif
 
 
 

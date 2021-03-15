@@ -66,7 +66,10 @@ Simbolo* buscar_simbolo_id(int id) {
 }
 
 Simbolo* buscar_simbolo(char *s, int escopo) {
+    printf("AAAAAAAAAAAAA\n");
 	if (tabelaSimbolo == NULL) return NULL;
+
+    
 
 	Simbolo *simbolo = tabelaSimbolo->primeiro;
 	int escopo_busca = escopo;

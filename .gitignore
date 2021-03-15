@@ -1,4 +1,5 @@
-Lexico/a.out
+*/a.out
 */*.o
 */*.tab.c
 */syntatic.output
+*/*.yy.c

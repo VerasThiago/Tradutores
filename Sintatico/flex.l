@@ -2,7 +2,6 @@
 %option noinput nounput
 
 %{
-
     #define RED     "\x1b[31m"
     #define GREEN   "\x1b[32m"
     #define YELLOW  "\x1b[33m"
@@ -17,33 +16,47 @@
     int lines = 1, errors = 0, columns = 0;
 %}
 
-DIGIT                   [0-9]
+DIGIT                           [0-9]
 
-ID                      [_a-zA-Z_][a-z0-9A-Z_]*
+ID                              [_a-zA-Z_][a-z0-9A-Z_]*
 
-CONSTANT                EMPTY
+CONSTANT                        EMPTY
 
-KEYWORD                 if|else|for|return
+KEYWORD                         if|else|for|return
 
-ARITMETIC_OPERATOR      [+*/-]
+BASIC_TYPE                      int|float
 
-LOGIC_OPERATOR          [!&|><%]
+SET                             set
 
-BASIC_TYPE              int|float
+ELEM                            elem
 
-SET                     set
+SET_OPERATION                   add|remove|exists
 
-ELEM                    elem
+SET_OPERATION_1                 is_set
 
-SET_OPERATION           add|remove|in|is_set|exists|forall
+SET_OPERATION_2                 forall
 
-IN                      read
+SET_OPERATION_3                 is
 
-OUT                     write|writeln
+ENUMERATOR_OP             =
 
-STRING                  \"[^\"]*\"|'[^']*'
+LOGICAL_AND_OP            &&
 
-COMMENT                "//"
+LOGICAL_OR_OP             \|\|
+
+RELATIONAL_OP             <|>|==|<=|>=
+
+MULTIPLICATIVE_OP         [*/%]
+
+ADDITIVE_OP               [+-]
+
+IN                              read
+
+OUT                             write|writeln
+
+STRING                          \"[^\"]*\"|'[^']*'
+
+COMMENT                         "//"
 
 %%
 
@@ -62,39 +75,71 @@ COMMENT                "//"
     columns += yyleng;
 }
 
-{SET_OPERATION} {
-    printf("Set operator: %s\n", yytext);
+{SET_OPERATION}|{SET_OPERATION_1}|{SET_OPERATION_2}|"in" {
     columns += yyleng;
+    printf("Set operator: %s\n", yytext);
+    if(yytext[0] == 'a' || yytext[0] == 'r' || yytext[0] == 'e'){
+        // return T_SET_OPERATION;
+    } else if ( yytext[0] == 'i' && yytext[1] == 's'){
+        // return T_SET_OPERATION_1;
+    } else if ( yytext[0] == 'f'){
+        // return T_SET_OPERATION_2;
+    } else {
+        // reutrn T_SET_OPERATION_3;
+    }
 }
 
 {KEYWORD} {
     printf("Keyword: %s\n", yytext );
     columns += yyleng;
+
+    if(yytext[0] == 'i'){
+        // return T_If;
+    } else if(yytext[0] == 'e'){
+        // return T_Else;
+    } else if(yytext[0] == 'f'){
+        // return T_For;
+    } else if(yytext[0] == 'r'){
+        // // return T_Return;
+    } 
 }
 
 {OUT} {
-    printf("Write: %s\n", yytext);
     columns += yyleng;
+    printf("Write: %s\n", yytext);
+    if(yytext[yyleng - 1] == 'n'){
+        // return T_Writeln;
+    } else {
+        // return T_Write;
+    }
 }
 
 {IN} {
     printf("Read: %s\n", yytext);
     columns += yyleng;
+    // return T_Read;
 }
 
 {BASIC_TYPE} {
     printf("Basic type: %s\n", yytext);
     columns += yyleng;
+    // return T_Basic_Type;
 }
 
 {STRING} {
     printf("String: %s\n", yytext);
     columns += yyleng;
+    // return T_String;
 }
 
 {SET}|{ELEM} {
     printf("Custom type: %s\n", yytext);
     columns += yyleng;
+    if(yytext[0] == 's'){
+        // return T_Set;
+    } else {
+        // return T_Elem;
+    }
 }
 
 "++" {
@@ -116,18 +161,33 @@ COMMENT                "//"
     columns += yyleng;
 }
 
-{ARITMETIC_OPERATOR} {
-    printf("Aritmetic operator: %s\n", yytext);
+{LOGICAL_AND_OP} {
+    printf("Logic AND operator: %s\n", yytext);
     columns += yyleng;
 }
 
-{LOGIC_OPERATOR}|">="|"<="|"=="|"&&"|"||" {
-    printf("Logic operator: %s\n", yytext);
+{LOGICAL_OR_OP} {
+    printf("Logic OR operator: %s\n", yytext);
     columns += yyleng;
 }
 
-{LOGIC_OPERATOR}?"=" {
-    printf("Assignment: %s\n", yytext);
+{RELATIONAL_OP} {
+    printf("Relational operator: %s\n", yytext);
+    columns += yyleng;
+}
+
+{MULTIPLICATIVE_OP} {
+    printf("Multiplicative operator: %s\n", yytext);
+    columns += yyleng;
+}
+
+{ADDITIVE_OP} {
+    printf("Additive operator: %s\n", yytext);
+    columns += yyleng;
+}
+
+{ENUMERATOR_OP} {
+    printf("Enumerator operator: %s\n", yytext);
     columns += yyleng;
 }
 

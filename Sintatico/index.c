@@ -6,9 +6,6 @@ int linha = 1;
 int coluna, errors, escopo = 0;
 char erroGlobal[2000000];
 int erroSintatico = 0;
-char *codeTAC;
-char *tableTAC;
-char operacaoTAC;
 char *funcaoAtual;
 
 Nodo *raiz;
@@ -43,5 +40,5 @@ int main() {
 
 void yyerror (char const *s) {
 	erroSintatico = 1;
-  sprintf(erroGlobal + strlen(erroGlobal),"Erro na linha %d: %s\n", linha, s);
+    sprintf(erroGlobal + strlen(erroGlobal),"Erro na linha %d: %s\n", linha, s);
 }
