@@ -1,6 +1,7 @@
 */a.out
+*/bison
 */*.o
 */*.tab.c
 */syntatic.output
 */*.yy.c
-Sintatico/syntatic.tab.h
+*/*.tab.h
