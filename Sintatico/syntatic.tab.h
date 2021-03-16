@@ -45,47 +45,78 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    T_Basic_type = 258,
-    T_Comma = 259,
-    T_Assignment = 260,
-    T_Elem = 261,
-    T_If = 262,
-    T_Else = 263,
-    T_Empty = 264,
-    T_Id = 265,
-    T_LeftBrace = 266,
-    T_LeftParentheses = 267,
-    T_Period = 268,
-    T_RightBrace = 269,
-    T_RightParentheses = 270,
-    T_Semicolon = 271,
-    T_Set = 272,
-    digit = 273,
-    ENUMERATOR_OP = 274,
-    LOGICAL_AND_OP = 275,
-    LOGICAL_OR_OP = 276,
-    RELATIONAL_OP = 277,
-    MULTIPLICATIVE_OP = 278,
-    ADDITIVE_OP = 279,
-    T_String = 280,
-    identifiers_list = 281,
-    T_SET_OPERATION = 282,
-    T_SET_OPERATION_1 = 283,
-    T_SET_OPERATION_2 = 284,
-    T_SET_OPERATION_3 = 285,
-    T_For = 286,
-    T_Return = 287,
-    T_Write = 288,
-    T_Writeln = 289,
-    T_Read = 290,
-    T_In = 291
+    T_Comma = 258,
+    T_Assignment = 259,
+    T_Elem = 260,
+    T_If = 261,
+    T_Else = 262,
+    T_LeftBrace = 263,
+    T_LeftParentheses = 264,
+    T_Period = 265,
+    T_RightBrace = 266,
+    T_RightParentheses = 267,
+    T_Semicolon = 268,
+    T_Set = 269,
+    LOGICAL_AND_OP = 270,
+    LOGICAL_OR_OP = 271,
+    T_SET_OPERATION_1 = 272,
+    T_SET_OPERATION_2 = 273,
+    T_SET_OPERATION_3 = 274,
+    T_For = 275,
+    T_Return = 276,
+    T_Write = 277,
+    T_Writeln = 278,
+    T_Read = 279,
+    T_Empty = 280,
+    T_Type_Float = 281,
+    T_Type_Int = 282,
+    ENUMERATOR_OP = 283,
+    T_Integer = 284,
+    T_Float = 285,
+    T_Basic_type = 286,
+    T_Id = 287,
+    RELATIONAL_OP = 288,
+    MULTIPLICATIVE_OP = 289,
+    ADDITIVE_OP = 290,
+    T_String = 291,
+    T_SET_OPERATION = 292
   };
 #endif
 
 /* Value type.  */
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+
+union YYSTYPE
+{
+#line 22 "syntatic.y" /* yacc.c:1909  */
+
+	char* body;
+
+#line 96 "syntatic.tab.h" /* yacc.c:1909  */
+};
+
+typedef union YYSTYPE YYSTYPE;
+# define YYSTYPE_IS_TRIVIAL 1
+# define YYSTYPE_IS_DECLARED 1
+#endif
+
+/* Location type.  */
+#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
+typedef struct YYLTYPE YYLTYPE;
+struct YYLTYPE
+{
+  int first_line;
+  int first_column;
+  int last_line;
+  int last_column;
+};
+# define YYLTYPE_IS_DECLARED 1
+# define YYLTYPE_IS_TRIVIAL 1
+#endif
 
 
-
+extern YYSTYPE yylval;
+extern YYLTYPE yylloc;
 int yyparse (void);
 
 #endif /* !YY_YY_SYNTATIC_TAB_H_INCLUDED  */

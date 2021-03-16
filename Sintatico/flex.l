@@ -1,20 +1,16 @@
 %option noyywrap
-%option noinput nounput
 
 %{
-    #define RED     "\x1b[31m"
-    #define GREEN   "\x1b[32m"
-    #define YELLOW  "\x1b[33m"
-    #define BLUE    "\x1b[34m"
-    #define MAGENTA "\x1b[35m"
-    #define CYAN    "\x1b[36m"
-    #define RESET   "\x1b[0m"
+
     #include<stdio.h>
     #include<string.h>
     #include<stdlib.h>
-    
+    #include "syntatic.tab.h"
+
     int lines = 1, errors = 0, columns = 0;
 %}
+
+%option noinput nounput
 
 DIGIT                           [0-9]
 
@@ -38,17 +34,17 @@ SET_OPERATION_2                 forall
 
 SET_OPERATION_3                 is
 
-ENUMERATOR_OP             =
+ENUMERATOR_OP                   =
 
-LOGICAL_AND_OP            &&
+LOGICAL_AND_OP                  &&
 
-LOGICAL_OR_OP             \|\|
+LOGICAL_OR_OP                   \|\|
 
-RELATIONAL_OP             <|>|==|<=|>=
+RELATIONAL_OP                   <|>|==|<=|>=
 
-MULTIPLICATIVE_OP         [*/%]
+MULTIPLICATIVE_OP               [*/%]
 
-ADDITIVE_OP               [+-]
+ADDITIVE_OP                     [+-]
 
 IN                              read
 
@@ -61,153 +57,168 @@ COMMENT                         "//"
 %%
 
 {COMMENT}.* {
-    printf("Comment on line %d\n", lines);
+    // printf("[LEXICO] Comment on line %d\n", lines);
 }
 
 {CONSTANT}|{DIGIT}+"."{DIGIT}+|{DIGIT}+ {
-    if(strchr(yytext, '.') != NULL){
-        printf("Constant (Float): %s\n", yytext);
-    } else if(yytext[0] == 'E'){
-        printf("Constant (Empty): %s\n", yytext);
-    } else {
-        printf("Constant (Int): %s\n", yytext);
-    }
     columns += yyleng;
+    yylval.body = strdup(yytext);
+    if(strchr(yytext, '.') != NULL){
+        // printf("[LEXICO] Constant (Float): %s\n", yytext);
+         return T_Float;
+    } else if(yytext[0] == 'E'){
+        // printf("[LEXICO] Constant (Empty): %s\n", yytext);
+        return T_Empty;
+    } else {
+        // printf("[LEXICO] Constant (Int): %s\n", yytext);
+        return T_Integer;
+    }
 }
 
 {SET_OPERATION}|{SET_OPERATION_1}|{SET_OPERATION_2}|"in" {
     columns += yyleng;
-    printf("Set operator: %s\n", yytext);
+    // printf("[LEXICO] Set operator: %s\n", yytext);
     if(yytext[0] == 'a' || yytext[0] == 'r' || yytext[0] == 'e'){
-        // return T_SET_OPERATION;
     } else if ( yytext[0] == 'i' && yytext[1] == 's'){
-        // return T_SET_OPERATION_1;
     } else if ( yytext[0] == 'f'){
-        // return T_SET_OPERATION_2;
     } else {
-        // reutrn T_SET_OPERATION_3;
     }
 }
 
 {KEYWORD} {
-    printf("Keyword: %s\n", yytext );
+    // printf("[LEXICO] Keyword: %s\n", yytext );
     columns += yyleng;
 
     if(yytext[0] == 'i'){
-        // return T_If;
+        return T_If;
     } else if(yytext[0] == 'e'){
-        // return T_Else;
+        return T_Else;
     } else if(yytext[0] == 'f'){
-        // return T_For;
+        return T_For;
     } else if(yytext[0] == 'r'){
-        // // return T_Return;
+        return T_Return;
     } 
 }
 
 {OUT} {
     columns += yyleng;
-    printf("Write: %s\n", yytext);
+    // printf("[LEXICO] Write: %s\n", yytext);
     if(yytext[yyleng - 1] == 'n'){
-        // return T_Writeln;
     } else {
-        // return T_Write;
     }
 }
 
 {IN} {
-    printf("Read: %s\n", yytext);
+    // printf("[LEXICO] Read: %s\n", yytext);
     columns += yyleng;
-    // return T_Read;
 }
 
 {BASIC_TYPE} {
-    printf("Basic type: %s\n", yytext);
     columns += yyleng;
-    // return T_Basic_Type;
+    // printf("[LEXICO] Basic type: %s\n", yytext);
+    if(yytext[0] == 'i'){
+        return T_Type_Int;
+    } else {
+        return T_Type_Float;
+    }
 }
 
 {STRING} {
-    printf("String: %s\n", yytext);
+    // printf("[LEXICO] String: %s\n", yytext);
     columns += yyleng;
-    // return T_String;
 }
 
 {SET}|{ELEM} {
-    printf("Custom type: %s\n", yytext);
+    // printf("[LEXICO] Custom type: %s\n", yytext);
     columns += yyleng;
     if(yytext[0] == 's'){
-        // return T_Set;
     } else {
-        // return T_Elem;
     }
 }
 
 "++" {
-    printf("Icrement Op, %s", yytext);
+    // printf("[LEXICO] Icrement Op, %s", yytext);
     columns += yyleng;
 }
 
 "--" {
-    printf("Decrement Op, %s", yytext);
+    // printf("[LEXICO] Decrement Op, %s", yytext);
     columns += yyleng;
 }
 
 {ID} {
     if(yyleng >= 33) {
-        printf("%sWARNING:%sThe idenfier length is too long, the idenfier was truncated to the first 33 characters\n" RESET, YELLOW, RESET);
+        // printf("[LEXICO] WARNING:The idenfier length is too long, the idenfier was truncated to the first 33 characters\n");
         yytext[33] = 0;
     }
-    printf("Identifier: %s\n", yytext);
+    // printf("[LEXICO] Identifier: %s\n", yytext);
     columns += yyleng;
+    yylval.body = strdup(yytext);
+    return T_Id;
 }
 
 {LOGICAL_AND_OP} {
-    printf("Logic AND operator: %s\n", yytext);
+    // printf("[LEXICO] Logic AND operator: %s\n", yytext);
     columns += yyleng;
 }
 
 {LOGICAL_OR_OP} {
-    printf("Logic OR operator: %s\n", yytext);
+    // printf("[LEXICO] Logic OR operator: %s\n", yytext);
     columns += yyleng;
 }
 
 {RELATIONAL_OP} {
-    printf("Relational operator: %s\n", yytext);
+    // printf("[LEXICO] Relational operator: %s\n", yytext);
     columns += yyleng;
+    yylval.body = strdup(yytext);
+    return RELATIONAL_OP;
 }
 
 {MULTIPLICATIVE_OP} {
-    printf("Multiplicative operator: %s\n", yytext);
+    // printf("[LEXICO] Multiplicative operator: %s\n", yytext);
     columns += yyleng;
 }
 
 {ADDITIVE_OP} {
-    printf("Additive operator: %s\n", yytext);
+    // printf("[LEXICO] Additive operator: %s\n", yytext);
     columns += yyleng;
 }
 
 {ENUMERATOR_OP} {
-    printf("Enumerator operator: %s\n", yytext);
+    // printf("[LEXICO] Enumerator operator: %s\n", yytext);
     columns += yyleng;
+    yylval.body = strdup(yytext);
+    return ENUMERATOR_OP;
 }
 
 ";" {
-    printf("Command separator: %s\n", yytext);
+    // printf("[LEXICO] Command separator: %s\n", yytext);
     columns += yyleng;
+    return T_Semicolon;
 }
 
 "{"|"}" {
-    printf("Block delimiter: %s\n", yytext);
+    // printf("[LEXICO] Block delimiter: %s\n", yytext);
+    if(yytext[0] == '{'){
+        return T_LeftBrace;
+    } else {
+        return T_RightBrace;
+    }
     columns += yyleng;
 }
 
 "("|")" {
-    printf("Expression delimiter: %s\n", yytext);
+    // printf("[LEXICO] Expression delimiter: %s\n", yytext);
     columns += yyleng;
+    if(yytext[0] == '('){
+        return T_LeftParentheses;
+    } else {
+        return T_RightParentheses;
+    }
 }
 
 "," {
-    printf("Variable separator: %s\n", yytext);
+    // printf("[LEXICO] Variable separator: %s\n", yytext);
     columns += yyleng;
 }
 
@@ -220,28 +231,7 @@ COMMENT                         "//"
 
 . {
     errors++;
-    printf("%sERROR%s line: %d columns: %d Undentified char: %s\n" RESET, RED, RESET, lines, columns, yytext );
+    // printf("[LEXICO] ERROR line: %d columns: %d Undentified char: %s \n", lines, columns, yytext );
 }
 
 %%
-
-int main(int argc, char ** argv) {
-    ++argv, --argc;
-    if(argc > 0) {
-        yyin = fopen(argv[0], "r");
-    }
-    else {
-        yyin = stdin;
-    }
-    yylex();
-    printf("\n");
-    if(errors > 0){
-        printf("%sProgram analysis failed!%s\n%sLexical analysis terminated with %d error(s)\n"RESET, RED, RESET, CYAN, errors);
-    }
-    else{
-        printf("%sCorrect program.\n" RESET, GREEN);
-    }
-    fclose(yyin);
-    yylex_destroy();
-    return 0;
-}

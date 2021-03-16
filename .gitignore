@@ -3,3 +3,4 @@
 */*.tab.c
 */syntatic.output
 */*.yy.c
+Sintatico/syntatic.tab.h
