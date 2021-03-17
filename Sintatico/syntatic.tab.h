@@ -54,42 +54,32 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    T_Comma = 258,                 /* T_Comma  */
-    T_Assignment = 259,            /* T_Assignment  */
-    T_Elem = 260,                  /* T_Elem  */
-    T_If = 261,                    /* T_If  */
-    T_Else = 262,                  /* T_Else  */
-    T_LeftBrace = 263,             /* T_LeftBrace  */
-    T_LeftParentheses = 264,       /* T_LeftParentheses  */
-    T_Period = 265,                /* T_Period  */
-    T_RightBrace = 266,            /* T_RightBrace  */
-    T_RightParentheses = 267,      /* T_RightParentheses  */
-    T_Semicolon = 268,             /* T_Semicolon  */
-    T_Set = 269,                   /* T_Set  */
-    LOGICAL_AND_OP = 270,          /* LOGICAL_AND_OP  */
-    LOGICAL_OR_OP = 271,           /* LOGICAL_OR_OP  */
-    T_For = 272,                   /* T_For  */
-    T_Return = 273,                /* T_Return  */
-    T_Write = 274,                 /* T_Write  */
-    T_Writeln = 275,               /* T_Writeln  */
-    T_Read = 276,                  /* T_Read  */
-    T_Empty = 277,                 /* T_Empty  */
-    T_Type_Float = 278,            /* T_Type_Float  */
-    T_Type_Int = 279,              /* T_Type_Int  */
-    T_SetForAll = 280,             /* T_SetForAll  */
-    T_SetIsSet = 281,              /* T_SetIsSet  */
-    T_SetIn = 282,                 /* T_SetIn  */
-    T_SetBasic = 283,              /* T_SetBasic  */
-    ENUMERATOR_OP = 284,           /* ENUMERATOR_OP  */
-    T_Integer = 285,               /* T_Integer  */
-    T_Float = 286,                 /* T_Float  */
-    T_Basic_type = 287,            /* T_Basic_type  */
-    T_Id = 288,                    /* T_Id  */
-    RELATIONAL_OP = 289,           /* RELATIONAL_OP  */
-    MULTIPLICATIVE_OP = 290,       /* MULTIPLICATIVE_OP  */
-    ADDITIVE_OP = 291,             /* ADDITIVE_OP  */
-    T_String = 292,                /* T_String  */
-    T_SET_OPERATION = 293          /* T_SET_OPERATION  */
+    ELEM = 258,                    /* ELEM  */
+    IF = 259,                      /* IF  */
+    ELSE = 260,                    /* ELSE  */
+    SET = 261,                     /* SET  */
+    AND_OP = 262,                  /* AND_OP  */
+    OR_OP = 263,                   /* OR_OP  */
+    FOR = 264,                     /* FOR  */
+    RETURN = 265,                  /* RETURN  */
+    WRITE = 266,                   /* WRITE  */
+    WRITELN = 267,                 /* WRITELN  */
+    READ = 268,                    /* READ  */
+    EMPTY = 269,                   /* EMPTY  */
+    FLOAT = 270,                   /* FLOAT  */
+    INT = 271,                     /* INT  */
+    FOR_ALL = 272,                 /* FOR_ALL  */
+    IS_SET = 273,                  /* IS_SET  */
+    IN = 274,                      /* IN  */
+    SET_BASIC = 275,               /* SET_BASIC  */
+    INT_VALUE = 276,               /* INT_VALUE  */
+    FLOAT_VALUE = 277,             /* FLOAT_VALUE  */
+    ID = 278,                      /* ID  */
+    ASSIGNMENT_OP = 279,           /* ASSIGNMENT_OP  */
+    RELATIONAL_OP = 280,           /* RELATIONAL_OP  */
+    MULTIPLICATIVE_OP = 281,       /* MULTIPLICATIVE_OP  */
+    ADDITIVE_OP = 282,             /* ADDITIVE_OP  */
+    STRING = 283                   /* STRING  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -102,7 +92,7 @@ union YYSTYPE
 
 	char* body;
 
-#line 106 "syntatic.tab.h"
+#line 96 "syntatic.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

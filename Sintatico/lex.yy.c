@@ -808,13 +808,13 @@ YY_RULE_SETUP
     yylval.body = strdup(yytext);
     if(strchr(yytext, '.') != NULL){
         // printf("[LEXICO] Constant (Float): %s\n", yytext);
-         return T_Float;
+         return FLOAT_VALUE;
     } else if(yytext[0] == 'E'){
         // printf("[LEXICO] Constant (Empty): %s\n", yytext);
-        return T_Empty;
+        return EMPTY;
     } else {
         // printf("[LEXICO] Constant (Int): %s\n", yytext);
-        return T_Integer;
+        return INT_VALUE;
     }
 }
 	YY_BREAK
@@ -826,13 +826,13 @@ YY_RULE_SETUP
     columns += yyleng;
     if(yytext[0] == 'a' || yytext[0] == 'r' || yytext[0] == 'e'){
         yylval.body = strdup(yytext);
-        return T_SetBasic;
+        return SET_BASIC;
     } else if ( yytext[0] == 'i' && yytext[1] == 's'){
-        return T_SetIsSet;
+        return IS_SET;
     } else if ( yytext[0] == 'f'){
-        return T_SetForAll;
+        return FOR_ALL;
     } else {
-        return T_SetIn;
+        return IN;
     }
 }
 	YY_BREAK
@@ -844,13 +844,13 @@ YY_RULE_SETUP
     columns += yyleng;
 
     if(yytext[0] == 'i'){
-        return T_If;
+        return ELSE;
     } else if(yytext[0] == 'e'){
-        return T_Else;
+        return IF;
     } else if(yytext[0] == 'f'){
-        return T_For;
+        return FOR;
     } else if(yytext[0] == 'r'){
-        return T_Return;
+        return RETURN;
     } 
 }
 	YY_BREAK
@@ -861,9 +861,9 @@ YY_RULE_SETUP
     columns += yyleng;
     // printf("[LEXICO] Write: %s\n", yytext);
     if(yytext[yyleng - 1] == 'n'){
-        return T_Writeln;
+        return WRITELN;
     } else {
-        return T_Write;
+        return WRITE;
     }
 }
 	YY_BREAK
@@ -873,7 +873,7 @@ YY_RULE_SETUP
 {
     // printf("[LEXICO] Read: %s\n", yytext);
     columns += yyleng;
-    return T_Read;
+    return READ;
 }
 	YY_BREAK
 case 7:
@@ -883,9 +883,9 @@ YY_RULE_SETUP
     columns += yyleng;
     // printf("[LEXICO] Basic type: %s\n", yytext);
     if(yytext[0] == 'i'){
-        return T_Type_Int;
+        return INT;
     } else {
-        return T_Type_Float;
+        return FLOAT;
     }
 }
 	YY_BREAK
@@ -897,7 +897,7 @@ YY_RULE_SETUP
     // printf("[LEXICO] String: %s\n", yytext);
     columns += yyleng;
     yylval.body = strdup(yytext);
-    return T_String;
+    return STRING;
 }
 	YY_BREAK
 case 9:
@@ -907,9 +907,9 @@ YY_RULE_SETUP
     // printf("[LEXICO] Custom type: %s\n", yytext);
     columns += yyleng;
     if(yytext[0] == 's'){
-        return T_Set;
+        return SET;
     } else {
-        return T_Elem;
+        return ELEM;
     }
 }
 	YY_BREAK
@@ -924,7 +924,7 @@ YY_RULE_SETUP
     // printf("[LEXICO] Identifier: %s\n", yytext);
     columns += yyleng;
     yylval.body = strdup(yytext);
-    return T_Id;
+    return ID;
 }
 	YY_BREAK
 case 11:
@@ -933,7 +933,7 @@ YY_RULE_SETUP
 {
     // printf("[LEXICO] Logic AND operator: %s\n", yytext);
     columns += yyleng;
-    return LOGICAL_AND_OP;
+    return AND_OP;
 }
 	YY_BREAK
 case 12:
@@ -942,7 +942,7 @@ YY_RULE_SETUP
 {
     // printf("[LEXICO] Logic OR operator: %s\n", yytext);
     columns += yyleng;
-    return LOGICAL_OR_OP;
+    return OR_OP;
 }
 	YY_BREAK
 case 13:
@@ -982,7 +982,7 @@ YY_RULE_SETUP
 {
     // printf("[LEXICO] Enumerator operator: %s\n", yytext);
     columns += yyleng;
-    return ENUMERATOR_OP;
+    return ASSIGNMENT_OP;
 }
 	YY_BREAK
 case 17:
@@ -991,20 +991,20 @@ YY_RULE_SETUP
 {
     // printf("[LEXICO] Command separator: %s\n", yytext);
     columns += yyleng;
-    return T_Semicolon;
+    return ';';
 }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 209 "flex.l"
 {
+    columns += yyleng;
     // printf("[LEXICO] Block delimiter: %s\n", yytext);
     if(yytext[0] == '{'){
-        return T_LeftBrace;
+        return '{';
     } else {
-        return T_RightBrace;
+        return '}';
     }
-    columns += yyleng;
 }
 	YY_BREAK
 case 19:
@@ -1014,9 +1014,9 @@ YY_RULE_SETUP
     // printf("[LEXICO] Expression delimiter: %s\n", yytext);
     columns += yyleng;
     if(yytext[0] == '('){
-        return T_LeftParentheses;
+        return '(';
     } else {
-        return T_RightParentheses;
+        return ')';
     }
 }
 	YY_BREAK
@@ -1026,7 +1026,7 @@ YY_RULE_SETUP
 {
     // printf("[LEXICO] Variable separator: %s\n", yytext);
     columns += yyleng;
-    return T_Comma;
+    return ',';
 }
 	YY_BREAK
 case 21:
