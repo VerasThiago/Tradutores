@@ -1,16 +1,12 @@
-int f(int a, float b) {
-  int j;
-
-  return j;
+int f(int a, set b, int c){
+    exists(a in b);
+    if(a == b){
+        return 10;
+    } else {
+        return 20;
+    }
 }
 
-int main() {
-  int b;
-  b = 5;
-
-  f(b, 1.0);
-
-  b = 5;
-
-  return 1;
+int main(){
+    f(f(a, b, c), b, c);
 }

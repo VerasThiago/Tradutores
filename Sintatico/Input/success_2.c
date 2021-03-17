@@ -1,11 +1,10 @@
 int func (int a, float asd, int vc) {
-	int func, b, c, d[10];
 	int x;
-	while ( x == 3 ) {
+	for ( x = 3; i > 3 ; i = i + 1 ) {
 		int k;
 		k = 9;
 		if ( k ) {
-			List<int> declaracaoJunta;
+			set declaracaoJunta;
 		}
 	}
 
