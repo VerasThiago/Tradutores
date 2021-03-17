@@ -286,11 +286,8 @@ expression:
 ;
 
 expression_assignment:
-    T_LeftParentheses expression T_RightParentheses{
-        printf("[SYNTATIC] (expression_assignment) T_LeftParentheses expression_assignment T_RightParentheses \n");
-    }
-    | expression ENUMERATOR_OP expression {
-         printf("[SYNTATIC] (expression_assignment) expression ENUMERATOR_OP(=)  expression\n");
+    T_Id ENUMERATOR_OP expression {
+         printf("[SYNTATIC] (expression_assignment) T_Id(%s) ENUMERATOR_OP(=)  expression\n", $1);
     }
     | expression_logical {
         printf("[SYNTATIC] (expression) expression_logical\n");   
