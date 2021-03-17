@@ -178,9 +178,6 @@ statements:
     | statements_braced {
         printf("[SYNTATIC] (statements) statements_braced\n");
     }
-    | %empty {
-        printf("[SYNTATIC] (statements) empty\n");    
-    }
     // | error {
     //     printf("[SYNTATIC] ERROR (statements)\n");
     // }
@@ -189,6 +186,9 @@ statements:
 statements_braced:
     '{' statements '}' {
         printf("[SYNTATIC] (statements_braced) '{' statements '}'\n");
+    }
+    | '{' '}' {
+        printf("[SYNTATIC] (statements_braced) '{' '}'\n");
     }
 ;
 
@@ -204,6 +204,9 @@ statement:
     }
 	| for {
         printf("[SYNTATIC] (statement) for\n");   
+    }
+    | is_set_statement {
+        printf("[SYNTATIC] (statement) is_set_statement\n");   
     }
     | function_call_statement {
         printf("[SYNTATIC] (statement) function_call_statement\n");   
@@ -225,9 +228,6 @@ statement:
 set_pre_statement:
     set_statement_add_remove ';' {
         printf("[SYNTATIC] (set_pre_statement) set_statement_add_remove ';'\n");  
-    }
-    | set_statement_exists ';' {
-        printf("[SYNTATIC] (set_pre_statement) set_statement_exists\n");  
     }
     | set_statement_for_all {
         printf("[SYNTATIC] (set_pre_statement) set_statement_for_all\n");  
@@ -273,12 +273,6 @@ set_boolean_expression:
     }
     | expression IN ID {
         printf("[SYNTATIC] (set_boolean_expression) expression IN ID(%s)\n", $3);
-    }
-    | set_statement_exists IN set_statement_add_remove {
-        printf("[SYNTATIC] (set_boolean_expression) set_statement_exists IN set_statement_add_remove\n");
-    }
-    | set_statement_exists IN ID {
-        printf("[SYNTATIC] (set_boolean_expression) set_statement_exists IN set_statement_add_remove\n");
     }
     // | error {
     //     printf("[SYNTATIC] ERROR set_boolean_expression\n");
@@ -333,6 +327,9 @@ expression_logical:
     }
     | set_boolean_expression {
         printf("[SYNTATIC] (expression_logical) set_expression\n");
+    }
+    | is_set_expression {
+        printf("[SYNTATIC] (is_set_expression) is_set_expression\n");
     }
     | expression_logical AND_OP expression_logical {
         printf("[SYNTATIC] (expression_logical) expression_logical AND_OP(&&) expression_logical\n");
@@ -399,6 +396,23 @@ expression_value:
     // }
 ;
 
+is_set_statement:
+    is_set_expression ';' {
+        printf("[SYNTATIC] (is_set_statement) is_set_expression ';'\n");
+    }
+    // | error {
+    //     printf("[SYNTATIC] ERROR functexpression_valueion_body\n");
+    // }
+;
+
+is_set_expression: 
+    IS_SET '(' ID ')' {
+        printf("[SYNTATIC] (is_set) IS_SET '(' ID(%s) ')' ';'\n", $3);
+    }
+    // | error {
+    //     printf("[SYNTATIC] ERROR functexpression_valueion_body\n");
+    // }
+;
 
 for:
     FOR '(' for_expression ')' statements {
