@@ -77,11 +77,10 @@ extern int yydebug;
     INT_VALUE = 278,               /* INT_VALUE  */
     FLOAT_VALUE = 279,             /* FLOAT_VALUE  */
     ID = 280,                      /* ID  */
-    ASSIGNMENT_OP = 281,           /* ASSIGNMENT_OP  */
-    RELATIONAL_OP = 282,           /* RELATIONAL_OP  */
-    MULTIPLICATIVE_OP = 283,       /* MULTIPLICATIVE_OP  */
-    ADDITIVE_OP = 284,             /* ADDITIVE_OP  */
-    STRING = 285                   /* STRING  */
+    RELATIONAL_OP = 281,           /* RELATIONAL_OP  */
+    MULTIPLICATIVE_OP = 282,       /* MULTIPLICATIVE_OP  */
+    ADDITIVE_OP = 283,             /* ADDITIVE_OP  */
+    STRING = 284                   /* STRING  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -94,7 +93,7 @@ union YYSTYPE
 
 	char* body;
 
-#line 98 "syntatic.tab.h"
+#line 97 "syntatic.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

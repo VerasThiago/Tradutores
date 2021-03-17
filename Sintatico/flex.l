@@ -38,11 +38,9 @@ SET_FOR_ALL                     forall
 
 SET_IN                          in
 
-ASSIGNMENT_OP                   =
+AND_OP                          &&
 
-AND_OP                  &&
-
-OR_OP                   \|\|
+OR_OP                           \|\|
 
 RELATIONAL_OP                   <|>|==|<=|>=
 
@@ -104,9 +102,9 @@ COMMENT                         "//"
     columns += yyleng;
 
     if(yytext[0] == 'i'){
-        return ELSE;
-    } else if(yytext[0] == 'e'){
         return IF;
+    } else if(yytext[0] == 'e'){
+        return ELSE;
     } else if(yytext[0] == 'f'){
         return FOR;
     } else if(yytext[0] == 'r'){
@@ -203,10 +201,10 @@ COMMENT                         "//"
     return ADDITIVE_OP;
 }
 
-{ASSIGNMENT_OP} {
+"=" {
     // printf("[LEXICO] Enumerator operator: %s\n", yytext);
     columns += yyleng;
-    return ASSIGNMENT_OP;
+    return '=';
 }
 
 ";" {
