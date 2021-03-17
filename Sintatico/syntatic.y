@@ -45,11 +45,13 @@
 %token EMPTY
 %token FLOAT
 %token INT
+%token ADD
+%token REMOVE
+%token EXISTS
 %token FOR_ALL
 %token IS_SET
 %token IN
 
-%token <body> SET_BASIC
 %token <body> INT_VALUE
 %token <body> FLOAT_VALUE
 %token <body> ID
@@ -220,11 +222,14 @@ statement:
 ;
 
 set_pre_statement:
-    set_statement_basic ';' {
-        printf("[SYNTATIC] (set_pre_statement) set_statement_basic ';'\n");  
+    set_statement_add_remove ';' {
+        printf("[SYNTATIC] (set_pre_statement) set_statement_add_remove ';'\n");  
     }
-    | set_statement_complex {
-        printf("[SYNTATIC] (set_pre_statement) set_statement_complex\n");  
+    | set_statement_exists ';' {
+        printf("[SYNTATIC] (set_pre_statement) set_statement_exists\n");  
+    }
+    | set_statement_for_all {
+        printf("[SYNTATIC] (set_pre_statement) set_statement_for_all\n");  
     }
     | error {
         printf("[SYNTATIC] ERROR set_pre_statement\n");
@@ -232,36 +237,63 @@ set_pre_statement:
 
 ;
 
-set_statement_basic:
-    SET_BASIC '(' set_expression ')' {
-        printf("[SYNTATIC] (set_statement_basic) SET_BASIC(%s) '(' set_expression ')'\n", $1); 
+set_statement_add_remove:
+    ADD '(' set_boolean_expression ')' {
+        printf("[SYNTATIC] (set_statement_add_remove) ADD '(' set_boolean_expression ')'\n"); 
     }
-    | IS_SET '(' ID ')' {
-        printf("[SYNTATIC] (set_statement_basic) IS_SET '(' ID(%s) ')'\n", $3);
+    | REMOVE '(' set_boolean_expression ')' {
+        printf("[SYNTATIC] (set_statement_add_remove) REMOVE '(' set_boolean_expression ')'\n"); 
     }
     | error {
-        printf("[SYNTATIC] ERROR set_statement_basic\n");
+        printf("[SYNTATIC] ERROR set_statement_add_remove\n");
     }
 ;
 
-set_statement_complex:
-    FOR_ALL '(' set_expression ')' statements {
-        printf("[SYNTATIC] (set_statement_complex) FOR_ALL '(' set_expression ')' statements\n"); 
+set_statement_for_all:
+    FOR_ALL '(' set_assignment_expression ')' statements {
+        printf("[SYNTATIC] (set_statement_for_all) FOR_ALL '(' set_assignment_expression ')' statements\n"); 
     }
     | error {
-        printf("[SYNTATIC] ERROR set_statement_complex\n");
+        printf("[SYNTATIC] ERROR set_statement_for_all\n");
     }
 ;
 
-set_expression:
-    expression IN set_statement_basic {
-        printf("[SYNTATIC] (set_expression) expression IN set_statement_basic\n");
+set_statement_exists:
+    EXISTS '(' set_assignment_expression ')' {
+        printf("[SYNTATIC] (set_statement_exists) EXISTS '(' set_assignment_expression ')'\n"); 
+    }
+    | error {
+        printf("[SYNTATIC] ERROR set_statement_exists\n");
+    }
+;
+
+set_boolean_expression:
+    expression IN set_statement_add_remove {
+        printf("[SYNTATIC] (set_boolean_expression) expression IN set_statement_add_remove\n");
     }
     | expression IN ID {
-        printf("[SYNTATIC] (set_expression) expression IN ID(%s)\n", $3);
+        printf("[SYNTATIC] (set_boolean_expression) expression IN ID(%s)\n", $3);
+    }
+    | set_statement_exists IN set_statement_add_remove {
+        printf("[SYNTATIC] (set_boolean_expression) set_statement_exists IN set_statement_add_remove\n");
+    }
+    | set_statement_exists IN ID {
+        printf("[SYNTATIC] (set_boolean_expression) set_statement_exists IN set_statement_add_remove\n");
     }
     | error {
-        printf("[SYNTATIC] ERROR set_expression\n");
+        printf("[SYNTATIC] ERROR set_boolean_expression\n");
+    }
+;
+
+set_assignment_expression:
+    ID IN set_statement_add_remove {
+        printf("[SYNTATIC] (set_assignment_expression) expression IN set_statement_add_remove\n");
+    }
+    | ID IN ID {
+        printf("[SYNTATIC] (set_assignment_expression) ID(%s) IN ID(%s)\n", $1, $3);
+    }
+    | error {
+        printf("[SYNTATIC] ERROR set_assignment_expression\n");
     }
 ;
 
@@ -275,10 +307,7 @@ expression_statement:
 ;
 
 expression:
-    '(' expression ')' {
-        printf("[SYNTATIC] (expression) '(' expression ')'\n");
-    }
-    | expression_assignment {
+    expression_assignment {
         printf("[SYNTATIC] (expression) expression_assignment\n");
     }
     | error {
@@ -296,16 +325,13 @@ expression_assignment:
 ;
 
 expression_logical:
-    '(' expression ')'{
-        printf("[SYNTATIC] (expression_logical) '(' expression_logical ')' \n");
-    }
-    | expression_logical AND_OP expression_logical {
+    expression_logical AND_OP expression_logical {
         printf("[SYNTATIC] (expression_logical) expression_logical AND_OP(&&) expression_logical\n");
     }
     | expression_logical OR_OP expression_logical {
         printf("[SYNTATIC] (expression_logical) expression_logical OR_OP(||) expression_logical\n");
     }
-    | set_expression {
+    | set_boolean_expression {
         printf("[SYNTATIC] (expression_logical) set_expression\n");
     }
     | expression_relational {
@@ -317,10 +343,7 @@ expression_logical:
 ;
 
 expression_relational:
-    '(' expression ')'{
-        printf("[SYNTATIC] (expression_relational) '(' expression_relational ')' \n");
-    }
-    | expression_relational RELATIONAL_OP expression_relational {
+    expression_relational RELATIONAL_OP expression_relational {
         printf("[SYNTATIC] (expression_relational) expression_relational RELATIONAL_OP(%s) expression_relational\n", $2);
     }
     | expression_multiplicative {
@@ -332,10 +355,7 @@ expression_relational:
 ;
 
 expression_multiplicative:
-    '(' expression ')'{
-        printf("[SYNTATIC] (expression_multiplicative) '(' expression_multiplicative ')' \n");
-    }
-    | expression_multiplicative MULTIPLICATIVE_OP expression_multiplicative {
+    expression_multiplicative MULTIPLICATIVE_OP expression_multiplicative {
         printf("[SYNTATIC] (expression_multiplicative)  expression_multiplicative MULTIPLICATIVE_OP(%s) expression_multiplicative \n", $2);
     }
     | expression_additive {
@@ -347,10 +367,7 @@ expression_multiplicative:
 ;
 
 expression_additive:
-    '(' expression ')'{
-        printf("[SYNTATIC] (expression_additive) '(' expression_additive ')' \n");
-    }
-    | expression_additive ADDITIVE_OP expression_additive {
+    expression_additive ADDITIVE_OP expression_additive {
         printf("[SYNTATIC] (expression_additive) expression_additive ADDITIVE_OP(%s) expression_additive \n", $2);
     }
     | expression_value {
@@ -362,10 +379,7 @@ expression_additive:
 ;
 
 expression_value:
-    '(' expression ')'{
-        printf("[SYNTATIC] (expression_value) '(' expression_value ')' \n");
-    }
-    | value {
+    value {
         printf("[SYNTATIC] (expression_value) value \n");
     }
     | '-' value {
@@ -389,9 +403,6 @@ for:
 for_expression:
     expression_assignment ';' expression_logical ';' expression_assignment {
         printf("[SYNTATIC] (for_expression) expression_assignment ';' expression_logical ';' expression_assignment\n");
-    }
-    | expression_assignment ';' expression_logical ';' {
-        printf("[SYNTATIC] (for_expression) expression_assignment ';' expression_logical ';' empty \n");
     }
     | error {
         printf("[SYNTATIC] ERROR for_expression\n");

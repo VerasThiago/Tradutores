@@ -26,7 +26,11 @@ SET                             set
 
 ELEM                            elem
 
-SET_BASIC                       add|remove|exists
+SET_ADD                         add
+
+SET_REMOVE                      remove
+
+SET_EXISTS                      exists
 
 SET_IS_SET                      is_set
 
@@ -75,19 +79,24 @@ COMMENT                         "//"
     }
 }
 
-{SET_BASIC}|{SET_IS_SET}|{SET_FOR_ALL}|{SET_IN} {
+{SET_ADD}|{SET_REMOVE}|{SET_EXISTS}|{SET_IS_SET}|{SET_FOR_ALL}|{SET_IN} {
     // printf("[LEXICO] Set operator: %s\n", yytext);
     columns += yyleng;
-    if(yytext[0] == 'a' || yytext[0] == 'r' || yytext[0] == 'e'){
-        yylval.body = strdup(yytext);
-        return SET_BASIC;
-    } else if ( yytext[0] == 'i' && yytext[1] == 's'){
-        return IS_SET;
+
+    if(yytext[0] == 'a'){
+        return ADD;
+    } else if ( yytext[0] == 'r'){
+        return REMOVE;
+    } else if ( yytext[0] == 'e'){
+        return EXISTS;
     } else if ( yytext[0] == 'f'){
         return FOR_ALL;
+    } else if ( yytext[1] == 's'){
+        return IS_SET;
     } else {
         return IN;
     }
+
 }
 
 {KEYWORD} {

@@ -68,18 +68,20 @@ extern int yydebug;
     EMPTY = 269,                   /* EMPTY  */
     FLOAT = 270,                   /* FLOAT  */
     INT = 271,                     /* INT  */
-    FOR_ALL = 272,                 /* FOR_ALL  */
-    IS_SET = 273,                  /* IS_SET  */
-    IN = 274,                      /* IN  */
-    SET_BASIC = 275,               /* SET_BASIC  */
-    INT_VALUE = 276,               /* INT_VALUE  */
-    FLOAT_VALUE = 277,             /* FLOAT_VALUE  */
-    ID = 278,                      /* ID  */
-    ASSIGNMENT_OP = 279,           /* ASSIGNMENT_OP  */
-    RELATIONAL_OP = 280,           /* RELATIONAL_OP  */
-    MULTIPLICATIVE_OP = 281,       /* MULTIPLICATIVE_OP  */
-    ADDITIVE_OP = 282,             /* ADDITIVE_OP  */
-    STRING = 283                   /* STRING  */
+    ADD = 272,                     /* ADD  */
+    REMOVE = 273,                  /* REMOVE  */
+    EXISTS = 274,                  /* EXISTS  */
+    FOR_ALL = 275,                 /* FOR_ALL  */
+    IS_SET = 276,                  /* IS_SET  */
+    IN = 277,                      /* IN  */
+    INT_VALUE = 278,               /* INT_VALUE  */
+    FLOAT_VALUE = 279,             /* FLOAT_VALUE  */
+    ID = 280,                      /* ID  */
+    ASSIGNMENT_OP = 281,           /* ASSIGNMENT_OP  */
+    RELATIONAL_OP = 282,           /* RELATIONAL_OP  */
+    MULTIPLICATIVE_OP = 283,       /* MULTIPLICATIVE_OP  */
+    ADDITIVE_OP = 284,             /* ADDITIVE_OP  */
+    STRING = 285                   /* STRING  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -92,7 +94,7 @@ union YYSTYPE
 
 	char* body;
 
-#line 96 "syntatic.tab.h"
+#line 98 "syntatic.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
