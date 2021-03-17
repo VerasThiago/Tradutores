@@ -26,13 +26,13 @@ SET                             set
 
 ELEM                            elem
 
-SET_OPERATION                   add|remove|exists
+SET_BASIC                       add|remove|exists
 
-SET_OPERATION_1                 is_set
+SET_IS_SET                      is_set
 
-SET_OPERATION_2                 forall
+SET_FOR_ALL                     forall
 
-SET_OPERATION_3                 is
+SET_IN                          in
 
 ENUMERATOR_OP                   =
 
@@ -75,13 +75,18 @@ COMMENT                         "//"
     }
 }
 
-{SET_OPERATION}|{SET_OPERATION_1}|{SET_OPERATION_2}|"in" {
-    columns += yyleng;
+{SET_BASIC}|{SET_IS_SET}|{SET_FOR_ALL}|{SET_IN} {
     // printf("[LEXICO] Set operator: %s\n", yytext);
+    columns += yyleng;
     if(yytext[0] == 'a' || yytext[0] == 'r' || yytext[0] == 'e'){
+        yylval.body = strdup(yytext);
+        return T_SetBasic;
     } else if ( yytext[0] == 'i' && yytext[1] == 's'){
+        return T_SetIsSet;
     } else if ( yytext[0] == 'f'){
+        return T_SetForAll;
     } else {
+        return T_SetIn;
     }
 }
 
@@ -104,13 +109,16 @@ COMMENT                         "//"
     columns += yyleng;
     // printf("[LEXICO] Write: %s\n", yytext);
     if(yytext[yyleng - 1] == 'n'){
+        return T_Writeln;
     } else {
+        return T_Write;
     }
 }
 
 {IN} {
     // printf("[LEXICO] Read: %s\n", yytext);
     columns += yyleng;
+    return T_Read;
 }
 
 {BASIC_TYPE} {
@@ -126,25 +134,20 @@ COMMENT                         "//"
 {STRING} {
     // printf("[LEXICO] String: %s\n", yytext);
     columns += yyleng;
+    yylval.body = strdup(yytext);
+    return T_String;
 }
 
 {SET}|{ELEM} {
     // printf("[LEXICO] Custom type: %s\n", yytext);
     columns += yyleng;
     if(yytext[0] == 's'){
+        return T_Set;
     } else {
+        return T_Elem;
     }
 }
 
-"++" {
-    // printf("[LEXICO] Icrement Op, %s", yytext);
-    columns += yyleng;
-}
-
-"--" {
-    // printf("[LEXICO] Decrement Op, %s", yytext);
-    columns += yyleng;
-}
 
 {ID} {
     if(yyleng >= 33) {
@@ -160,16 +163,19 @@ COMMENT                         "//"
 {LOGICAL_AND_OP} {
     // printf("[LEXICO] Logic AND operator: %s\n", yytext);
     columns += yyleng;
+    return LOGICAL_AND_OP;
 }
 
 {LOGICAL_OR_OP} {
     // printf("[LEXICO] Logic OR operator: %s\n", yytext);
     columns += yyleng;
+    return LOGICAL_OR_OP;
 }
 
 {RELATIONAL_OP} {
     // printf("[LEXICO] Relational operator: %s\n", yytext);
     columns += yyleng;
+    yylval.body = strdup(yytext);
     yylval.body = strdup(yytext);
     return RELATIONAL_OP;
 }
@@ -177,17 +183,20 @@ COMMENT                         "//"
 {MULTIPLICATIVE_OP} {
     // printf("[LEXICO] Multiplicative operator: %s\n", yytext);
     columns += yyleng;
+    yylval.body = strdup(yytext);
+    return MULTIPLICATIVE_OP;
 }
 
 {ADDITIVE_OP} {
     // printf("[LEXICO] Additive operator: %s\n", yytext);
     columns += yyleng;
+    yylval.body = strdup(yytext);
+    return ADDITIVE_OP;
 }
 
 {ENUMERATOR_OP} {
     // printf("[LEXICO] Enumerator operator: %s\n", yytext);
     columns += yyleng;
-    yylval.body = strdup(yytext);
     return ENUMERATOR_OP;
 }
 
@@ -220,6 +229,7 @@ COMMENT                         "//"
 "," {
     // printf("[LEXICO] Variable separator: %s\n", yytext);
     columns += yyleng;
+    return T_Comma;
 }
 
 [ \t]+

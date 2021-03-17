@@ -1,8 +1,9 @@
-/* A Bison parser, made by GNU Bison 3.0.4.  */
+/* A Bison parser, made by GNU Bison 3.7.6.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2021 Free Software Foundation,
+   Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -15,7 +16,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -30,6 +31,10 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
+/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
+   especially those whose name start with YY_ or yy_.  They are
+   private implementation details that can be changed or removed.  */
+
 #ifndef YY_YY_SYNTATIC_TAB_H_INCLUDED
 # define YY_YY_SYNTATIC_TAB_H_INCLUDED
 /* Debug traces.  */
@@ -40,61 +45,66 @@
 extern int yydebug;
 #endif
 
-/* Token type.  */
+/* Token kinds.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
   enum yytokentype
   {
-    T_Comma = 258,
-    T_Assignment = 259,
-    T_Elem = 260,
-    T_If = 261,
-    T_Else = 262,
-    T_LeftBrace = 263,
-    T_LeftParentheses = 264,
-    T_Period = 265,
-    T_RightBrace = 266,
-    T_RightParentheses = 267,
-    T_Semicolon = 268,
-    T_Set = 269,
-    LOGICAL_AND_OP = 270,
-    LOGICAL_OR_OP = 271,
-    T_SET_OPERATION_1 = 272,
-    T_SET_OPERATION_2 = 273,
-    T_SET_OPERATION_3 = 274,
-    T_For = 275,
-    T_Return = 276,
-    T_Write = 277,
-    T_Writeln = 278,
-    T_Read = 279,
-    T_Empty = 280,
-    T_Type_Float = 281,
-    T_Type_Int = 282,
-    ENUMERATOR_OP = 283,
-    T_Integer = 284,
-    T_Float = 285,
-    T_Basic_type = 286,
-    T_Id = 287,
-    RELATIONAL_OP = 288,
-    MULTIPLICATIVE_OP = 289,
-    ADDITIVE_OP = 290,
-    T_String = 291,
-    T_SET_OPERATION = 292
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    T_Comma = 258,                 /* T_Comma  */
+    T_Assignment = 259,            /* T_Assignment  */
+    T_Elem = 260,                  /* T_Elem  */
+    T_If = 261,                    /* T_If  */
+    T_Else = 262,                  /* T_Else  */
+    T_LeftBrace = 263,             /* T_LeftBrace  */
+    T_LeftParentheses = 264,       /* T_LeftParentheses  */
+    T_Period = 265,                /* T_Period  */
+    T_RightBrace = 266,            /* T_RightBrace  */
+    T_RightParentheses = 267,      /* T_RightParentheses  */
+    T_Semicolon = 268,             /* T_Semicolon  */
+    T_Set = 269,                   /* T_Set  */
+    LOGICAL_AND_OP = 270,          /* LOGICAL_AND_OP  */
+    LOGICAL_OR_OP = 271,           /* LOGICAL_OR_OP  */
+    T_For = 272,                   /* T_For  */
+    T_Return = 273,                /* T_Return  */
+    T_Write = 274,                 /* T_Write  */
+    T_Writeln = 275,               /* T_Writeln  */
+    T_Read = 276,                  /* T_Read  */
+    T_Empty = 277,                 /* T_Empty  */
+    T_Type_Float = 278,            /* T_Type_Float  */
+    T_Type_Int = 279,              /* T_Type_Int  */
+    T_SetForAll = 280,             /* T_SetForAll  */
+    T_SetIsSet = 281,              /* T_SetIsSet  */
+    T_SetIn = 282,                 /* T_SetIn  */
+    T_SetBasic = 283,              /* T_SetBasic  */
+    ENUMERATOR_OP = 284,           /* ENUMERATOR_OP  */
+    T_Integer = 285,               /* T_Integer  */
+    T_Float = 286,                 /* T_Float  */
+    T_Basic_type = 287,            /* T_Basic_type  */
+    T_Id = 288,                    /* T_Id  */
+    RELATIONAL_OP = 289,           /* RELATIONAL_OP  */
+    MULTIPLICATIVE_OP = 290,       /* MULTIPLICATIVE_OP  */
+    ADDITIVE_OP = 291,             /* ADDITIVE_OP  */
+    T_String = 292,                /* T_String  */
+    T_SET_OPERATION = 293          /* T_SET_OPERATION  */
   };
+  typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-
 union YYSTYPE
 {
-#line 22 "syntatic.y" /* yacc.c:1909  */
+#line 24 "syntatic.y"
 
 	char* body;
 
-#line 96 "syntatic.tab.h" /* yacc.c:1909  */
-};
+#line 106 "syntatic.tab.h"
 
+};
 typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

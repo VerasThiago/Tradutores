@@ -1,7 +1,9 @@
 %define lr.type canonical-lr
-%error-verbose
+%define parse.error verbose
 %debug
 %locations
+
+
 
 %{
     #include <stdlib.h>
@@ -27,7 +29,7 @@
 %token T_Assignment
 %token T_Elem
 %token T_If
-%token T_Else
+%nonassoc T_Else
 %token T_LeftBrace
 %token T_LeftParentheses
 %token T_Period
@@ -37,9 +39,6 @@
 %token T_Set
 %token LOGICAL_AND_OP
 %token LOGICAL_OR_OP
-%token T_SET_OPERATION_1
-%token T_SET_OPERATION_2
-%token T_SET_OPERATION_3
 %token T_For
 %token T_Return
 %token T_Write
@@ -48,15 +47,19 @@
 %token T_Empty
 %token T_Type_Float
 %token T_Type_Int
+%token T_SetForAll
+%token T_SetIsSet
+%token T_SetIn
 
+%token <body> T_SetBasic
 %token <body> ENUMERATOR_OP
 %token <body> T_Integer
 %token <body> T_Float
 %token <body> T_Basic_type
 %token <body> T_Id
-%token <body> RELATIONAL_OP
-%token <body> MULTIPLICATIVE_OP
-%token <body> ADDITIVE_OP
+%left <body> RELATIONAL_OP
+%left <body> MULTIPLICATIVE_OP
+%left <body> ADDITIVE_OP
 %token <body> T_String
 %token <body> T_SET_OPERATION
 
@@ -78,11 +81,15 @@ program:
 	function_definition {
         printf("[SYNTATIC] (program) function_definition\n");
     }
+	| function_definition program {
+        printf("[SYNTATIC] (program) function_definition program\n");
+    }
+	| variables_declaration program {
+        printf("[SYNTATIC] (program) variables_declaration program\n");
+    }
     | error {
         printf("[SYNTATIC] ERROR program\n");
     }
-	| function_definition program {}
-	| variables_declaration program {}
 ;
 
 function_definition:
@@ -96,7 +103,7 @@ function_definition:
 
 function_declaration:
 	type_identifier T_Id {
-        printf("[SYNTATIC] (function_declaration) type_identifier T_Id\n");
+        printf("[SYNTATIC] (function_declaration) type_identifier T_Id(%s)\n", $2);
     }
 ;
 
@@ -110,25 +117,33 @@ function_body:
 ;
 
 parameters:
-	T_LeftParentheses parameters_list T_RightParentheses {}
-    | T_LeftParentheses T_RightParentheses {}
-    | %empty {}
+	parameters_list {
+        printf("[SYNTATIC] (parameters) T_LeftParentheses parameters_list T_RightParentheses\n");
+    }
+    | %empty {
+       printf("[SYNTATIC] (parameters) VAZIO\n"); 
+    }
     | error {
         printf("[SYNTATIC] ERROR parameters\n");
     }
 ;
 
 parameters_list:
-	parameter T_Comma parameters_list {} 
-	| parameter {}
-    | %empty {}
+	parameters_list T_Comma parameter {
+        printf("[SYNTATIC] (parameters_list) parameter T_Comma parameters_list\n");
+    } 
+	| parameter {
+        printf("[SYNTATIC] (parameters_list) parameter\n");
+    }
     | error {
         printf("[SYNTATIC] ERROR parameters_list\n");
     }
 ;
 
 parameter:
-	type_identifier T_Id {}
+	type_identifier T_Id {
+        printf("[SYNTATIC] (parameter) type_identifier T_Id(%s)\n", $2);
+    }
     | error {
         printf("[SYNTATIC] ERROR parameter\n");
     }
@@ -141,8 +156,12 @@ type_identifier:
     | T_Type_Float {
         printf("[SYNTATIC] type_identifier FLOAT\n");
     }
-	| T_Elem {}
-    | T_Set {}
+	| T_Elem {
+        printf("[SYNTATIC] type_identifier ELEM\n");
+    }
+    | T_Set {
+        printf("[SYNTATIC] type_identifier SET\n");
+    }
     | error {
         printf("[SYNTATIC] ERROR type_identifier\n");
     }
@@ -155,17 +174,20 @@ statements:
 	| statement {
         printf("[SYNTATIC] (statements) statement\n");   
     }
-    | T_LeftBrace statements T_RightBrace {
-        printf("[SYNTATIC] (statements) T_LeftBrace statements T_RightBrace\n");
+    | statements_braced {
+        printf("[SYNTATIC] (statements) statements_braced\n");
     }
     | %empty {
         printf("[SYNTATIC] (statements) empty\n");    
     }
-    | expression_statement statements {
-        printf("[SYNTATIC] (statements) expression_statement statements\n");    
-    }
     | error {
         printf("[SYNTATIC] ERROR (statements)\n");
+    }
+;
+
+statements_braced:
+    T_LeftBrace statements T_RightBrace {
+        printf("[SYNTATIC] (statements_braced) T_LeftBrace statements T_RightBrace\n");
     }
 ;
 
@@ -179,54 +201,115 @@ statement:
 	| conditional {
         printf("[SYNTATIC] (statement) conditional\n");   
     }
-	| for {}
-	| expression_statement T_Semicolon {}
-	| io_statement {}
-	| set_statement {}
+	| for {
+        printf("[SYNTATIC] (statement) FOR\n");   
+    }
+	| expression_statement T_Semicolon {
+        printf("[SYNTATIC] (statement) expression_statement T_Semicolon\n");   
+    }
+	| io_statement {
+        printf("[SYNTATIC] (statement) io_statement\n");  
+    }
+	| set_pre_statement {
+        printf("[SYNTATIC] (statement) set_pre_statement\n");  
+    }
     | error {
         printf("[SYNTATIC] ERROR (statement)\n");
     }
 ;
 
-set_statement:
-    T_SET_OPERATION_1 T_LeftParentheses T_Id T_RightParentheses T_Semicolon {}
-    | T_SET_OPERATION_1 T_LeftParentheses set_expression T_RightParentheses T_Semicolon {}
-    | T_SET_OPERATION_2 T_LeftParentheses T_Id T_SET_OPERATION_3 set_expression T_RightParentheses statement {}
+set_pre_statement:
+    set_statement_basic T_Semicolon {
+        printf("[SYNTATIC] (set_pre_statement) set_statement_basic T_Semicolon\n");  
+    }
+    | set_statement_complex {
+        printf("[SYNTATIC] (set_pre_statement) set_statement_complex\n");  
+    }
     | error {
-        printf("[SYNTATIC] ERROR set_statement\n");
+        printf("[SYNTATIC] ERROR set_pre_statement\n");
+    }
+
+;
+
+set_statement_basic:
+    T_SetBasic T_LeftParentheses set_expression T_RightParentheses {
+        printf("[SYNTATIC] (set_statement_basic) T_SetBasic(%s) T_LeftParentheses set_expression T_RightParentheses\n", $1); 
+    }
+    | T_SetIsSet T_LeftParentheses T_Id T_RightParentheses {
+        printf("[SYNTATIC] (set_statement_basic) T_SetIsSet T_LeftParentheses T_Id(%s) T_RightParentheses\n", $3);
+    }
+    | error {
+        printf("[SYNTATIC] ERROR set_statement_basic\n");
+    }
+;
+
+set_statement_complex:
+    T_SetForAll T_LeftParentheses set_expression T_RightParentheses statements {
+        printf("[SYNTATIC] (set_statement_complex) T_SetForAll T_LeftParentheses set_expression T_RightParentheses statements\n"); 
+    }
+    | error {
+        printf("[SYNTATIC] ERROR set_statement_complex\n");
     }
 ;
 
 set_expression:
-    T_SET_OPERATION T_LeftParentheses T_SET_OPERATION_3 set_expression T_RightParentheses statement {}
+    expression T_SetIn set_statement_basic {
+        printf("[SYNTATIC] (set_expression) expression T_SetIn set_statement_basic\n");
+    }
+    | expression T_SetIn T_Id {
+        printf("[SYNTATIC] (set_expression) expression T_SetIn T_id(%s)\n", $3);
+    }
     | error {
-        printf("[SYNTATIC] ERROR functset_expressionion_body\n");
+        printf("[SYNTATIC] ERROR set_expression\n");
     }
 ;
 
 expression_statement:
-    expression T_Semicolon
-    | T_Semicolon
+    expression {
+        printf("[SYNTATIC] (expression_statement) expression\n");
+    }
     | error {
         printf("[SYNTATIC] ERROR expression_statement\n");
     }
 ;
 
 expression:
-    expression ENUMERATOR_OP expression {
-        printf("EXP %s EXP\n", $2);
+    T_LeftParentheses expression T_RightParentheses {
+        printf("[SYNTATIC] (expression) T_LeftParentheses expression T_RightParentheses\n");
     }
-    | expression_logical {
-        printf("[SYNTATIC] (statexpressionement) expression_logical\n");   
+    | expression_assignment {
+        printf("[SYNTATIC] (expression) expression_assignment\n");
     }
     | error {
         printf("[SYNTATIC] ERROR expression\n");
     }
 ;
 
-expression_logical: 
-    expression_logical LOGICAL_AND_OP expression_logical {}
-    | expression_logical LOGICAL_OR_OP expression_logical {}
+expression_assignment:
+    T_LeftParentheses expression T_RightParentheses{
+        printf("[SYNTATIC] (expression_assignment) T_LeftParentheses expression_assignment T_RightParentheses \n");
+    }
+    | expression ENUMERATOR_OP expression {
+         printf("[SYNTATIC] (expression_assignment) expression ENUMERATOR_OP(=)  expression\n");
+    }
+    | expression_logical {
+        printf("[SYNTATIC] (expression) expression_logical\n");   
+    }
+;
+
+expression_logical:
+    T_LeftParentheses expression T_RightParentheses{
+        printf("[SYNTATIC] (expression_logical) T_LeftParentheses expression_logical T_RightParentheses \n");
+    }
+    | expression_logical LOGICAL_AND_OP expression_logical {
+        printf("[SYNTATIC] (expression_logical) expression_logical LOGICAL_AND_OP(&&) expression_logical\n");
+    }
+    | expression_logical LOGICAL_OR_OP expression_logical {
+        printf("[SYNTATIC] (expression_logical) expression_logical LOGICAL_OR_OP(||) expression_logical\n");
+    }
+    | set_expression {
+        printf("[SYNTATIC] (expression_logical) set_expression\n");
+    }
     | expression_relational {
         printf("[SYNTATIC] (expression_logical) expression_relational\n");
     }
@@ -236,7 +319,10 @@ expression_logical:
 ;
 
 expression_relational:
-    expression_relational RELATIONAL_OP expression_relational {
+    T_LeftParentheses expression T_RightParentheses{
+        printf("[SYNTATIC] (expression_relational) T_LeftParentheses expression_relational T_RightParentheses \n");
+    }
+    | expression_relational RELATIONAL_OP expression_relational {
         printf("[SYNTATIC] (expression_relational) expression_relational RELATIONAL_OP(%s) expression_relational\n", $2);
     }
     | expression_multiplicative {
@@ -248,7 +334,12 @@ expression_relational:
 ;
 
 expression_multiplicative:
-    expression_multiplicative MULTIPLICATIVE_OP expression_multiplicative {}
+    T_LeftParentheses expression T_RightParentheses{
+        printf("[SYNTATIC] (expression_multiplicative) T_LeftParentheses expression_multiplicative T_RightParentheses \n");
+    }
+    | expression_multiplicative MULTIPLICATIVE_OP expression_multiplicative {
+        printf("[SYNTATIC] (expression_multiplicative)  expression_multiplicative MULTIPLICATIVE_OP(%s) expression_multiplicative \n", $2);
+    }
     | expression_additive {
         printf("[SYNTATIC] (expression_multiplicative) expression_additive \n");
     }
@@ -258,7 +349,12 @@ expression_multiplicative:
 ;
 
 expression_additive:
-    expression_additive ADDITIVE_OP expression_additive {}
+    T_LeftParentheses expression T_RightParentheses{
+        printf("[SYNTATIC] (expression_additive) T_LeftParentheses expression_additive T_RightParentheses \n");
+    }
+    | expression_additive ADDITIVE_OP expression_additive {
+        printf("[SYNTATIC] (expression_additive) expression_additive ADDITIVE_OP(%s) expression_additive \n", $2);
+    }
     | expression_value {
         printf("[SYNTATIC] (expression_additive) expression_value \n");
     }
@@ -268,7 +364,10 @@ expression_additive:
 ;
 
 expression_value:
-    value {
+    T_LeftParentheses expression T_RightParentheses{
+        printf("[SYNTATIC] (expression_value) T_LeftParentheses expression_value T_RightParentheses \n");
+    }
+    | value {
         printf("[SYNTATIC] (expression_value) value \n");
     }
     | "-" value {}
@@ -277,43 +376,56 @@ expression_value:
     }
 ;
 
-expression_empty:
-    expression {}
-    | %empty {}
-    | error {
-        printf("[SYNTATIC] ERROR expression_empty\n");
-    }
-;
 
 for:
-    T_For T_LeftParentheses for_expression T_RightParentheses statement {}
-    | T_For T_LeftParentheses for_expression T_RightParentheses T_LeftBrace statement T_RightBrace {}
+    T_For T_LeftParentheses for_expression T_RightParentheses statements {
+        printf("[SYNTATIC] (for) T_For T_LeftParentheses for_expression T_RightParentheses statement\n");
+    }
     | error {
         printf("[SYNTATIC] ERROR for\n");
     }
 ;
 
 for_expression:
-    expression_empty T_Semicolon expression_empty T_Semicolon expression_empty {}
+    expression_assignment T_Semicolon expression_logical T_Semicolon expression_assignment {
+        printf("[SYNTATIC] (for_expression) expression_assignment T_Semicolon expression_logical T_Semicolon expression_assignment\n");
+    }
+    | expression_assignment T_Semicolon expression_logical T_Semicolon {
+        printf("[SYNTATIC] (for_expression) expression_assignment T_Semicolon expression_logical T_Semicolon empty \n");
+    }
     | error {
         printf("[SYNTATIC] ERROR for_expression\n");
     }
 ;
 
 io_statement:
-    T_Read T_LeftParentheses T_Id T_RightParentheses T_Semicolon {}
-    | T_Write T_LeftParentheses T_String T_RightParentheses T_Semicolon {}
-    | T_Write T_LeftParentheses expression T_RightParentheses T_Semicolon {}
-    | T_Writeln T_LeftParentheses T_String T_RightParentheses T_Semicolon {}
-    | T_Writeln T_LeftParentheses expression T_RightParentheses T_Semicolon {}
+    T_Read T_LeftParentheses T_Id T_RightParentheses T_Semicolon {
+        printf("[SYNTATIC] (io_statement) T_Read T_LeftParentheses T_Id(%s) T_RightParentheses T_Semicolon\n", $3);
+    }
+    | T_Write T_LeftParentheses T_String T_RightParentheses T_Semicolon {
+        printf("[SYNTATIC] (io_statement) T_Write T_LeftParentheses T_String(%s) T_RightParentheses T_Semicolon\n", $3);
+    }
+    | T_Write T_LeftParentheses expression T_RightParentheses T_Semicolon {
+        printf("[SYNTATIC] (io_statement) T_Write T_LeftParentheses expression T_RightParentheses T_Semicolon\n");
+    }
+    | T_Writeln T_LeftParentheses T_String T_RightParentheses T_Semicolon {
+        printf("[SYNTATIC] (io_statement) T_Writeln T_LeftParentheses T_String(%s) T_RightParentheses T_Semicolon\n", $3);
+    }
+    | T_Writeln T_LeftParentheses expression T_RightParentheses T_Semicolon {
+        printf("[SYNTATIC] (io_statement) T_Writeln T_LeftParentheses expression T_RightParentheses T_Semicolon\n");
+    }
     | error {
         printf("[SYNTATIC] ERROR io_statement\n");
     }
 ;
 
 arguments_list:
-    arguments_list T_Comma value {}
-    | value {}
+    arguments_list T_Comma value {
+        printf("[SYNTATIC] (arguments_list) arguments_list value\n");
+    }
+    | value {
+        printf("[SYNTATIC] (arguments_list) value\n");
+    }
     | error {
         printf("[SYNTATIC] ERROR arguments_list:\n");
     }
@@ -321,9 +433,11 @@ arguments_list:
 
 conditional:
     T_If conditional_expression statements {
-        printf("[SYNTATIC] (conditional) conditional_expression statements\n");
+        printf("[SYNTATIC] (conditional) T_If conditional_expression statements\n");
     }
-    | T_If conditional_expression statement T_Else statements {}
+    | T_If conditional_expression statements_braced T_Else statements_braced {
+        printf("[SYNTATIC] (conditional) T_If conditional_expression statements_braced T_Else statements_braced\n");
+    }
     | error {
         printf("[SYNTATIC] ERROR conditional\n");
     }
@@ -342,7 +456,9 @@ return:
     T_Return value T_Semicolon {
         printf("[SYNTATIC] (return) T_Return value T_Semicolon\n");
     }
-    | T_Return T_Semicolon {}
+    | T_Return T_Semicolon {
+        printf("[SYNTATIC] (return) T_Return T_Semicolon\n");
+    }
     | error {
         printf("[SYNTATIC] ERROR return\n");
     }
@@ -355,7 +471,9 @@ value:
     | const {
         printf("[SYNTATIC] (value) const\n");
     }
-    | function_call {}
+    | function_call {
+
+    }
     | error {
         printf("[SYNTATIC] ERROR value\n");
     }    
@@ -371,7 +489,7 @@ function_call:
 
 variables_declaration:
     type_identifier T_Id T_Semicolon {
-        printf("[SYNTATIC] (variables_declaration) type_identifier T_Id T_Semicolon\n");
+        printf("[SYNTATIC] (variables_declaration) type_identifier T_Id(%s) T_Semicolon\n", $2);
     }
     | error {
         printf("[SYNTATIC] ERROR variables_declaration\n");

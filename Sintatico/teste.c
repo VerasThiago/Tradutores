@@ -1,3 +1,3 @@
-int main(){
-    int x;
+int main() {
+    (x) = (1 + 2) / (10 - 10);
 }
