@@ -91,7 +91,7 @@ union YYSTYPE
 {
 #line 24 "syntatic.y"
 
-	char* body;
+	char body[2000];
     struct TreeNode *node;
 
 #line 98 "syntatic.tab.h"

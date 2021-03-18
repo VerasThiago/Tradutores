@@ -57,9 +57,8 @@ void freeTree(TreeNode* root){
 
     freeTree(root->nxt);
     freeTree(root->children);
-    free(root->children);
-    free(root->nxt);
     free(root->rule);
+    free(root);
 
     
 }

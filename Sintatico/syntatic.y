@@ -22,7 +22,7 @@
 %}
 
 %union {
-	char* body;
+	char body[2000];
     struct TreeNode *node;
 }
 
@@ -834,18 +834,17 @@ int main(int argc, char ** argv) {
 
     if(errors){
         printf("Symbol table and Tree won't be displayed because unexpected behaviour can be found since it contains erros\n");
-        exit(0);
-    }
-    
-    printTable(&tableList);
-    printf("\n");
-    printTree(root, 1, ok);
-    freeTree(root);
+    } else {
+        printTable(&tableList);
+        printf("\n");
+        printTree(root, 1, ok);
+    }    
 
+    freeTree(root);
     free(lastType);
     freeTable(&tableList);
-
     fclose(yyin);
     yylex_destroy();
+
     return 0;
 }

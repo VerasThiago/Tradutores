@@ -76,7 +76,7 @@ COMMENT                         "//"
 
 {CONSTANT}|{DIGIT}+"."{DIGIT}+|{DIGIT}+ {
     columns += yyleng;
-    yylval.body = strdup(yytext);
+    strcpy(yylval.body, yytext);
     if(strchr(yytext, '.') != NULL){
         // printf("[LEXICO] Constant (Float): %s\n", yytext);
          return FLOAT_VALUE;
@@ -153,7 +153,7 @@ COMMENT                         "//"
 {STRING} {
     // printf("[LEXICO] String: %s\n", yytext);
     columns += yyleng;
-    yylval.body = strdup(yytext);
+    strcpy(yylval.body, yytext);
     return STRING;
 }
 
@@ -173,9 +173,9 @@ COMMENT                         "//"
         // printf("[LEXICO] WARNING:The idenfier length is too long, the idenfier was truncated to the first 33 characters\n");
         yytext[33] = 0;
     }
+    strcpy(yylval.body, yytext);
     // printf("[LEXICO] Identifier: %s\n", yytext);
     columns += yyleng;
-    yylval.body = strdup(yytext);
     return ID;
 }
 
@@ -194,22 +194,21 @@ COMMENT                         "//"
 {RELATIONAL_OP} {
     // printf("[LEXICO] Relational operator: %s\n", yytext);
     columns += yyleng;
-    yylval.body = strdup(yytext);
-    yylval.body = strdup(yytext);
+    strcpy(yylval.body, yytext);
     return RELATIONAL_OP;
 }
 
 {MULTIPLICATIVE_OP} {
     // printf("[LEXICO] Multiplicative operator: %s\n", yytext);
     columns += yyleng;
-    yylval.body = strdup(yytext);
+    strcpy(yylval.body, yytext);
     return MULTIPLICATIVE_OP;
 }
 
 {ADDITIVE_OP} {
     // printf("[LEXICO] Additive operator: %s\n", yytext);
     columns += yyleng;
-    yylval.body = strdup(yytext);
+    strcpy(yylval.body, yytext);
     return ADDITIVE_OP;
 }
 
