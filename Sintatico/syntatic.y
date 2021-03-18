@@ -790,6 +790,7 @@ const:
 
 int yyerror(const char* message){
     printf("[SYNTATIC] ERROR [%d:%d] %s\n", lines, columns, message);
+    errors++;
     return 0;
 }
 
@@ -816,15 +817,23 @@ int main(int argc, char ** argv) {
 
     yyparse();
     printf("\n");
-    if(errors > 0){
-        printf("Program analysis failed!\nLexical analysis terminated with %d error(s)\n", errors);
+
+    if(errors){
+        printf("Program analysis failed!\nAnalysis terminated with %d error(s)\n\n", errors);
     }
     else{
-        printf("Correct program.\n");
+        printf("Correct program.\n\n");
     }
 
+    if(errors){
+        printf("Symbol table and Tree won't be displayed because unexpected behaviour can be found since it contains erros\n");
+        exit(0);
+    }
+    
     printTable(&tableList);
+    printf("\n");
     printTree(root, 1, ok);
+    freeTree(root);
 
     // fclose(yyin);
     yylex_destroy();

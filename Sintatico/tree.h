@@ -15,6 +15,8 @@ TreeNode* createNode(char* rule);
 
 void printTree(TreeNode* root, int ident,int *ok);
 
+void freeTree(TreeNode* root);
+
 void printToken(Symbol* s, int ident,int *ok);
 
 TreeNode* root;

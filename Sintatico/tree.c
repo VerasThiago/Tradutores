@@ -41,3 +41,19 @@ void printTree(TreeNode* root, int ident, int *ok){
     printTree(root->children, ident + 2, ok);
 }
 
+void freeTree(TreeNode* root){
+    if(root) return;
+
+    
+    if(root->symbol){
+        free(root->symbol->class);
+        free(root->symbol->type);
+        free(root->symbol->body);
+    }
+
+    freeTree(root->nxt);
+    freeTree(root->children);
+    free(root);
+
+    
+}
