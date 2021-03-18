@@ -1,5 +1,5 @@
 int funcao() {
-	List int listaDeclaracaoErrada;
+	set int setDeclaracaoErrada;
 
 	return 0;
 }

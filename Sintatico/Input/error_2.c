@@ -1,4 +1,5 @@
 int semParenteses {
-	List <int> lista;
+	int x = 1 + 1 / 3;
+
 	return 0;
 }
