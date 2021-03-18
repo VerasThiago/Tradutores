@@ -48,15 +48,15 @@ void freeTree(TreeNode* root){
     if(!root) return;
 
     
+    freeTree(root->nxt);
+    freeTree(root->children);
+    
     if(root->symbol){
         free(root->symbol->classType);
         free(root->symbol->type);
         free(root->symbol->body);
-        free(root->symbol);
     }
-
-    freeTree(root->nxt);
-    freeTree(root->children);
+    free(root->symbol);
     free(root->rule);
     free(root);
 

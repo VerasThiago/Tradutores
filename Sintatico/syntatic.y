@@ -510,7 +510,7 @@ expression_relational:
     | expression_relational RELATIONAL_OP expression_relational {
         printf("[SYNTATIC] (expression_relational) expression_relational RELATIONAL_OP(%s) expression_relational\n", $2);
 
-        $$ = createNode("expression_logical");
+        $$ = createNode("expression_relational");
         $$->children = $1;   
         $1->nxt = $3;
         $$->symbol = createSymbol(lines, columns, "relational operator", "", $2);
@@ -841,7 +841,6 @@ int main(int argc, char ** argv) {
     }    
 
     freeTree(root);
-    // free(lastType);
     freeTable(&tableList);
     fclose(yyin);
     yylex_destroy();

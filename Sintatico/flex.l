@@ -50,9 +50,6 @@ SET_FOR_ALL                     forall
 
 SET_IN                          in
 
-AND_OP                          &&
-
-OR_OP                           \|\|
 
 RELATIONAL_OP                   <|>|==|<=|>=
 
@@ -179,13 +176,13 @@ COMMENT                         "//"
     return ID;
 }
 
-{AND_OP} {
+"&&" {
     // printf("[LEXICO] Logic AND operator: %s\n", yytext);
     columns += yyleng;
     return AND_OP;
 }
 
-{OR_OP} {
+"||" {
     // printf("[LEXICO] Logic OR operator: %s\n", yytext);
     columns += yyleng;
     return OR_OP;
