@@ -152,6 +152,13 @@ function_definition:
         $1->nxt = $3;
         $3->nxt = $5;
     }
+    | function_declaration '(' ')' function_body {
+        printf("[SYNTATIC] (function_definition) function_declaration '(' ')' function_body\n");
+        
+        $$ = createNode("function_definition");
+        $$->children = $1;
+        $1->nxt = $4;
+    }
     | error {}
 ;
 
@@ -170,22 +177,22 @@ function_body:
 	'{' statements '}' {
         printf("[SYNTATIC] (function_body) '{' statements '}'\n");
 
-        $$ = createNode("funfunction_bodyction_definition");
+        $$ = createNode("function_body");
         $$->children = $2;
+    }
+    | '{' '}' {
+        printf("[SYNTATIC] (function_body) '{' '}'\n");
+
+        $$ = createNode("function_body");
     }
 ;
 
 parameters:
 	parameters_list {
-        printf("[SYNTATIC] (parameters) '(' parameters_list ')'\n");
+        printf("[SYNTATIC] (parameters)  parameters_list \n");
 
         $$ = createNode("parameters_list");
         $$->children = $1;
-    }
-    | %empty {
-        printf("[SYNTATIC] (parameters) VAZIO\n"); 
-
-        $$ = createNode("parameters");
     }
 ;
 
