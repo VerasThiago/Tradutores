@@ -14,6 +14,8 @@
     extern TableList tableList;
     extern TreeNode* root;
 
+    extern char* lastType;
+
     extern int lines;
     extern int errors;
     extern int columns;

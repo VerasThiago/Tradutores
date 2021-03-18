@@ -3,42 +3,41 @@
 #include <string.h>
 #include "tree.h"
 
-TreeNode* createNode(char* type){
+TreeNode* createNode(char* rule){
     TreeNode* node = (TreeNode*) malloc(sizeof(TreeNode));
-    node->type = strdup(type);
+    node->rule = strdup(rule);
     return node;
 }
 
 void printToken(Symbol* s, int ident, int *ok){
-    printf("|");
-    for(int i = 0; i < ident; i++) {
-        if(ok[i]) printf("|");
-        else printf(".");
-        printf(" ");
-    }
-    printf("[%d:%d] %s - %s \n", s->line, s->colum, s->type, s->body);
+    printf(" ── [%d:%d] %s", s->line, s->colum, s->class);
+    if(strcmp(s->class, s->body))
+        printf(" : %s", s->body);
 }
 
 void printRule(char* s, int ident, int *ok){
-    printf("|");
     for(int i = 0; i < ident; i++) {
         if(ok[i]) printf("|");
-        else printf(".");
+        else printf(" ");
         printf(" ");
     }
-    printf("├─ %s\n", s);
+    printf("├─ %s ", s);
 }
 
 void printTree(TreeNode* root, int ident, int *ok){
-    if(!root || !root->type) return;
+    if(!root || !root->rule) return;
 
-    printRule(root->type, ident, ok);
+    printRule(root->rule, ident, ok);
+    ok[ident] = 1;
 
     if(root->symbol){
         printToken(root->symbol, ident + 1, ok);
     }
+
+    printf("\n");
+
     printTree(root->nxt, ident, ok);
-    ok[ident] = 1;
-    printTree(root->children, ident + 1, ok);
+    
+    printTree(root->children, ident + 2, ok);
 }
 

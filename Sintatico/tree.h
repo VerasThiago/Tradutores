@@ -6,12 +6,12 @@
 typedef struct TreeNode {
     struct TreeNode* children;
     struct TreeNode* nxt;
-    char* type;
+    char* rule;
     Symbol* symbol;
 } TreeNode;
 
 
-TreeNode* createNode(char* type);
+TreeNode* createNode(char* rule);
 
 void printTree(TreeNode* root, int ident,int *ok);
 

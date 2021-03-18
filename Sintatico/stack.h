@@ -15,4 +15,6 @@ Stack stackScope;
 
 int lines, columns, errors;
 
+char* lastType;
+
 #endif

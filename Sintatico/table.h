@@ -5,6 +5,7 @@
 typedef struct Symbol {
     int line;
     int colum;
+    char* class;
     char* type;
     char* body;
     int scope;
@@ -21,7 +22,7 @@ void push_back(TableList* tl, Symbol* s);
 
 void printTable(TableList* tl);
 
-Symbol* createSymbol(int line, int colum, char* type, char* body);
+Symbol* createSymbol(int line, int colum,char* class, char* type, char* body);
 
 TableList tableList;
 
