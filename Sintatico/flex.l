@@ -9,8 +9,8 @@
     #include "stack.h"
     #include "table.h"
 
-    extern Stack* stackScope;
-    extern TableList* tableList;
+    extern Stack stackScope;
+    extern TableList tableList;
 
     extern int lines;
     extern int errors;
@@ -225,10 +225,10 @@ COMMENT                         "//"
     columns += yyleng;
     // printf("[LEXICO] Block delimiter: %s\n", yytext);
     if(yytext[0] == '{'){
-        push(stackScope);  
+        push(&stackScope);  
         return '{';
     } else {
-        pop(stackScope);
+        pop(&stackScope);
         return '}';
     }
 }

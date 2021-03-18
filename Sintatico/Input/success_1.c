@@ -1,32 +1,32 @@
-set f(int x){
-    int x;
+set func1(int a){
+    int b;
 }
 
-int a(int b, set b){
-    int x;
-    int y;
+int func2(int c, set d){
+    int e;
+    int f;
 }
 
 int main(){
-    int a;
-    int b;
-    if(){
-        int c;
-    }
-    if(x){
-        int d;
-    }
-    if(x){
-        int e;
-    
-    }
-    int a1;
-    int a2;
-    int a3;
-    if(x){
-        int f;
-    }
     int g;
     int h;
-    int i;
+    if(i){
+        int j;
+    }
+    if(k){
+        int l;
+    }
+    if(m){
+        int n;
+    
+    }
+    int o;
+    int p;
+    int q;
+    if(r){
+        int s;
+    }
+    int qwuhdqhuwdhut;
+    int u;
+    int v;
 }

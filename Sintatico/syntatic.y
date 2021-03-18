@@ -72,9 +72,6 @@ start:
 	program {
         printf("[SYNTATIC] (start) program\n");
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR start \n");
-    // }
 ;
 
 program:
@@ -87,23 +84,18 @@ program:
 	| variables_declaration program {
         printf("[SYNTATIC] (program) variables_declaration program\n");
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR program\n");
-    // }
 ;
 
 function_definition:
 	function_declaration '(' parameters ')' function_body {
         printf("[SYNTATIC] (function_definition) function_declaration '(' parameters ')' function_body\n");
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR function_definition\n");
-    // }
+    | error {}
 ;
 
 function_declaration:
 	type_identifier ID {
-        push_back(tableList, createSymbol(lines, columns, "function", $2));
+        push_back(&tableList, createSymbol(lines, columns, "function", $2));
         printf("[SYNTATIC] (function_declaration) type_identifier ID(%s)\n", $2);
     }
 ;
@@ -112,9 +104,6 @@ function_body:
 	'{' statements '}' {
         printf("[SYNTATIC] (function_body) '{' statements '}'\n");
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR function_body\n");
-    // }
 ;
 
 parameters:
@@ -124,9 +113,6 @@ parameters:
     | %empty {
     //    printf("[SYNTATIC] (parameters) VAZIO\n"); 
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR parameters\n");
-    // }
 ;
 
 parameters_list:
@@ -136,18 +122,12 @@ parameters_list:
 	| parameter {
         printf("[SYNTATIC] (parameters_list) parameter\n");
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR parameters_list\n");
-    // }
 ;
 
 parameter:
 	type_identifier ID {
         printf("[SYNTATIC] (parameter) type_identifier ID(%s)\n", $2);
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR parameter\n");
-    // }
 ;
 
 type_identifier:
@@ -163,9 +143,6 @@ type_identifier:
     | SET{
         printf("[SYNTATIC] (type_identifier) SET\n");
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR type_identifier\n");
-    // }
 ;
 
 statements:
@@ -178,9 +155,6 @@ statements:
     | statements_braced {
         printf("[SYNTATIC] (statements) statements_braced\n");
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR (statements)\n");
-    // }
 ;
 
 statements_braced:
@@ -220,9 +194,6 @@ statement:
 	| set_pre_statement {
         printf("[SYNTATIC] (statement) set_pre_statement\n");  
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR (statement)\n");
-    // }
 ;
 
 set_pre_statement:
@@ -232,9 +203,6 @@ set_pre_statement:
     | set_statement_for_all {
         printf("[SYNTATIC] (set_pre_statement) set_statement_for_all\n");  
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR set_pre_statement\n");
-    // }
 ;
 
 set_statement_add_remove:
@@ -244,27 +212,18 @@ set_statement_add_remove:
     | REMOVE '(' set_boolean_expression ')' {
         printf("[SYNTATIC] (set_statement_add_remove) REMOVE '(' set_boolean_expression ')'\n"); 
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR set_statement_add_remove\n");
-    // }
 ;
 
 set_statement_for_all:
     FOR_ALL '(' set_assignment_expression ')' statements {
         printf("[SYNTATIC] (set_statement_for_all) FOR_ALL '(' set_assignment_expression ')' statements\n"); 
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR set_statement_for_all\n");
-    // }
 ;
 
 set_statement_exists:
     EXISTS '(' set_assignment_expression ')' {
         printf("[SYNTATIC] (set_statement_exists) EXISTS '(' set_assignment_expression ')'\n"); 
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR set_statement_exists\n");
-    // }
 ;
 
 set_boolean_expression:
@@ -274,9 +233,6 @@ set_boolean_expression:
     | expression IN ID {
         printf("[SYNTATIC] (set_boolean_expression) expression IN ID(%s)\n", $3);
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR set_boolean_expression\n");
-    // }
 ;
 
 set_assignment_expression:
@@ -286,27 +242,18 @@ set_assignment_expression:
     | ID IN ID {
         printf("[SYNTATIC] (set_assignment_expression) ID(%s) IN ID(%s)\n", $1, $3);
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR set_assignment_expression\n");
-    // }
 ;
 
 expression_statement:
     expression ';' {
         printf("[SYNTATIC] (expression_statement) expression\n");
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR expression_statement\n");
-    // }
 ;
 
 expression:
     expression_assignment {
         printf("[SYNTATIC] (expression) expression_assignment\n");
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR expression\n");
-    // }
 ;
 
 expression_assignment:
@@ -316,9 +263,6 @@ expression_assignment:
     | ID '=' expression {
         //  printf("[SYNTATIC] (expression_assignment) ID(%s) '='  expression\n", $1);
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR expression\n");
-    // }
 ;
 
 expression_logical:
@@ -337,9 +281,6 @@ expression_logical:
     | expression_logical OR_OP expression_logical {
         printf("[SYNTATIC] (expression_logical) expression_logical OR_OP(||) expression_logical\n");
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR expression_logical\n");
-    // }
 ;
 
 expression_relational:
@@ -349,9 +290,6 @@ expression_relational:
     | expression_relational RELATIONAL_OP expression_relational {
         printf("[SYNTATIC] (expression_relational) expression_relational RELATIONAL_OP(%s) expression_relational\n", $2);
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR expression_relational\n");
-    // }
 ;
 
 expression_additive:
@@ -361,9 +299,6 @@ expression_additive:
     | expression_additive ADDITIVE_OP expression_additive {
         printf("[SYNTATIC] (expression_additive) expression_additive ADDITIVE_OP(%s) expression_additive \n", $2);
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR expression_additive\n");
-    // }
 ;
 
 expression_multiplicative:
@@ -373,9 +308,6 @@ expression_multiplicative:
     | expression_multiplicative MULTIPLICATIVE_OP expression_multiplicative {
         printf("[SYNTATIC] (expression_multiplicative)  expression_multiplicative MULTIPLICATIVE_OP(%s) expression_multiplicative \n", $2);
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR expression_multiplicative\n");
-    // }
 ;
 
 expression_value:
@@ -391,45 +323,30 @@ expression_value:
     | set_statement_exists {
         printf("[SYNTATIC] (expression_value) set_statement_exists\n");
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR functexpression_valueion_body\n");
-    // }
 ;
 
 is_set_statement:
     is_set_expression ';' {
         printf("[SYNTATIC] (is_set_statement) is_set_expression ';'\n");
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR functexpression_valueion_body\n");
-    // }
 ;
 
 is_set_expression: 
     IS_SET '(' ID ')' {
         printf("[SYNTATIC] (is_set) IS_SET '(' ID(%s) ')' ';'\n", $3);
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR functexpression_valueion_body\n");
-    // }
 ;
 
 for:
     FOR '(' for_expression ')' statements {
         printf("[SYNTATIC] (for) FOR '(' for_expression ')' statement\n");
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR for\n");
-    // }
 ;
 
 for_expression:
     expression_assignment ';' expression_logical ';' expression_assignment {
         printf("[SYNTATIC] (for_expression) expression_assignment ';' expression_logical ';' expression_assignment\n");
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR for_expression\n");
-    // }
 ;
 
 io_statement:
@@ -448,9 +365,6 @@ io_statement:
     | WRITELN '(' expression ')' ';' {
         printf("[SYNTATIC] (io_statement) WRITELN '(' expression ')' ';'\n");
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR io_statement\n");
-    // }
 ;
 
 arguments_list:
@@ -461,9 +375,6 @@ arguments_list:
         printf("[SYNTATIC] (arguments_list) expression\n");
     }
     
-    // | error {
-        // printf("[SYNTATIC] ERROR arguments_list:\n");
-    // }
 ;
 
 conditional:
@@ -473,18 +384,12 @@ conditional:
     | IF conditional_expression statements_braced ELSE statements_braced {
         printf("[SYNTATIC] (conditional) IF conditional_expression statements_braced ELSE statements_braced\n");
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR conditional\n");
-    // }
 ;
 
 conditional_expression:
     '(' expression ')' {
         printf("[SYNTATIC] (conditional_expression) '(' expression ')'\n");
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR conditional_expression\n");
-    // }
 ;
 
 return:
@@ -494,9 +399,6 @@ return:
     | RETURN ';' {
         printf("[SYNTATIC] (return) RETURN ';'\n");
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR return\n");
-    // }
 ;
 
 value:
@@ -509,18 +411,12 @@ value:
     | function_call {
         printf("[SYNTATIC] (value) function_call\n");
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR value\n");
-    // }    
 ;
 
 function_call_statement:
     function_call ';' {
         printf("[SYNTATIC] (function_call_statement) function_call ';'\n");
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR function_call_statement\n");
-    // }    
 ;
 
 function_call:
@@ -530,17 +426,14 @@ function_call:
     | ID '(' ')' {
         printf("[SYNTATIC] (function_call) ID(%s) '(' ')'\n", $1);
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR function_call\n");
-    // }    
 ;
 
 variables_declaration:
     type_identifier ID ';' {
-        push_back(tableList, createSymbol(lines, columns, "variable", $2));
+        push_back(&tableList, createSymbol(lines, columns, "variable", $2));
         printf("[SYNTATIC] (variables_declaration) type_identifier ID(%s) ';'\n", $2);
     }
-    | type_identifier ID error {}
+    | error {}
 ;
 
 const:
@@ -553,9 +446,6 @@ const:
     | EMPTY {
         printf("[SYNTATIC] (const) EMPTY\n");
     }
-    // | error {
-        // printf("[SYNTATIC] ERROR const\n");
-    // }
 ;
 
 %%
@@ -574,13 +464,11 @@ int main(int argc, char ** argv) {
     //     yyin = stdin;
     // }
 
-    stackScope = (Stack*) malloc(sizeof(Stack));
-    stackScope->size = stackScope->nxtScope = -1;
+    stackScope.size = stackScope.nxtScope = -1;
     
-    tableList = (TableList*) malloc(sizeof(TableList));
-    tableList->size = -1;
+    tableList.size = -1;
 
-    push(stackScope);
+    push(&stackScope);
 
     lines = 0;
     columns = 0;
@@ -595,7 +483,7 @@ int main(int argc, char ** argv) {
         printf("Correct program.\n");
     }
 
-    printTable(tableList);
+    printTable(&tableList);
 
     // fclose(yyin);
     yylex_destroy();
