@@ -802,13 +802,13 @@ int yyerror(const char* message){
 }
 
 int main(int argc, char ** argv) {
-    // ++argv, --argc;
-    // if(argc > 0) {
-    //     yyin = fopen(argv[0], "r");
-    // }
-    // else {
-    //     yyin = stdin;
-    // }
+    ++argv, --argc;
+    if(argc > 0) {
+        yyin = fopen(argv[0], "r");
+    }
+    else {
+        yyin = stdin;
+    }
 
     stackScope.size = stackScope.nxtScope = -1;
     tableList.size = -1;
@@ -845,7 +845,7 @@ int main(int argc, char ** argv) {
     free(lastType);
     freeTable(&tableList);
 
-    // fclose(yyin);
+    fclose(yyin);
     yylex_destroy();
     return 0;
 }

@@ -4,7 +4,7 @@ int func (int a, float asd, int vc) {
 		int k;
 		k = 9;
 		if ( k ) {
-			set declaracaoJunta;
+			set varSet;
 		}
 	}
 
