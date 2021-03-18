@@ -14,6 +14,3 @@ int top(Stack* scope){
     return scope->st[scope->size];
 }
 
-Stack stackScope;
-
-int lines, columns, errors;

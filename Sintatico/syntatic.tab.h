@@ -77,10 +77,10 @@ extern int yydebug;
     INT_VALUE = 278,               /* INT_VALUE  */
     FLOAT_VALUE = 279,             /* FLOAT_VALUE  */
     ID = 280,                      /* ID  */
-    RELATIONAL_OP = 281,           /* RELATIONAL_OP  */
-    MULTIPLICATIVE_OP = 282,       /* MULTIPLICATIVE_OP  */
-    ADDITIVE_OP = 283,             /* ADDITIVE_OP  */
-    STRING = 284                   /* STRING  */
+    STRING = 281,                  /* STRING  */
+    RELATIONAL_OP = 282,           /* RELATIONAL_OP  */
+    MULTIPLICATIVE_OP = 283,       /* MULTIPLICATIVE_OP  */
+    ADDITIVE_OP = 284              /* ADDITIVE_OP  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -89,11 +89,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 23 "syntatic.y"
+#line 24 "syntatic.y"
 
 	char* body;
+    struct TreeNode *node;
 
-#line 97 "syntatic.tab.h"
+#line 98 "syntatic.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -11,4 +11,8 @@ void push(Stack* scope);
 void pop(Stack* scope);
 int top(Stack* scope);
 
+Stack stackScope;
+
+int lines, columns, errors;
+
 #endif

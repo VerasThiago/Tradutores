@@ -8,9 +8,11 @@
     #include "syntatic.tab.h"
     #include "stack.h"
     #include "table.h"
+    #include "tree.h"
 
     extern Stack stackScope;
     extern TableList tableList;
+    extern TreeNode* root;
 
     extern int lines;
     extern int errors;
