@@ -229,7 +229,7 @@ type_identifier:
 
         $$ = createNode("type_identifier");
         
-        lastType = strdup("int");
+        strcpy(lastType, "int");
 
     }
     | FLOAT {
@@ -237,7 +237,7 @@ type_identifier:
 
         $$ = createNode("type_identifier");
 
-        lastType = strdup("float");
+        strcpy(lastType, "float");
 
     }
 	| ELEM {
@@ -245,7 +245,7 @@ type_identifier:
 
         $$ = createNode("type_identifier");
 
-        lastType = strdup("elem");
+        strcpy(lastType, "elem");
 
     }
     | SET{
@@ -253,7 +253,7 @@ type_identifier:
 
         $$ = createNode("type_identifier");
 
-        lastType = strdup("set");
+        strcpy(lastType, "set");
 
     }
 ;
@@ -841,7 +841,7 @@ int main(int argc, char ** argv) {
     }    
 
     freeTree(root);
-    free(lastType);
+    // free(lastType);
     freeTable(&tableList);
     fclose(yyin);
     yylex_destroy();
