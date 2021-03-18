@@ -1,9 +1,32 @@
+set f(int x){
+    int x;
+}
+
+int a(int b, set b){
+    int x;
+    int y;
+}
+
 int main(){
-    if(f( (1 + 2) - b, 3 / (((3))), exists(b in add(1 in add(2 in s))))){
-        write("puts");
+    int a;
+    int b;
+    if(){
+        int c;
     }
-    if( (13 in b) || (is_set(b)) ){
-        write("xota");
-        x = is_set(b);
+    if(x){
+        int d;
     }
+    if(x){
+        int e;
+    
+    }
+    int a1;
+    int a2;
+    int a3;
+    if(x){
+        int f;
+    }
+    int g;
+    int h;
+    int i;
 }

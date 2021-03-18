@@ -6,8 +6,16 @@
     #include<string.h>
     #include<stdlib.h>
     #include "syntatic.tab.h"
+    #include "stack.h"
+    #include "table.h"
 
-    int lines = 1, errors = 0, columns = 0;
+    extern Stack* stackScope;
+    extern TableList* tableList;
+
+    extern int lines;
+    extern int errors;
+    extern int columns;
+
 %}
 
 %option noinput nounput
@@ -217,8 +225,10 @@ COMMENT                         "//"
     columns += yyleng;
     // printf("[LEXICO] Block delimiter: %s\n", yytext);
     if(yytext[0] == '{'){
+        push(stackScope);  
         return '{';
     } else {
+        pop(stackScope);
         return '}';
     }
 }
