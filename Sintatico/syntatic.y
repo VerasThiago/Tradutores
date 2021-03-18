@@ -842,6 +842,9 @@ int main(int argc, char ** argv) {
     printTree(root, 1, ok);
     freeTree(root);
 
+    free(lastType);
+    freeTable(&tableList);
+
     // fclose(yyin);
     yylex_destroy();
     return 0;

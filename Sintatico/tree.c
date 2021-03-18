@@ -6,12 +6,15 @@
 TreeNode* createNode(char* rule){
     TreeNode* node = (TreeNode*) malloc(sizeof(TreeNode));
     node->rule = strdup(rule);
+    node->children = NULL;
+    node->nxt = NULL;
+    node->symbol = NULL;
     return node;
 }
 
 void printToken(Symbol* s, int ident, int *ok){
-    printf(" ── [%d:%d] %s", s->line, s->colum, s->class);
-    if(strcmp(s->class, s->body))
+    printf(" ── [%d:%d] %s", s->line, s->colum, s->classType);
+    if(strcmp(s->classType, s->body))
         printf(" : %s", s->body);
 }
 
@@ -25,7 +28,7 @@ void printRule(char* s, int ident, int *ok){
 }
 
 void printTree(TreeNode* root, int ident, int *ok){
-    if(!root || !root->rule) return;
+    if(!root) return;
 
     printRule(root->rule, ident, ok);
     ok[ident] = 1;
@@ -42,18 +45,21 @@ void printTree(TreeNode* root, int ident, int *ok){
 }
 
 void freeTree(TreeNode* root){
-    if(root) return;
+    if(!root) return;
 
     
     if(root->symbol){
-        free(root->symbol->class);
+        free(root->symbol->classType);
         free(root->symbol->type);
         free(root->symbol->body);
+        free(root->symbol);
     }
 
     freeTree(root->nxt);
     freeTree(root->children);
-    free(root);
+    free(root->children);
+    free(root->nxt);
+    free(root->rule);
 
     
 }

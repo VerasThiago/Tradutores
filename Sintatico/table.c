@@ -15,19 +15,27 @@ void printTable(TableList* tl){
         printf("| %-20s | %-20s | %-20s | %-20s | %-20s |\n", "LINE", "COLUMN", "CLASS", "TYPE", "BODY");
         printf("--------------------------------------------------------------------------------------------------------------------\n");
         for(int i = 0; i <= tl->size; i++){
-            printf("| %-20d | %-20d | %-20s | %-20s | %-20s |\n", tl->arr[i]->line, tl->arr[i]->colum, tl->arr[i]->class, tl->arr[i]->type, tl->arr[i]->body);
+            printf("| %-20d | %-20d | %-20s | %-20s | %-20s |\n", tl->arr[i]->line, tl->arr[i]->colum, tl->arr[i]->classType, tl->arr[i]->type, tl->arr[i]->body);
         }
         printf("--------------------------------------------------------------------------------------------------------------------\n");
     }
 }
 
-Symbol* createSymbol(int line, int colum,char* class, char* type, char* body){
+Symbol* createSymbol(int line, int colum,char* classType, char* type, char* body){
     Symbol* ret = (Symbol*) malloc(sizeof(Symbol));
     ret->line = line;
     ret->colum = colum;
-    ret->class = strdup(class);
+    ret->classType = strdup(classType);
     ret->type = strdup(type);
     ret->body = strdup(body);
     return ret;
 }
 
+void freeTable(TableList* tl){
+    for(int i = 0; i <= tl->size; i++){
+        free(tl->arr[i]->classType);
+        free(tl->arr[i]->type);
+        free(tl->arr[i]->body);
+        free(tl->arr[i]);
+    }
+}
