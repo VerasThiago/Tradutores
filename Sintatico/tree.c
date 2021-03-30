@@ -55,9 +55,11 @@ void freeTree(TreeNode* root){
         free(root->symbol->classType);
         free(root->symbol->type);
         free(root->symbol->body);
+        free(root->symbol);
     }
-    free(root->symbol);
-    free(root->rule);
+    if(root->rule){
+        free(root->rule);
+    }
     free(root);
 
     

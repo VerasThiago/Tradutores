@@ -1,5 +1,5 @@
 int f() {
-	List <int> lista;
+	Set sets;
 
 	int varSemPontoVirgula
 

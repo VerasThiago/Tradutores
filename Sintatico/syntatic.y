@@ -164,7 +164,7 @@ function_definition:
 
 function_declaration:
 	type_identifier ID {
-        push_back(&tableList, createSymbol(lines, columns, "function", lastType, $2));
+        push_back(&tableList, createSymbol(lines, columns - strlen($2), "function", lastType, $2));
         printf("[SYNTATIC] (function_declaration) type_identifier ID(%s)\n", $2);
 
         $$ = createNode("function_declaration");
@@ -761,7 +761,7 @@ variables_declaration:
     type_identifier ID ';' {
         printf("[SYNTATIC] (variables_declaration) type_identifier ID(%s) ';'\n", $2);
         
-        push_back(&tableList, createSymbol(lines, columns, "variable", lastType, $2));
+        push_back(&tableList, createSymbol(lines, columns - strlen($2), "variable", lastType, $2));
         
         Symbol* s = createSymbol(lines, columns, "variable", lastType, $2);
         $$ = createNode("variables_declaration");
@@ -815,8 +815,8 @@ int main(int argc, char ** argv) {
 
     push(&stackScope);
 
-    lines = 0;
-    columns = 0;
+    lines = 1;
+    columns = 1;
     errors = 0;
 
     int ok[10000];
@@ -833,12 +833,12 @@ int main(int argc, char ** argv) {
     }
 
     if(errors){
-        printf("Symbol table and Tree won't be displayed because unexpected behaviour can be found since it contains erros\n");
+        printf("Tree won't be displayed because unexpected behaviour can be found since it contains erros\n");
     } else {
-        printTable(&tableList);
         printf("\n");
-        printTree(root, 1, ok);
+        // printTree(root, 1, ok);
     }    
+    printTable(&tableList);
 
     freeTree(root);
     freeTable(&tableList);

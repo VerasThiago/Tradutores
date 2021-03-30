@@ -50,8 +50,7 @@ SET_FOR_ALL                     forall
 
 SET_IN                          in
 
-
-RELATIONAL_OP                   <|>|==|<=|>=
+RELATIONAL_OP                   <|>|==|<=|>=|!=
 
 MULTIPLICATIVE_OP               [*/%]
 
@@ -253,7 +252,7 @@ COMMENT                         "//"
 
 \n|\r {
     lines++;
-    columns = 0;
+    columns = 1;
 }
 
 . {
