@@ -33,6 +33,7 @@
 %token ')'
 %token ';'
 %token '='
+%token '!'
 
 %token ELEM
 %token IF
@@ -558,6 +559,19 @@ expression_value:
         $$ = createNode("expression_value");
         $$->children = $2;   
     }
+    | ADDITIVE_OP '(' expression ')' {
+        printf("[SYNTATIC] (expression_value) ADDITIVE_OP(%s) '(' expression ')' \n", $1);
+
+        $$ = createNode("expression_value");
+        $$->children = $3;
+        $$->symbol = createSymbol(lines, columns, "additive operator", "", $1); 
+    }
+    | '!' '(' expression ')' {
+        printf("[SYNTATIC] (expression_value) ! '(' expression ')' \n");
+
+        $$ = createNode("expression_value");
+        $$->children = $3;
+    }
     | value {
         printf("[SYNTATIC] (expression_value) value \n");
 
@@ -570,6 +584,12 @@ expression_value:
         $$ = createNode("expression_value");
         $$->children = $2;  
         $$->symbol = createSymbol(lines, columns, "additive operator", "", $1);
+    }
+    | '!' value {
+        printf("[SYNTATIC] (expression_value) ! value \n");
+
+        $$ = createNode("expression_value");
+        $$->children = $2;  
     }
     | set_statement_exists {
         printf("[SYNTATIC] (expression_value) set_statement_exists\n");
@@ -836,7 +856,7 @@ int main(int argc, char ** argv) {
         printf("Tree won't be displayed because unexpected behaviour can be found since it contains erros\n");
     } else {
         printf("\n");
-        // printTree(root, 1, ok);
+        printTree(root, 1, ok);
     }    
     printTable(&tableList);
 

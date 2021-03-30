@@ -60,7 +60,7 @@ IN                              read
 
 OUT                             write|writeln
 
-STRING                          \"[^\"]*\"|'[^']*'
+STRING                          \"[^\"]*\"|\'([^'\\\n]|\\.)'
 
 COMMENT                         "//"
 
@@ -212,6 +212,12 @@ COMMENT                         "//"
     // printf("[LEXICO] Enumerator operator: %s\n", yytext);
     columns += yyleng;
     return '=';
+}
+
+"!" {
+    // printf("[LEXICO] Not operator: %s\n", yytext);
+    columns += yyleng;
+    return '!';
 }
 
 ";" {
