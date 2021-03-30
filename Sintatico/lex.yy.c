@@ -508,7 +508,8 @@ int yy_flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
 #line 1 "flex.l"
-#line 4 "flex.l"
+#define YY_NO_INPUT 1
+#line 5 "flex.l"
 
     #include<stdio.h>
     #include<string.h>
@@ -528,8 +529,7 @@ char *yytext;
     extern int errors;
     extern int columns;
 
-#line 532 "lex.yy.c"
-#define YY_NO_INPUT 1
+#line 533 "lex.yy.c"
 #line 534 "lex.yy.c"
 
 #define INITIAL 0
@@ -1050,32 +1050,33 @@ YY_RULE_SETUP
 case 21:
 YY_RULE_SETUP
 #line 251 "flex.l"
-
+{
+  columns += yyleng;
+}
 	YY_BREAK
 case 22:
 /* rule 22 can match eol */
 YY_RULE_SETUP
-#line 253 "flex.l"
+#line 255 "flex.l"
 {
-    printf("QUEBREI LINHA\n");
     lines++;
     columns = 1;
 }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 259 "flex.l"
+#line 260 "flex.l"
 {
     errors++;
-    printf("[LEXICO] ERROR line: %d columns: %d Undentified char: %s \n", lines, columns, yytext );
+    // printf("[LEXICO] ERROR line: %d columns: %d Undentified char: %s \n", lines, columns, yytext );
 }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 264 "flex.l"
+#line 265 "flex.l"
 ECHO;
 	YY_BREAK
-#line 1079 "lex.yy.c"
+#line 1080 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2043,5 +2044,5 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 264 "flex.l"
+#line 265 "flex.l"
 

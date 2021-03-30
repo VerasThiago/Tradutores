@@ -1,4 +1,5 @@
 %option noyywrap
+%option noinput nounput
 
 %{
 
@@ -22,7 +23,6 @@
 
 %}
 
-%option noinput nounput
 
 DIGIT                           [0-9]
 
@@ -248,7 +248,9 @@ COMMENT                         "//"
     return ',';
 }
 
-[ \t]+
+[ \t]+ {
+  columns += yyleng;
+}
 
 \n|\r {
     lines++;
