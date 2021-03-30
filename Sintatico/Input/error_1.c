@@ -1,7 +1,7 @@
 int f() {
-	Set sets;
-
-	int varSemPontoVirgula
+	if(int x){
+        erro();
+    }
 
 	return 0;
 }

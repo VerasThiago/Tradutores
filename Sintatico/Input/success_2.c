@@ -1,16 +1,15 @@
-int func (int a, float asd, int vc) {
-	int x;
-	for ( x = 3; i > 3 ; i = i + 1 ) {
-		int k;
-		k = 9;
-		if ( k ) {
-			set varSet;
-		}
-	}
-
-	return 1;
+int f(int x){
+    int a;
+    a = !(20);
+    a = -(10);
 }
 
-int main() {
-	return 1;
+int main(){
+    if(!f(10)){
+        write("teste");
+    } else {
+        write('\n');
+    }
+    int x;
+    x = 12 in a;
 }
