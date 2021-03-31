@@ -51,7 +51,7 @@ int test_set_expression() {
     boolean = is_set(s);
     boolean = is_set(add(1 in s));
     boolean = is_set(remove(1 in s));
-    boolean = is_set(exists(1 in s));
+    boolean = is_set(exists(a in s));
     boolean = !is_set(a);
     boolean = !is_set(a) || is_set(b);
     forall(a in s) {
