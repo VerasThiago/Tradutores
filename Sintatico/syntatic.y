@@ -178,7 +178,6 @@ function_definition:
         $$->children = $1;
         $1->nxt = $4;
     }
-    | error {}
 ;
 
 function_declaration:
@@ -1007,7 +1006,6 @@ variables_declaration:
         $$->children = $1;
         $$->symbol = createSymbol($2.line, $2.column, "variable", lastType, $2.tokenBody, $2.scope);
     }
-    | error {}
 ;
 
 const:
