@@ -57,30 +57,31 @@ extern int yydebug;
     ELEM = 258,                    /* ELEM  */
     IF = 259,                      /* IF  */
     ELSE = 260,                    /* ELSE  */
-    SET = 261,                     /* SET  */
-    FOR = 262,                     /* FOR  */
-    RETURN = 263,                  /* RETURN  */
-    WRITE = 264,                   /* WRITE  */
-    WRITELN = 265,                 /* WRITELN  */
-    READ = 266,                    /* READ  */
-    EMPTY = 267,                   /* EMPTY  */
-    FLOAT = 268,                   /* FLOAT  */
-    INT = 269,                     /* INT  */
-    ADD = 270,                     /* ADD  */
-    REMOVE = 271,                  /* REMOVE  */
-    EXISTS = 272,                  /* EXISTS  */
-    FOR_ALL = 273,                 /* FOR_ALL  */
-    IS_SET = 274,                  /* IS_SET  */
-    IN = 275,                      /* IN  */
-    INT_VALUE = 276,               /* INT_VALUE  */
-    FLOAT_VALUE = 277,             /* FLOAT_VALUE  */
-    ID = 278,                      /* ID  */
-    STRING = 279,                  /* STRING  */
-    RELATIONAL_OP = 280,           /* RELATIONAL_OP  */
-    MULTIPLICATIVE_OP = 281,       /* MULTIPLICATIVE_OP  */
-    ADDITIVE_OP = 282,             /* ADDITIVE_OP  */
-    AND_OP = 283,                  /* AND_OP  */
-    OR_OP = 284                    /* OR_OP  */
+    THEN = 261,                    /* THEN  */
+    SET = 262,                     /* SET  */
+    FOR = 263,                     /* FOR  */
+    RETURN = 264,                  /* RETURN  */
+    WRITE = 265,                   /* WRITE  */
+    WRITELN = 266,                 /* WRITELN  */
+    READ = 267,                    /* READ  */
+    EMPTY = 268,                   /* EMPTY  */
+    FLOAT = 269,                   /* FLOAT  */
+    INT = 270,                     /* INT  */
+    ADD = 271,                     /* ADD  */
+    REMOVE = 272,                  /* REMOVE  */
+    EXISTS = 273,                  /* EXISTS  */
+    FOR_ALL = 274,                 /* FOR_ALL  */
+    IS_SET = 275,                  /* IS_SET  */
+    IN = 276,                      /* IN  */
+    INT_VALUE = 277,               /* INT_VALUE  */
+    FLOAT_VALUE = 278,             /* FLOAT_VALUE  */
+    ID = 279,                      /* ID  */
+    STRING = 280,                  /* STRING  */
+    RELATIONAL_OP = 281,           /* RELATIONAL_OP  */
+    MULTIPLICATIVE_OP = 282,       /* MULTIPLICATIVE_OP  */
+    ADDITIVE_OP = 283,             /* ADDITIVE_OP  */
+    AND_OP = 284,                  /* AND_OP  */
+    OR_OP = 285                    /* OR_OP  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -101,7 +102,7 @@ union YYSTYPE
 
     struct TreeNode *node;
 
-#line 105 "syntatic.tab.h"
+#line 106 "syntatic.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

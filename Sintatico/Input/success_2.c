@@ -52,6 +52,7 @@ int test_set_expression() {
     boolean = is_set(add(1 in s));
     boolean = is_set(remove(1 in s));
     boolean = is_set(exists(a in s));
+    boolean = is_set(EMPTY);
     boolean = !is_set(a);
     boolean = !is_set(a) || is_set(b);
     forall(a in s) {
@@ -83,6 +84,12 @@ int test_if_stmt() {
     if(f( (1 + 2) - b, 3 / (((3))), exists(b in add(1 in add(2 in s)))) && 2 > 3 || 4){
         write("puts");
         write('\n');
+    }
+    
+    if(a > 3)
+        return 1;
+    else{
+        return 2;
     }
 }
 

@@ -45,6 +45,7 @@
 %token ELEM
 %token IF
 %token ELSE
+%right THEN ELSE
 %token SET
 %token FOR
 %token RETURN
@@ -693,6 +694,14 @@ expression_value:
         
         $$->children = $2;   
     }
+    | '!' '(' expression ')' {
+        printf("[SYNTATIC] (expression_value) ! '(' expression ')' \n");
+
+        $$ = createNode("expression_value");
+        push_back_node(&treeNodeList, $$);
+        
+        $$->children = $3;
+    }
     | ADDITIVE_OP '(' expression ')' {
         printf("[SYNTATIC] (expression_value) ADDITIVE_OP(%s) '(' expression ')' \n", $1.tokenBody);
 
@@ -702,14 +711,6 @@ expression_value:
         $$->children = $3;
         $$->symbol = createSymbol($1.line, $1.column, "additive operator", "", $1.tokenBody, $1.scope); 
     }
-    | '!' '(' expression ')' {
-        printf("[SYNTATIC] (expression_value) ! '(' expression ')' \n");
-
-        $$ = createNode("expression_value");
-        push_back_node(&treeNodeList, $$);
-        
-        $$->children = $3;
-    }
     | value {
         printf("[SYNTATIC] (expression_value) value \n");
 
@@ -717,6 +718,14 @@ expression_value:
         push_back_node(&treeNodeList, $$);
         
         $$->children = $1;
+    }
+    | '!' value {
+        printf("[SYNTATIC] (expression_value) ! value \n");
+
+        $$ = createNode("expression_value");
+        push_back_node(&treeNodeList, $$);
+        
+        $$->children = $2;  
     }
     | ADDITIVE_OP value {
         printf("[SYNTATIC] (expression_value) ADDITIVE_OP(%s) value \n", $1.tokenBody);
@@ -726,14 +735,6 @@ expression_value:
         
         $$->children = $2;  
         $$->symbol = createSymbol($1.line, $1.column, "additive operator", "", $1.tokenBody, $1.scope);
-    }
-    | '!' value {
-        printf("[SYNTATIC] (expression_value) ! value \n");
-
-        $$ = createNode("expression_value");
-        push_back_node(&treeNodeList, $$);
-        
-        $$->children = $2;  
     }
     | set_statement_exists {
         printf("[SYNTATIC] (expression_value) set_statement_exists\n");
@@ -885,7 +886,7 @@ arguments_list:
 ;
 
 conditional:
-    IF conditional_expression statements {
+    IF conditional_expression statements %prec THEN{
         printf("[SYNTATIC] (conditional) IF conditional_expression statements\n");
 
         $$ = createNode("conditional");
@@ -894,7 +895,7 @@ conditional:
         $$->children = $2;
         $2->nxt = $3;
     }
-    | IF conditional_expression statements_braced ELSE statements_braced {
+    | IF conditional_expression statements ELSE statements {
         printf("[SYNTATIC] (conditional) IF conditional_expression statements_braced ELSE statements_braced\n");
 
         $$ = createNode("conditional");
