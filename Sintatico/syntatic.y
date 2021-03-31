@@ -22,7 +22,13 @@
 %}
 
 %union {
-	char body[2000];
+
+    struct Body {
+        char tokenBody [2000];
+        int line;
+        int colum;
+    } body;
+
     struct TreeNode *node;
 }
 
@@ -113,7 +119,7 @@
 
 start:
 	program {
-        printf("[SYNTATIC] (start) program\n");
+        // printf("[SYNTATIC] (start) program\n");
         $$ = createNode("start");
         $$->children = $1;
 
@@ -124,19 +130,19 @@ start:
 
 program:
 	function_definition {
-        printf("[SYNTATIC] (program) function_definition\n");
+        // printf("[SYNTATIC] (program) function_definition\n");
         $$ = createNode("program");
         $$->children = $1;
     }
 	| function_definition program {
-        printf("[SYNTATIC] (program) function_definition program\n");
+        // printf("[SYNTATIC] (program) function_definition program\n");
 
         $$ = createNode("program");
         $$->children = $1;
         $1->nxt = $2;
     }
 	| variables_declaration program {
-        printf("[SYNTATIC] (program) variables_declaration program\n");
+        // printf("[SYNTATIC] (program) variables_declaration program\n");
 
         $$ = createNode("program");
         $$->children = $1;
@@ -146,7 +152,7 @@ program:
 
 function_definition:
 	function_declaration '(' parameters ')' function_body {
-        printf("[SYNTATIC] (function_definition) function_declaration '(' parameters ')' function_body\n");
+        // printf("[SYNTATIC] (function_definition) function_declaration '(' parameters ')' function_body\n");
         
         $$ = createNode("function_definition");
         $$->children = $1;
@@ -154,7 +160,7 @@ function_definition:
         $3->nxt = $5;
     }
     | function_declaration '(' ')' function_body {
-        printf("[SYNTATIC] (function_definition) function_declaration '(' ')' function_body\n");
+        // printf("[SYNTATIC] (function_definition) function_declaration '(' ')' function_body\n");
         
         $$ = createNode("function_definition");
         $$->children = $1;
@@ -165,24 +171,25 @@ function_definition:
 
 function_declaration:
 	type_identifier ID {
-        push_back(&tableList, createSymbol(lines, columns - strlen($2), "function", lastType, $2));
-        printf("[SYNTATIC] (function_declaration) type_identifier ID(%s)\n", $2);
+        printf("TO NA COULNA %d com o ID = %s\n", columns, $2.tokenBody);
+        push_back(&tableList, createSymbol($2.line, $2.colum, "function", lastType, $2.tokenBody));
+        // printf("[SYNTATIC] (function_declaration) type_identifier ID(%s)\n", $2.tokenBody);
 
         $$ = createNode("function_declaration");
         $$->children = $1;
-        $$->symbol = createSymbol(lines, columns, "variable", lastType, $2);
+        $$->symbol = createSymbol(lines, columns, "variable", lastType, $2.tokenBody);
     }
 ;
 
 function_body:
 	'{' statements '}' {
-        printf("[SYNTATIC] (function_body) '{' statements '}'\n");
+        // printf("[SYNTATIC] (function_body) '{' statements '}'\n");
 
         $$ = createNode("function_body");
         $$->children = $2;
     }
     | '{' '}' {
-        printf("[SYNTATIC] (function_body) '{' '}'\n");
+        // printf("[SYNTATIC] (function_body) '{' '}'\n");
 
         $$ = createNode("function_body");
     }
@@ -190,7 +197,7 @@ function_body:
 
 parameters:
 	parameters_list {
-        printf("[SYNTATIC] (parameters)  parameters_list \n");
+        // printf("[SYNTATIC] (parameters)  parameters_list \n");
 
         $$ = createNode("parameters_list");
         $$->children = $1;
@@ -199,7 +206,7 @@ parameters:
 
 parameters_list:
 	parameters_list ',' parameter {
-        printf("[SYNTATIC] (parameters_list) parameter ',' parameters_list\n");
+        // printf("[SYNTATIC] (parameters_list) parameter ',' parameters_list\n");
 
         $$ = createNode("parameters_list");
         $$->children = $1;
@@ -207,7 +214,7 @@ parameters_list:
         
     } 
 	| parameter {
-        printf("[SYNTATIC] (parameters_list) parameter\n");
+        // printf("[SYNTATIC] (parameters_list) parameter\n");
 
         $$ = createNode("parameters_list");
         $$->children = $1;
@@ -216,17 +223,17 @@ parameters_list:
 
 parameter:
 	type_identifier ID {
-        printf("[SYNTATIC] (parameter) type_identifier ID(%s)\n", $2);
+        // printf("[SYNTATIC] (parameter) type_identifier ID(%s)\n", $2.tokenBody);
 
         $$ = createNode("parameter");
         $$->children = $1;
-        $$->symbol = createSymbol(lines, columns, "variable", lastType, $2);
+        $$->symbol = createSymbol(lines, columns, "variable", lastType, $2.tokenBody);
     }
 ;
 
 type_identifier:
 	INT {
-        printf("[SYNTATIC] (type_identifier) INT\n");
+        // printf("[SYNTATIC] (type_identifier) INT\n");
 
         $$ = createNode("type_identifier");
         
@@ -234,7 +241,7 @@ type_identifier:
 
     }
     | FLOAT {
-        printf("[SYNTATIC] (type_identifier) FLOAT\n");
+        // printf("[SYNTATIC] (type_identifier) FLOAT\n");
 
         $$ = createNode("type_identifier");
 
@@ -242,7 +249,7 @@ type_identifier:
 
     }
 	| ELEM {
-        printf("[SYNTATIC] (type_identifier) ELEM\n");
+        // printf("[SYNTATIC] (type_identifier) ELEM\n");
 
         $$ = createNode("type_identifier");
 
@@ -250,7 +257,7 @@ type_identifier:
 
     }
     | SET{
-        printf("[SYNTATIC] (type_identifier) SET\n");
+        // printf("[SYNTATIC] (type_identifier) SET\n");
 
         $$ = createNode("type_identifier");
 
@@ -261,20 +268,20 @@ type_identifier:
 
 statements:
 	statement statements {
-        printf("[SYNTATIC] (statements) statement statements\n");
+        // printf("[SYNTATIC] (statements) statement statements\n");
 
         $$ = createNode("statements");
         $$->children = $1;
         $1->nxt = $2;
     }
 	| statement {
-        printf("[SYNTATIC] (statements) statement\n");   
+        // printf("[SYNTATIC] (statements) statement\n");   
 
         $$ = createNode("statements");
         $$->children = $1;
     }
     | statements_braced {
-        printf("[SYNTATIC] (statements) statements_braced\n");
+        // printf("[SYNTATIC] (statements) statements_braced\n");
 
         $$ = createNode("statements");
         $$->children = $1;
@@ -283,13 +290,13 @@ statements:
 
 statements_braced:
     '{' statements '}' {
-        printf("[SYNTATIC] (statements_braced) '{' statements '}'\n");
+        // printf("[SYNTATIC] (statements_braced) '{' statements '}'\n");
 
         $$ = createNode("statements_braced");
         $$->children = $2;
     }
     | '{' '}' {
-        printf("[SYNTATIC] (statements_braced) '{' '}'\n");
+        // printf("[SYNTATIC] (statements_braced) '{' '}'\n");
 
         $$ = createNode("statements_braced");
     }
@@ -297,55 +304,55 @@ statements_braced:
 
 statement:
 	variables_declaration {
-        printf("[SYNTATIC] (statement) variables_declaration\n");
+        // printf("[SYNTATIC] (statement) variables_declaration\n");
 
         $$ = createNode("statement");
         $$->children = $1;   
     }
 	| return {
-        printf("[SYNTATIC] (statement) return\n");
+        // printf("[SYNTATIC] (statement) return\n");
 
         $$ = createNode("statement");
         $$->children = $1;    
     }
 	| conditional {
-        printf("[SYNTATIC] (statement) conditional\n");   
+        // printf("[SYNTATIC] (statement) conditional\n");   
 
         $$ = createNode("statement");
         $$->children = $1;  
     }
 	| for {
-        printf("[SYNTATIC] (statement) for\n");
+        // printf("[SYNTATIC] (statement) for\n");
 
         $$ = createNode("statement");
         $$->children = $1;   
     }
     | is_set_statement {
-        printf("[SYNTATIC] (statement) is_set_statement\n"); 
+        // printf("[SYNTATIC] (statement) is_set_statement\n"); 
 
         $$ = createNode("statement");
         $$->children = $1;  
     }
     | function_call_statement {
-        printf("[SYNTATIC] (statement) function_call_statement\n"); 
+        // printf("[SYNTATIC] (statement) function_call_statement\n"); 
 
         $$ = createNode("statement");
         $$->children = $1; 
     }
 	| expression_statement {
-        printf("[SYNTATIC] (statement) expression_statement \n");
+        // printf("[SYNTATIC] (statement) expression_statement \n");
 
         $$ = createNode("statement");
         $$->children = $1;   
     }
 	| io_statement {
-        printf("[SYNTATIC] (statement) io_statement\n");
+        // printf("[SYNTATIC] (statement) io_statement\n");
 
         $$ = createNode("statement");
         $$->children = $1;  
     }
 	| set_pre_statement {
-        printf("[SYNTATIC] (statement) set_pre_statement\n");
+        // printf("[SYNTATIC] (statement) set_pre_statement\n");
 
         $$ = createNode("statement");
         $$->children = $1;  
@@ -354,13 +361,13 @@ statement:
 
 set_pre_statement:
     set_statement_add_remove ';' {
-        printf("[SYNTATIC] (set_pre_statement) set_statement_add_remove ';'\n");  
+        // printf("[SYNTATIC] (set_pre_statement) set_statement_add_remove ';'\n");  
 
         $$ = createNode("set_pre_statement");
         $$->children = $1;
     }
     | set_statement_for_all {
-        printf("[SYNTATIC] (set_pre_statement) set_statement_for_all\n");  
+        // printf("[SYNTATIC] (set_pre_statement) set_statement_for_all\n");  
 
         $$ = createNode("set_pre_statement");
         $$->children = $1;
@@ -369,14 +376,14 @@ set_pre_statement:
 
 set_statement_add_remove:
     ADD '(' set_boolean_expression ')' {
-        printf("[SYNTATIC] (set_statement_add_remove) ADD '(' set_boolean_expression ')'\n"); 
+        // printf("[SYNTATIC] (set_statement_add_remove) ADD '(' set_boolean_expression ')'\n"); 
         
         $$ = createNode("set_statement_add_remove");
         $$->children = $3;
         $$->symbol = createSymbol(lines, columns, "set operation", "", "add");
     }
     | REMOVE '(' set_boolean_expression ')' {
-        printf("[SYNTATIC] (set_statement_add_remove) REMOVE '(' set_boolean_expression ')'\n"); 
+        // printf("[SYNTATIC] (set_statement_add_remove) REMOVE '(' set_boolean_expression ')'\n"); 
 
         $$ = createNode("set_statement_add_remove");
         $$->children = $3;
@@ -386,7 +393,7 @@ set_statement_add_remove:
 
 set_statement_for_all:
     FOR_ALL '(' set_assignment_expression ')' statements {
-        printf("[SYNTATIC] (set_statement_for_all) FOR_ALL '(' set_assignment_expression ')' statements\n"); 
+        // printf("[SYNTATIC] (set_statement_for_all) FOR_ALL '(' set_assignment_expression ')' statements\n"); 
 
         $$ = createNode("set_statement_for_all");
         $$->children = $3;
@@ -396,7 +403,7 @@ set_statement_for_all:
 
 set_statement_exists:
     EXISTS '(' set_assignment_expression ')' {
-        printf("[SYNTATIC] (set_statement_exists) EXISTS '(' set_assignment_expression ')'\n"); 
+        // printf("[SYNTATIC] (set_statement_exists) EXISTS '(' set_assignment_expression ')'\n"); 
 
         $$ = createNode("set_statement_exists");
         $$->children = $3;
@@ -405,14 +412,14 @@ set_statement_exists:
 
 set_boolean_expression:
     expression IN set_statement_add_remove {
-        printf("[SYNTATIC] (set_boolean_expression) expression IN set_statement_add_remove\n");
+        // printf("[SYNTATIC] (set_boolean_expression) expression IN set_statement_add_remove\n");
 
         $$ = createNode("set_boolean_expression");
         $$->children = $1;
         $1->nxt = $3;
     }
     | expression IN ID {
-        printf("[SYNTATIC] (set_boolean_expression) expression IN ID(%s)\n", $3);
+        // printf("[SYNTATIC] (set_boolean_expression) expression IN ID(%s)\n", $3.tokenBody);
 
         $$ = createNode("set_boolean_expression");
         $$->children = $1;
@@ -421,22 +428,22 @@ set_boolean_expression:
 
 set_assignment_expression:
     ID IN set_statement_add_remove {
-        printf("[SYNTATIC] (set_assignment_expression) expression IN set_statement_add_remove\n");
+        // printf("[SYNTATIC] (set_assignment_expression) expression IN set_statement_add_remove\n");
 
         $$ = createNode("set_assignment_expression");
         $$->children = $3;
     }
     | ID IN ID {
-        printf("[SYNTATIC] (set_assignment_expression) ID(%s) IN ID(%s)\n", $1, $3);
+        // printf("[SYNTATIC] (set_assignment_expression) ID(%s) IN ID(%s)\n", $1, $3.tokenBody);
 
         $$ = createNode("set_assignment_expression");
-        $$->symbol = createSymbol(lines, columns, "variable", lastType, $1);
+        $$->symbol = createSymbol(lines, columns, "variable", lastType, $1.tokenBody);
     }
 ;
 
 expression_statement:
     expression ';' {
-        printf("[SYNTATIC] (expression_statement) expression\n");
+        // printf("[SYNTATIC] (expression_statement) expression\n");
 
         $$ = createNode("expression_statement");
         $$->children = $1;
@@ -445,7 +452,7 @@ expression_statement:
 
 expression:
     expression_assignment {
-        printf("[SYNTATIC] (expression) expression_assignment\n");
+        // printf("[SYNTATIC] (expression) expression_assignment\n");
 
         $$ = createNode("expression");
         $$->children = $1;
@@ -454,47 +461,47 @@ expression:
 
 expression_assignment:
     expression_logical {
-        printf("[SYNTATIC] (expression_assignment) expression_logical\n");
+        // printf("[SYNTATIC] (expression_assignment) expression_logical\n");
 
         $$ = createNode("expression_assignment");
         $$->children = $1;   
     }
     | ID '=' expression {
-        printf("[SYNTATIC] (expression_assignment) ID(%s) '='  expression\n", $1);
+        // printf("[SYNTATIC] (expression_assignment) ID(%s) '='  expression\n", $1.tokenBody);
 
         $$ = createNode("expression_assignment");
         $$->children = $3;
-        $$->symbol = createSymbol(lines, columns, "variable", lastType, $1);
+        $$->symbol = createSymbol(lines, columns, "variable", lastType, $1.tokenBody);
     }
 ;
 
 expression_logical:
     expression_relational {
-        printf("[SYNTATIC] (expression_logical) expression_relational\n");
+        // printf("[SYNTATIC] (expression_logical) expression_relational\n");
 
         $$ = createNode("expression_logical");
         $$->children = $1;   
     }
     | set_boolean_expression {
-        printf("[SYNTATIC] (expression_logical) set_expression\n");
+        // printf("[SYNTATIC] (expression_logical) set_expression\n");
 
         $$ = createNode("expression_logical");
         $$->children = $1;   
     }
     | is_set_expression {
-        printf("[SYNTATIC] (is_set_expression) is_set_expression\n");
+        // printf("[SYNTATIC] (is_set_expression) is_set_expression\n");
 
         $$ = createNode("expression_logical");
         $$->children = $1;   
     }
     | expression_logical AND_OP expression_logical {
-        printf("[SYNTATIC] (expression_logical) expression_logical AND_OP(&&) expression_logical\n");
+        // printf("[SYNTATIC] (expression_logical) expression_logical AND_OP(&&) expression_logical\n");
 
         $$ = createNode("expression_logical");
         $$->children = $1;   
     }
     | expression_logical OR_OP expression_logical {
-        printf("[SYNTATIC] (expression_logical) expression_logical OR_OP(||) expression_logical\n");
+        // printf("[SYNTATIC] (expression_logical) expression_logical OR_OP(||) expression_logical\n");
 
         $$ = createNode("expression_logical");
         $$->children = $1;   
@@ -503,96 +510,96 @@ expression_logical:
 
 expression_relational:
     expression_additive {
-        printf("[SYNTATIC] (expression_relational) expression_additive \n");
+        // printf("[SYNTATIC] (expression_relational) expression_additive \n");
 
         $$ = createNode("expression_relational");
         $$->children = $1;   
     }
     | expression_relational RELATIONAL_OP expression_relational {
-        printf("[SYNTATIC] (expression_relational) expression_relational RELATIONAL_OP(%s) expression_relational\n", $2);
+        // printf("[SYNTATIC] (expression_relational) expression_relational RELATIONAL_OP(%s) expression_relational\n", $2.tokenBody);
 
         $$ = createNode("expression_relational");
         $$->children = $1;   
         $1->nxt = $3;
-        $$->symbol = createSymbol(lines, columns, "relational operator", "", $2);
+        $$->symbol = createSymbol(lines, columns, "relational operator", "", $2.tokenBody);
     }
 ;
 
 expression_additive:
     expression_multiplicative {
-        printf("[SYNTATIC] (expression_additive) expression_multiplicative \n");
+        // printf("[SYNTATIC] (expression_additive) expression_multiplicative \n");
     
         $$ = createNode("expression_additive");
         $$->children = $1;   
     }
     | expression_additive ADDITIVE_OP expression_additive {
-        printf("[SYNTATIC] (expression_additive) expression_additive ADDITIVE_OP(%s) expression_additive \n", $2);
+        // printf("[SYNTATIC] (expression_additive) expression_additive ADDITIVE_OP(%s) expression_additive \n", $2.tokenBody);
 
         $$ = createNode("expression_additive");
         $$->children = $1;   
         $1->nxt = $3;
-        $$->symbol = createSymbol(lines, columns, "additive operator", "", $2);
+        $$->symbol = createSymbol(lines, columns, "additive operator", "", $2.tokenBody);
     }
 ;
 
 expression_multiplicative:
     expression_value {
-        printf("[SYNTATIC] (expression_multiplicative) expression_value \n");
+        // printf("[SYNTATIC] (expression_multiplicative) expression_value \n");
 
         $$ = createNode("expression_multiplicative");
         $$->children = $1;
     }
     | expression_multiplicative MULTIPLICATIVE_OP expression_multiplicative {
-        printf("[SYNTATIC] (expression_multiplicative)  expression_multiplicative MULTIPLICATIVE_OP(%s) expression_multiplicative \n", $2);
+        // printf("[SYNTATIC] (expression_multiplicative)  expression_multiplicative MULTIPLICATIVE_OP(%s) expression_multiplicative \n", $2.tokenBody);
 
         $$ = createNode("expression_multiplicative");
         $$->children = $1;   
         $1->nxt = $3;
-        $$->symbol = createSymbol(lines, columns, "multiplicative operator", "", $2);
+        $$->symbol = createSymbol(lines, columns, "multiplicative operator", "", $2.tokenBody);
     }
 ;
 
 expression_value:
     '(' expression ')' {
-        printf("[SYNTATIC] (expression_value) '(' expression ')' \n");
+        // printf("[SYNTATIC] (expression_value) '(' expression ')' \n");
 
         $$ = createNode("expression_value");
         $$->children = $2;   
     }
     | ADDITIVE_OP '(' expression ')' {
-        printf("[SYNTATIC] (expression_value) ADDITIVE_OP(%s) '(' expression ')' \n", $1);
+        // printf("[SYNTATIC] (expression_value) ADDITIVE_OP(%s) '(' expression ')' \n", $1.tokenBody);
 
         $$ = createNode("expression_value");
         $$->children = $3;
-        $$->symbol = createSymbol(lines, columns, "additive operator", "", $1); 
+        $$->symbol = createSymbol(lines, columns, "additive operator", "", $1.tokenBody); 
     }
     | '!' '(' expression ')' {
-        printf("[SYNTATIC] (expression_value) ! '(' expression ')' \n");
+        // printf("[SYNTATIC] (expression_value) ! '(' expression ')' \n");
 
         $$ = createNode("expression_value");
         $$->children = $3;
     }
     | value {
-        printf("[SYNTATIC] (expression_value) value \n");
+        // printf("[SYNTATIC] (expression_value) value \n");
 
         $$ = createNode("expression_value");
         $$->children = $1;
     }
     | ADDITIVE_OP value {
-        printf("[SYNTATIC] (expression_value) ADDITIVE_OP(%s) value \n", $1);
+        // printf("[SYNTATIC] (expression_value) ADDITIVE_OP(%s) value \n", $1.tokenBody);
 
         $$ = createNode("expression_value");
         $$->children = $2;  
-        $$->symbol = createSymbol(lines, columns, "additive operator", "", $1);
+        $$->symbol = createSymbol(lines, columns, "additive operator", "", $1.tokenBody);
     }
     | '!' value {
-        printf("[SYNTATIC] (expression_value) ! value \n");
+        // printf("[SYNTATIC] (expression_value) ! value \n");
 
         $$ = createNode("expression_value");
         $$->children = $2;  
     }
     | set_statement_exists {
-        printf("[SYNTATIC] (expression_value) set_statement_exists\n");
+        // printf("[SYNTATIC] (expression_value) set_statement_exists\n");
 
         $$ = createNode("expression_value");
         $$->children = $1;  
@@ -601,7 +608,7 @@ expression_value:
 
 is_set_statement:
     is_set_expression ';' {
-        printf("[SYNTATIC] (is_set_statement) is_set_expression ';'\n");
+        // printf("[SYNTATIC] (is_set_statement) is_set_expression ';'\n");
 
         $$ = createNode("is_set_statement");
         $$->children = $1;  
@@ -610,16 +617,16 @@ is_set_statement:
 
 is_set_expression: 
     IS_SET '(' ID ')' {
-        printf("[SYNTATIC] (is_set) IS_SET '(' ID(%s) ')' ';'\n", $3);
+        // printf("[SYNTATIC] (is_set) IS_SET '(' ID(%s) ')' ';'\n", $3.tokenBody);
 
         $$ = createNode("is_set_expression");
-        $$->symbol = createSymbol(lines, columns, "variable", lastType, $3); 
+        $$->symbol = createSymbol(lines, columns, "variable", lastType, $3.tokenBody); 
     }
 ;
 
 for:
     FOR '(' for_expression ')' statements {
-        printf("[SYNTATIC] (for) FOR '(' for_expression ')' statement\n");
+        // printf("[SYNTATIC] (for) FOR '(' for_expression ')' statement\n");
 
         $$ = createNode("for");
         $$->children = $3;
@@ -629,7 +636,7 @@ for:
 
 for_expression:
     expression_assignment ';' expression_logical ';' expression_assignment {
-        printf("[SYNTATIC] (for_expression) expression_assignment ';' expression_logical ';' expression_assignment\n");
+        // printf("[SYNTATIC] (for_expression) expression_assignment ';' expression_logical ';' expression_assignment\n");
         
         $$ = createNode("for_expression");
         $$->children = $1;
@@ -640,30 +647,30 @@ for_expression:
 
 io_statement:
     READ '(' ID ')' ';' {
-        printf("[SYNTATIC] (io_statement) READ '(' ID(%s) ')' ';'\n", $3);
+        // printf("[SYNTATIC] (io_statement) READ '(' ID(%s) ')' ';'\n", $3.tokenBody);
 
         $$ = createNode("io_statement");
     }
     | WRITE '(' STRING ')' ';' {
-        printf("[SYNTATIC] (io_statement) WRITE '(' STRING(%s) ')' ';'\n", $3);
+        // printf("[SYNTATIC] (io_statement) WRITE '(' STRING(%s) ')' ';'\n", $3.tokenBody);
 
         $$ = createNode("io_statement");
-        $$->symbol = createSymbol(lines, columns, "string", "", $3);
+        $$->symbol = createSymbol(lines, columns, "string", "", $3.tokenBody);
     }
     | WRITE '(' expression ')' ';' {
-        printf("[SYNTATIC] (io_statement) WRITE '(' expression ')' ';'\n");
+        // printf("[SYNTATIC] (io_statement) WRITE '(' expression ')' ';'\n");
 
         $$ = createNode("io_statement");
         $$->children = $3;
     }
     | WRITELN '(' STRING ')' ';' {
-        printf("[SYNTATIC] (io_statement) WRITELN '(' STRING(%s) ')' ';'\n", $3);
+        // printf("[SYNTATIC] (io_statement) WRITELN '(' STRING(%s) ')' ';'\n", $3.tokenBody);
 
         $$ = createNode("io_statement");
-        $$->symbol = createSymbol(lines, columns, "string", "", $3);
+        $$->symbol = createSymbol(lines, columns, "string", "", $3.tokenBody);
     }
     | WRITELN '(' expression ')' ';' {
-        printf("[SYNTATIC] (io_statement) WRITELN '(' expression ')' ';'\n");
+        // printf("[SYNTATIC] (io_statement) WRITELN '(' expression ')' ';'\n");
 
         $$ = createNode("io_statement");
         $$->children = $3;
@@ -672,14 +679,14 @@ io_statement:
 
 arguments_list:
     arguments_list ',' expression {
-        printf("[SYNTATIC] (arguments_list) arguments_list ',' expression\n");
+        // printf("[SYNTATIC] (arguments_list) arguments_list ',' expression\n");
 
         $$ = createNode("arguments_list");
         $$->children = $1;
         $1->nxt = $3;
     }
     | expression {
-        printf("[SYNTATIC] (arguments_list) expression\n");
+        // printf("[SYNTATIC] (arguments_list) expression\n");
 
         $$ = createNode("arguments_list");
         $$->children = $1;
@@ -688,14 +695,14 @@ arguments_list:
 
 conditional:
     IF conditional_expression statements {
-        printf("[SYNTATIC] (conditional) IF conditional_expression statements\n");
+        // printf("[SYNTATIC] (conditional) IF conditional_expression statements\n");
 
         $$ = createNode("conditional");
         $$->children = $2;
         $2->nxt = $3;
     }
     | IF conditional_expression statements_braced ELSE statements_braced {
-        printf("[SYNTATIC] (conditional) IF conditional_expression statements_braced ELSE statements_braced\n");
+        // printf("[SYNTATIC] (conditional) IF conditional_expression statements_braced ELSE statements_braced\n");
 
         $$ = createNode("conditional");
         $$->children = $2;
@@ -706,7 +713,7 @@ conditional:
 
 conditional_expression:
     '(' expression ')' {
-        printf("[SYNTATIC] (conditional_expression) '(' expression ')'\n");
+        // printf("[SYNTATIC] (conditional_expression) '(' expression ')'\n");
 
         $$ = createNode("conditional_expression");
         $$->children = $2;
@@ -715,13 +722,13 @@ conditional_expression:
 
 return:
     RETURN expression ';' {
-        printf("[SYNTATIC] (return) RETURN expression ';'\n");
+        // printf("[SYNTATIC] (return) RETURN expression ';'\n");
 
         $$ = createNode("return");
         $$->children = $2;
     }
     | RETURN ';' {
-        printf("[SYNTATIC] (return) RETURN ';'\n");
+        // printf("[SYNTATIC] (return) RETURN ';'\n");
 
         $$ = createNode("return");
     }
@@ -729,20 +736,20 @@ return:
 
 value:
     ID {
-        printf("[SYNTATIC] (value) ID = %s\n", $1);
+        // printf("[SYNTATIC] (value) ID = %s\n", $1.tokenBody);
 
         $$ = createNode("value");
-        $$->symbol = createSymbol(lines, columns, "variable", lastType, $1);
+        $$->symbol = createSymbol(lines, columns, "variable", lastType, $1.tokenBody);
     }
     | const {
-        printf("[SYNTATIC] (value) const\n");
+        // printf("[SYNTATIC] (value) const\n");
 
         $$ = createNode("value");
         $$->children = $1;
 
     }
     | function_call {
-        printf("[SYNTATIC] (value) function_call\n");
+        // printf("[SYNTATIC] (value) function_call\n");
 
         $$ = createNode("value");
         $$->children = $1;
@@ -751,7 +758,7 @@ value:
 
 function_call_statement:
     function_call ';' {
-        printf("[SYNTATIC] (function_call_statement) function_call ';'\n");
+        // printf("[SYNTATIC] (function_call_statement) function_call ';'\n");
         
         $$ = createNode("function_call_statement");
         $$->children = $1;
@@ -761,17 +768,17 @@ function_call_statement:
 
 function_call:
     ID '(' arguments_list ')' {
-        printf("[SYNTATIC] (function_call) ID(%s) '(' arguments_list ')'\n", $1);
+        // printf("[SYNTATIC] (function_call) ID(%s) '(' arguments_list ')'\n", $1.tokenBody);
 
-        Symbol* s = createSymbol(lines, columns, "function_call", "", $1);
+        Symbol* s = createSymbol(lines, columns, "function_call", "", $1.tokenBody);
         $$ = createNode("function_call");
         $$->children = $3;
         $$->symbol = s;
     }
     | ID '(' ')' {
-        printf("[SYNTATIC] (function_call) ID(%s) '(' ')'\n", $1);
+        // printf("[SYNTATIC] (function_call) ID(%s) '(' ')'\n", $1.tokenBody);
 
-        Symbol* s = createSymbol(lines, columns, "function_call", "", $1);
+        Symbol* s = createSymbol(lines, columns, "function_call", "", $1.tokenBody);
         $$ = createNode("function_call");
         $$->symbol = s;
     }
@@ -779,11 +786,11 @@ function_call:
 
 variables_declaration:
     type_identifier ID ';' {
-        printf("[SYNTATIC] (variables_declaration) type_identifier ID(%s) ';'\n", $2);
+        // printf("[SYNTATIC] (variables_declaration) type_identifier ID(%s) ';'\n", $2.tokenBody);
         
-        push_back(&tableList, createSymbol(lines, columns - strlen($2), "variable", lastType, $2));
+        push_back(&tableList, createSymbol($2.line, $2.colum, "variable", lastType, $2.tokenBody));
         
-        Symbol* s = createSymbol(lines, columns, "variable", lastType, $2);
+        Symbol* s = createSymbol(lines, columns, "variable", lastType, $2.tokenBody);
         $$ = createNode("variables_declaration");
         $$->children = $1;
         $$->symbol = s;
@@ -793,20 +800,20 @@ variables_declaration:
 
 const:
     INT_VALUE {
-        printf("[SYNTATIC] (const) INT_VALUE = %s\n", $1);
+        // printf("[SYNTATIC] (const) INT_VALUE = %s\n", $1.tokenBody);
         
         $$ = createNode("const");
-        $$->symbol = createSymbol(lines, columns, "const", "int", $1);
+        $$->symbol = createSymbol(lines, columns, "const", "int", $1.tokenBody);
 
     }
     | FLOAT_VALUE {
-        printf("[SYNTATIC] (const) FLOAT_VALUE = %s\n", $1);
+        // printf("[SYNTATIC] (const) FLOAT_VALUE = %s\n", $1.tokenBody);
         
         $$ = createNode("const");
-        $$->symbol = createSymbol(lines, columns, "const", "float", $1);
+        $$->symbol = createSymbol(lines, columns, "const", "float", $1.tokenBody);
     }
     | EMPTY {
-        printf("[SYNTATIC] (const) EMPTY\n");
+        // printf("[SYNTATIC] (const) EMPTY\n");
         
         $$ = createNode("const");
         $$->symbol = createSymbol(lines, columns, "const", "empty", "EMPTY");
@@ -816,7 +823,7 @@ const:
 %%
 
 int yyerror(const char* message){
-    printf("[SYNTATIC] ERROR [%d:%d] %s\n", lines, columns, message);
+    // printf("[SYNTATIC] ERROR [%d:%d] %s\n", lines, columns, message);
     errors++;
     return 0;
 }
@@ -856,7 +863,7 @@ int main(int argc, char ** argv) {
         printf("Tree won't be displayed because unexpected behaviour can be found since it contains erros\n");
     } else {
         printf("\n");
-        printTree(root, 1, ok);
+        // printTree(root, 1, ok);
     }    
     printTable(&tableList);
 

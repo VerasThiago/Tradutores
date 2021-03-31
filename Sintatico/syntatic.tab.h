@@ -91,10 +91,16 @@ union YYSTYPE
 {
 #line 24 "syntatic.y"
 
-	char body[2000];
+
+    struct Body {
+        char tokenBody [2000];
+        int line;
+        int colum;
+    } body;
+
     struct TreeNode *node;
 
-#line 98 "syntatic.tab.h"
+#line 104 "syntatic.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
