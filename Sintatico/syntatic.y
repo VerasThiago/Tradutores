@@ -757,21 +757,17 @@ is_set_statement:
 ;
 
 is_set_expression: 
-    IS_SET '(' ID ')' {
-        printf("[SYNTATIC] (is_set_expression) IS_SET '(' ID(%s) ')' ';'\n", $3.tokenBody);
+    IS_SET '(' expression ')' {
+        printf("[SYNTATIC] (is_set_expression) IS_SET '(' expression ')' ';'\n");
 
         $$ = createNode("is_set_expression");
         push_back_node(&treeNodeList, $$);
-        
-        $$->symbol = createSymbol($3.line, $3.column, "variable", lastType, $3.tokenBody, $3.scope); 
     }
-    | '!' IS_SET '(' ID ')' {
-        printf("[SYNTATIC] (is_set_expression) ! IS_SET '(' ID(%s) ')' ';'\n", $4.tokenBody);
+    | '!' IS_SET '(' expression ')' {
+        printf("[SYNTATIC] (is_set_expression) ! IS_SET '(' expression ')' ';'\n");
 
         $$ = createNode("is_set_expression");
         push_back_node(&treeNodeList, $$);
-        
-        $$->symbol = createSymbol($4.line, $4.column, "variable", lastType, $4.tokenBody, $4.scope); 
     } 
     | IS_SET '(' set_statement_add_remove ')' {
         printf("[SYNTATIC] (is_set_expression) IS_SET '(' set_statement_add_remove ')' ';'\n");
