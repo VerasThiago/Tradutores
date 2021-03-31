@@ -20,11 +20,12 @@ typedef struct TableList {
 
 void push_back(TableList* tl, Symbol* s);
 
+void freeTable(TableList* tl);
+
 void printTable(TableList* tl);
 
 Symbol* createSymbol(int line, int colum,char* classType, char* type, char* body, int scope);
 
-void freeTable(TableList* tl);
 
 TableList tableList;
 

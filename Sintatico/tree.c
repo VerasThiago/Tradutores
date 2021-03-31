@@ -63,3 +63,24 @@ void freeTree(TreeNode* root){
 
     
 }
+
+void freeNodeList(TreeNodeList* tnl) {
+    for(int i = 0; i <= tnl->size; i++){
+        if(!tnl->arr[i]) continue;
+        TreeNode* root = tnl->arr[i];
+        if(root->symbol){
+            free(root->symbol->classType);
+            free(root->symbol->type);
+            free(root->symbol->body);
+            free(root->symbol);
+        }
+        if(root->rule){
+            free(root->rule);
+        }
+        free(root);
+    }
+}
+
+void push_back_node(TreeNodeList* tnl, TreeNode* node){
+    tnl->arr[++tnl->size] = node;
+}

@@ -10,6 +10,14 @@ typedef struct TreeNode {
     Symbol* symbol;
 } TreeNode;
 
+typedef struct TreeNodeList {
+    struct TreeNode* arr[10000];
+    int size;
+} TreeNodeList;
+
+void push_back_node(TreeNodeList* tnl, TreeNode* node);
+
+void freeNodeList(TreeNodeList* tnl);
 
 TreeNode* createNode(char* rule);
 
@@ -20,5 +28,7 @@ void freeTree(TreeNode* root);
 void printToken(Symbol* s, int ident,int *ok);
 
 TreeNode* root;
+
+TreeNodeList treeNodeList;
 
 #endif

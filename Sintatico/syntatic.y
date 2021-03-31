@@ -121,11 +121,12 @@
 start:
 	program {
         printf("[SYNTATIC] (start) program\n");
-        $$ = createNode("start");
+        root = createNode("start");
+
+        push_back_node(&treeNodeList, root);
+        
+        $$ = root;
         $$->children = $1;
-
-        root = $$;
-
     }
 ;
 
@@ -133,12 +134,16 @@ program:
 	function_definition {
         printf("[SYNTATIC] (program) function_definition\n");
         $$ = createNode("program");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
     }
 	| function_definition program {
         printf("[SYNTATIC] (program) function_definition program\n");
 
         $$ = createNode("program");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
         $1->nxt = $2;
     }
@@ -146,6 +151,8 @@ program:
         printf("[SYNTATIC] (program) variables_declaration program\n");
 
         $$ = createNode("program");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
         $1->nxt = $2;
     }
@@ -156,6 +163,8 @@ function_definition:
         printf("[SYNTATIC] (function_definition) function_declaration '(' parameters ')' function_body\n");
         
         $$ = createNode("function_definition");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
         $1->nxt = $3;
         $3->nxt = $5;
@@ -164,6 +173,8 @@ function_definition:
         printf("[SYNTATIC] (function_definition) function_declaration '(' ')' function_body\n");
         
         $$ = createNode("function_definition");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
         $1->nxt = $4;
     }
@@ -175,6 +186,8 @@ function_declaration:
         printf("[SYNTATIC] (function_declaration) type_identifier ID(%s)\n", $2.tokenBody);
 
         $$ = createNode("function_declaration");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
         $$->symbol = createSymbol($2.line, $2.column, "variable", lastType, $2.tokenBody, $2.scope);
         push_back(&tableList, createSymbol($2.line, $2.column, "function", lastType, $2.tokenBody, $2.scope));
@@ -186,12 +199,16 @@ function_body:
         printf("[SYNTATIC] (function_body) '{' statements '}'\n");
 
         $$ = createNode("function_body");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $2;
     }
     | '{' '}' {
         printf("[SYNTATIC] (function_body) '{' '}'\n");
 
         $$ = createNode("function_body");
+        push_back_node(&treeNodeList, $$);
+        
     }
 ;
 
@@ -200,6 +217,8 @@ parameters:
         printf("[SYNTATIC] (parameters)  parameters_list \n");
 
         $$ = createNode("parameters_list");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
     }
 ;
@@ -209,6 +228,8 @@ parameters_list:
         printf("[SYNTATIC] (parameters_list) parameter ',' parameters_list\n");
 
         $$ = createNode("parameters_list");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
         $1->nxt = $3;
         
@@ -217,6 +238,8 @@ parameters_list:
         printf("[SYNTATIC] (parameters_list) parameter\n");
 
         $$ = createNode("parameters_list");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
     }
 ;
@@ -226,6 +249,8 @@ parameter:
         printf("[SYNTATIC] (parameter) type_identifier ID(%s)\n", $2.tokenBody);
 
         $$ = createNode("parameter");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
         $$->symbol = createSymbol($2.line, $2.column, "variable", lastType, $2.tokenBody, $2.scope);
         // push_back(&tableList, createSymbol($2.line, $2.line, "func parameter", lastType, $2.tokenBody, $2.scope));
@@ -237,6 +262,8 @@ type_identifier:
         printf("[SYNTATIC] (type_identifier) INT\n");
 
         $$ = createNode("type_identifier");
+        push_back_node(&treeNodeList, $$);
+        
         
         strcpy(lastType, "int");
 
@@ -245,6 +272,8 @@ type_identifier:
         printf("[SYNTATIC] (type_identifier) FLOAT\n");
 
         $$ = createNode("type_identifier");
+        push_back_node(&treeNodeList, $$);
+        
 
         strcpy(lastType, "float");
 
@@ -253,6 +282,8 @@ type_identifier:
         printf("[SYNTATIC] (type_identifier) ELEM\n");
 
         $$ = createNode("type_identifier");
+        push_back_node(&treeNodeList, $$);
+        
 
         strcpy(lastType, "elem");
 
@@ -261,6 +292,8 @@ type_identifier:
         printf("[SYNTATIC] (type_identifier) SET\n");
 
         $$ = createNode("type_identifier");
+        push_back_node(&treeNodeList, $$);
+        
 
         strcpy(lastType, "set");
 
@@ -272,6 +305,8 @@ statements:
         printf("[SYNTATIC] (statements) statement statements\n");
 
         $$ = createNode("statements");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
         $1->nxt = $2;
     }
@@ -279,12 +314,16 @@ statements:
         printf("[SYNTATIC] (statements) statement\n");   
 
         $$ = createNode("statements");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
     }
     | statements_braced {
         printf("[SYNTATIC] (statements) statements_braced\n");
 
         $$ = createNode("statements");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
     }
 ;
@@ -294,12 +333,16 @@ statements_braced:
         printf("[SYNTATIC] (statements_braced) '{' statements '}'\n");
 
         $$ = createNode("statements_braced");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $2;
     }
     | '{' '}' {
         printf("[SYNTATIC] (statements_braced) '{' '}'\n");
 
         $$ = createNode("statements_braced");
+        push_back_node(&treeNodeList, $$);
+        
     }
 ;
 
@@ -308,54 +351,72 @@ statement:
         printf("[SYNTATIC] (statement) variables_declaration\n");
 
         $$ = createNode("statement");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;   
     }
 	| return {
         printf("[SYNTATIC] (statement) return\n");
 
         $$ = createNode("statement");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;    
     }
 	| conditional {
         printf("[SYNTATIC] (statement) conditional\n");   
 
         $$ = createNode("statement");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;  
     }
 	| for {
         printf("[SYNTATIC] (statement) for\n");
 
         $$ = createNode("statement");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;   
     }
     | is_set_statement {
         printf("[SYNTATIC] (statement) is_set_statement\n"); 
 
         $$ = createNode("statement");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;  
     }
     | function_call_statement {
         printf("[SYNTATIC] (statement) function_call_statement\n"); 
 
         $$ = createNode("statement");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1; 
     }
 	| expression_statement {
         printf("[SYNTATIC] (statement) expression_statement \n");
 
         $$ = createNode("statement");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;   
     }
 	| io_statement {
         printf("[SYNTATIC] (statement) io_statement\n");
 
         $$ = createNode("statement");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;  
     }
 	| set_pre_statement {
         printf("[SYNTATIC] (statement) set_pre_statement\n");
 
         $$ = createNode("statement");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;  
     }
 ;
@@ -365,12 +426,16 @@ set_pre_statement:
         printf("[SYNTATIC] (set_pre_statement) set_statement_add_remove ';'\n");  
 
         $$ = createNode("set_pre_statement");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
     }
     | set_statement_for_all {
         printf("[SYNTATIC] (set_pre_statement) set_statement_for_all\n");  
 
         $$ = createNode("set_pre_statement");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
     }
 ;
@@ -380,12 +445,16 @@ set_statement_add_remove:
         printf("[SYNTATIC] (set_statement_add_remove) ADD '(' set_boolean_expression ')'\n"); 
         
         $$ = createNode("set_statement_add_remove");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $3;
     }
     | REMOVE '(' set_boolean_expression ')' {
         printf("[SYNTATIC] (set_statement_add_remove) REMOVE '(' set_boolean_expression ')'\n"); 
 
         $$ = createNode("set_statement_add_remove");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $3;
     }
 ;
@@ -395,6 +464,8 @@ set_statement_for_all:
         printf("[SYNTATIC] (set_statement_for_all) FOR_ALL '(' set_assignment_expression ')' statements\n"); 
 
         $$ = createNode("set_statement_for_all");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $3;
         $3->nxt = $5;
     }
@@ -405,6 +476,8 @@ set_statement_exists:
         printf("[SYNTATIC] (set_statement_exists) EXISTS '(' set_assignment_expression ')'\n"); 
 
         $$ = createNode("set_statement_exists");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $3;
     }
 ;
@@ -414,6 +487,8 @@ set_boolean_expression:
         printf("[SYNTATIC] (set_boolean_expression) expression IN set_statement_add_remove\n");
 
         $$ = createNode("set_boolean_expression");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
         $1->nxt = $3;
     }
@@ -421,6 +496,8 @@ set_boolean_expression:
         printf("[SYNTATIC] (set_boolean_expression) expression IN ID(%s)\n", $3.tokenBody);
 
         $$ = createNode("set_boolean_expression");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
     }
 ;
@@ -430,12 +507,16 @@ set_assignment_expression:
         printf("[SYNTATIC] (set_assignment_expression) expression IN set_statement_add_remove\n");
 
         $$ = createNode("set_assignment_expression");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $3;
     }
     | ID IN ID {
         printf("[SYNTATIC] (set_assignment_expression) ID(%s) IN ID(%s)\n", $1.tokenBody, $3.tokenBody);
 
         $$ = createNode("set_assignment_expression");
+        push_back_node(&treeNodeList, $$);
+        
         $$->symbol = createSymbol($1.line, $1.column, "variable", lastType, $1.tokenBody, $1.scope);
     }
 ;
@@ -445,6 +526,8 @@ expression_statement:
         printf("[SYNTATIC] (expression_statement) expression\n");
 
         $$ = createNode("expression_statement");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
     }
 ;
@@ -454,6 +537,8 @@ expression:
         printf("[SYNTATIC] (expression) expression_assignment\n");
 
         $$ = createNode("expression");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
     }
 ;
@@ -463,12 +548,16 @@ expression_assignment:
         printf("[SYNTATIC] (expression_assignment) expression_logical\n");
 
         $$ = createNode("expression_assignment");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;   
     }
     | ID '=' expression {
         printf("[SYNTATIC] (expression_assignment) ID(%s) '='  expression\n", $1.tokenBody);
 
         $$ = createNode("expression_assignment");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $3;
         $$->symbol = createSymbol($1.line, $1.column, "variable", lastType, $1.tokenBody, $1.scope);
     }
@@ -479,24 +568,32 @@ expression_logical:
         printf("[SYNTATIC] (expression_logical) expression_relational\n");
 
         $$ = createNode("expression_logical");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;   
     }
     | set_boolean_expression {
         printf("[SYNTATIC] (expression_logical) set_expression\n");
 
         $$ = createNode("expression_logical");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;   
     }
     | is_set_expression {
         printf("[SYNTATIC] (is_set_expression) is_set_expression\n");
 
         $$ = createNode("expression_logical");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;   
     }
     | expression_logical AND_OP expression_logical {
         printf("[SYNTATIC] (expression_logical) expression_logical AND_OP(&&) expression_logical\n");
 
         $$ = createNode("expression_logical");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
         $1->nxt = $3;
         $$->symbol = createSymbol($2.line, $2.column, "logical operator", "", $2.tokenBody, $2.scope);  
@@ -505,6 +602,8 @@ expression_logical:
         printf("[SYNTATIC] (expression_logical) expression_logical OR_OP(||) expression_logical\n");
 
         $$ = createNode("expression_logical");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
         $1->nxt = $3;
         $$->symbol = createSymbol($2.line, $2.column, "logical operator", "", $2.tokenBody, $2.scope);   
@@ -516,12 +615,16 @@ expression_relational:
         printf("[SYNTATIC] (expression_relational) expression_additive \n");
 
         $$ = createNode("expression_relational");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;   
     }
     | expression_relational RELATIONAL_OP expression_relational {
         printf("[SYNTATIC] (expression_relational) expression_relational RELATIONAL_OP(%s) expression_relational\n", $2.tokenBody);
 
         $$ = createNode("expression_relational");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;   
         $1->nxt = $3;
         $$->symbol = createSymbol($2.line, $2.column, "relational operator", "", $2.tokenBody, $2.scope);
@@ -533,12 +636,16 @@ expression_additive:
         printf("[SYNTATIC] (expression_additive) expression_multiplicative \n");
     
         $$ = createNode("expression_additive");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;   
     }
     | expression_additive ADDITIVE_OP expression_additive {
         printf("[SYNTATIC] (expression_additive) expression_additive ADDITIVE_OP(%s) expression_additive \n", $2.tokenBody);
 
         $$ = createNode("expression_additive");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;   
         $1->nxt = $3;
         $$->symbol = createSymbol($2.line, $2.column, "additive operator", "", $2.tokenBody, $2.scope);
@@ -550,12 +657,16 @@ expression_multiplicative:
         printf("[SYNTATIC] (expression_multiplicative) expression_value \n");
 
         $$ = createNode("expression_multiplicative");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
     }
     | expression_multiplicative MULTIPLICATIVE_OP expression_multiplicative {
         printf("[SYNTATIC] (expression_multiplicative)  expression_multiplicative MULTIPLICATIVE_OP(%s) expression_multiplicative \n", $2.tokenBody);
 
         $$ = createNode("expression_multiplicative");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;   
         $1->nxt = $3;
         $$->symbol = createSymbol($2.line, $2.column, "multiplicative operator", "", $2.tokenBody, $2.scope);
@@ -567,12 +678,16 @@ expression_value:
         printf("[SYNTATIC] (expression_value) '(' expression ')' \n");
 
         $$ = createNode("expression_value");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $2;   
     }
     | ADDITIVE_OP '(' expression ')' {
         printf("[SYNTATIC] (expression_value) ADDITIVE_OP(%s) '(' expression ')' \n", $1.tokenBody);
 
         $$ = createNode("expression_value");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $3;
         $$->symbol = createSymbol($1.line, $1.column, "additive operator", "", $1.tokenBody, $1.scope); 
     }
@@ -580,18 +695,24 @@ expression_value:
         printf("[SYNTATIC] (expression_value) ! '(' expression ')' \n");
 
         $$ = createNode("expression_value");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $3;
     }
     | value {
         printf("[SYNTATIC] (expression_value) value \n");
 
         $$ = createNode("expression_value");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
     }
     | ADDITIVE_OP value {
         printf("[SYNTATIC] (expression_value) ADDITIVE_OP(%s) value \n", $1.tokenBody);
 
         $$ = createNode("expression_value");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $2;  
         $$->symbol = createSymbol($1.line, $1.column, "additive operator", "", $1.tokenBody, $1.scope);
     }
@@ -599,12 +720,16 @@ expression_value:
         printf("[SYNTATIC] (expression_value) ! value \n");
 
         $$ = createNode("expression_value");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $2;  
     }
     | set_statement_exists {
         printf("[SYNTATIC] (expression_value) set_statement_exists\n");
 
         $$ = createNode("expression_value");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;  
     }
 ;
@@ -614,6 +739,8 @@ is_set_statement:
         printf("[SYNTATIC] (is_set_statement) is_set_expression ';'\n");
 
         $$ = createNode("is_set_statement");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;  
     }
 ;
@@ -623,6 +750,8 @@ is_set_expression:
         printf("[SYNTATIC] (is_set) IS_SET '(' ID(%s) ')' ';'\n", $3.tokenBody);
 
         $$ = createNode("is_set_expression");
+        push_back_node(&treeNodeList, $$);
+        
         $$->symbol = createSymbol($3.line, $3.column, "variable", lastType, $3.tokenBody, $3.scope); 
     }
 ;
@@ -632,6 +761,8 @@ for:
         printf("[SYNTATIC] (for) FOR '(' for_expression ')' statement\n");
 
         $$ = createNode("for");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $3;
         $3->nxt = $5;  
     }
@@ -642,6 +773,8 @@ for_expression:
         printf("[SYNTATIC] (for_expression) expression_assignment ';' expression_logical ';' expression_assignment\n");
         
         $$ = createNode("for_expression");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
         $1->nxt = $3;  
         $3->nxt = $5;  
@@ -653,29 +786,39 @@ io_statement:
         printf("[SYNTATIC] (io_statement) READ '(' ID(%s) ')' ';'\n", $3.tokenBody);
 
         $$ = createNode("io_statement");
+        push_back_node(&treeNodeList, $$);
+        
     }
     | WRITE '(' STRING ')' ';' {
         printf("[SYNTATIC] (io_statement) WRITE '(' STRING(%s) ')' ';'\n", $3.tokenBody);
 
         $$ = createNode("io_statement");
+        push_back_node(&treeNodeList, $$);
+        
         $$->symbol = createSymbol($3.line, $3.column, "string", "", $3.tokenBody, $3.scope);
     }
     | WRITE '(' expression ')' ';' {
         printf("[SYNTATIC] (io_statement) WRITE '(' expression ')' ';'\n");
 
         $$ = createNode("io_statement");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $3;
     }
     | WRITELN '(' STRING ')' ';' {
         printf("[SYNTATIC] (io_statement) WRITELN '(' STRING(%s) ')' ';'\n", $3.tokenBody);
 
         $$ = createNode("io_statement");
+        push_back_node(&treeNodeList, $$);
+        
         $$->symbol = createSymbol($3.line, $3.column, "string", "", $3.tokenBody, $3.scope);
     }
     | WRITELN '(' expression ')' ';' {
         printf("[SYNTATIC] (io_statement) WRITELN '(' expression ')' ';'\n");
 
         $$ = createNode("io_statement");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $3;
     }
 ;
@@ -685,6 +828,8 @@ arguments_list:
         printf("[SYNTATIC] (arguments_list) arguments_list ',' expression\n");
 
         $$ = createNode("arguments_list");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
         $1->nxt = $3;
     }
@@ -692,6 +837,8 @@ arguments_list:
         printf("[SYNTATIC] (arguments_list) expression\n");
 
         $$ = createNode("arguments_list");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
     }
 ;
@@ -701,6 +848,8 @@ conditional:
         printf("[SYNTATIC] (conditional) IF conditional_expression statements\n");
 
         $$ = createNode("conditional");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $2;
         $2->nxt = $3;
     }
@@ -708,6 +857,8 @@ conditional:
         printf("[SYNTATIC] (conditional) IF conditional_expression statements_braced ELSE statements_braced\n");
 
         $$ = createNode("conditional");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $2;
         $2->nxt = $3;
         $3->nxt = $5;
@@ -719,6 +870,8 @@ conditional_expression:
         printf("[SYNTATIC] (conditional_expression) '(' expression ')'\n");
 
         $$ = createNode("conditional_expression");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $2;
     }
 ;
@@ -728,12 +881,16 @@ return:
         printf("[SYNTATIC] (return) RETURN expression ';'\n");
 
         $$ = createNode("return");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $2;
     }
     | RETURN ';' {
         printf("[SYNTATIC] (return) RETURN ';'\n");
 
         $$ = createNode("return");
+        push_back_node(&treeNodeList, $$);
+        
     }
 ;
 
@@ -742,12 +899,16 @@ value:
         printf("[SYNTATIC] (value) ID = %s\n", $1.tokenBody);
 
         $$ = createNode("value");
+        push_back_node(&treeNodeList, $$);
+        
         $$->symbol = createSymbol($1.line, $1.column, "variable", lastType, $1.tokenBody, $1.scope);
     }
     | const {
         printf("[SYNTATIC] (value) const\n");
 
         $$ = createNode("value");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
 
     }
@@ -755,6 +916,8 @@ value:
         printf("[SYNTATIC] (value) function_call\n");
 
         $$ = createNode("value");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
     }
 ;
@@ -764,6 +927,8 @@ function_call_statement:
         printf("[SYNTATIC] (function_call_statement) function_call ';'\n");
         
         $$ = createNode("function_call_statement");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
 
     }
@@ -774,6 +939,8 @@ function_call:
         printf("[SYNTATIC] (function_call) ID(%s) '(' arguments_list ')'\n", $1.tokenBody);
 
         $$ = createNode("function_call");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $3;
         $$->symbol = createSymbol($1.line, $1.column, "function_call", "", $1.tokenBody, $1.scope);
     }
@@ -781,6 +948,8 @@ function_call:
         printf("[SYNTATIC] (function_call) ID(%s) '(' ')'\n", $1.tokenBody);
 
         $$ = createNode("function_call");
+        push_back_node(&treeNodeList, $$);
+        
         $$->symbol = createSymbol($1.line, $1.column, "function_call", "", $1.tokenBody, $1.scope);
     }
 ;
@@ -792,6 +961,8 @@ variables_declaration:
         push_back(&tableList, createSymbol($2.line, $2.line, "variable", lastType, $2.tokenBody, $2.scope));
         
         $$ = createNode("variables_declaration");
+        push_back_node(&treeNodeList, $$);
+        
         $$->children = $1;
         $$->symbol = createSymbol($2.line, $2.column, "variable", lastType, $2.tokenBody, $2.scope);
     }
@@ -803,6 +974,8 @@ const:
         printf("[SYNTATIC] (const) INT_VALUE = %s\n", $1.tokenBody);
         
         $$ = createNode("const");
+        push_back_node(&treeNodeList, $$);
+        
         $$->symbol = createSymbol($1.line, $1.column, "const", "int", $1.tokenBody, $1.scope);
 
     }
@@ -810,19 +983,23 @@ const:
         printf("[SYNTATIC] (const) FLOAT_VALUE = %s\n", $1.tokenBody);
         
         $$ = createNode("const");
+        push_back_node(&treeNodeList, $$);
+        
         $$->symbol = createSymbol($1.line, $1.column, "const", "float", $1.tokenBody, $1.scope);
     }
     | EMPTY {
         printf("[SYNTATIC] (const) EMPTY\n");
         
         $$ = createNode("const");
+        push_back_node(&treeNodeList, $$);
+        
     }
 ;
 
 %%
 
 int yyerror(const char* message){
-    printf("[SYNTATIC] ERROR %s\n", message);
+    printf("[SYNTATIC] [%d,%d] ERROR %s\n", yylval.body.line, yylval.body.column, message);
     errors++;
     return 0;
 }
@@ -838,6 +1015,7 @@ int main(int argc, char ** argv) {
 
     stackScope.size = stackScope.nxtScope = -1;
     tableList.size = -1;
+    treeNodeList.size = -1;
 
     push(&stackScope);
 
@@ -863,9 +1041,10 @@ int main(int argc, char ** argv) {
         printTree(root, 1, ok);
     }    
     printTable(&tableList);
-
-    freeTree(root);
+    
     freeTable(&tableList);
+    freeNodeList(&treeNodeList);
+
     fclose(yyin);
     yylex_destroy();
 

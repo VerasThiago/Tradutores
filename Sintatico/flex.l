@@ -13,6 +13,7 @@
 
     extern Stack stackScope;
     extern TableList tableList;
+    extern TreeNodeList treeNodeList;
     extern TreeNode* root;
 
     extern char lastType[200];
@@ -258,11 +259,9 @@ COMMENT                         "//"
     // printf("[LEXICO] Block delimiter: %s\n", yytext);
     if(yytext[0] == '{'){
         push(&stackScope);
-        printf("ESCOPO: %d\n", top(&stackScope));  
         return '{';
     } else {
         pop(&stackScope);
-        printf("ESCOPO: %d\n", top(&stackScope));  
         return '}';
     }
 }
@@ -284,7 +283,6 @@ COMMENT                         "//"
 }
 
 [ \t]+ {
-    // printf("[LEXICO] spaces(%d)\n",yyleng);
     columns += yyleng;
 }
 
