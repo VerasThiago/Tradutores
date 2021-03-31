@@ -22,7 +22,7 @@ void push_back(TableList* tl, Symbol* s);
 
 void printTable(TableList* tl);
 
-Symbol* createSymbol(int line, int colum,char* classType, char* type, char* body);
+Symbol* createSymbol(int line, int colum,char* classType, char* type, char* body, int scope);
 
 void freeTable(TableList* tl);
 

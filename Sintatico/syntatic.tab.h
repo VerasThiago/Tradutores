@@ -95,12 +95,13 @@ union YYSTYPE
     struct Body {
         char tokenBody [2000];
         int line;
-        int colum;
+        int column;
+        int scope;
     } body;
 
     struct TreeNode *node;
 
-#line 104 "syntatic.tab.h"
+#line 105 "syntatic.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

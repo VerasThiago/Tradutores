@@ -13,7 +13,7 @@ int top(Stack* scope);
 
 Stack stackScope;
 
-int lines, columns, errors;
+int errors;
 
 char lastType[200];
 

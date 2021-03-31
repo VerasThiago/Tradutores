@@ -527,9 +527,9 @@ char *yytext;
 
     extern char lastType[200];
 
-    extern int lines;
+    int lines = 1;
+    int columns = 1;
     extern int errors;
-    extern int columns;
 
 #line 535 "lex.yy.c"
 #line 536 "lex.yy.c"
@@ -818,10 +818,11 @@ case 2:
 YY_RULE_SETUP
 #line 73 "flex.l"
 {
-    columns += yyleng;
     strcpy(yylval.body.tokenBody, yytext);
     yylval.body.line = lines;
-    yylval.body.colum = columns;
+    yylval.body.column = columns;
+    columns += yyleng;
+    yylval.body.scope = top(&stackScope);
 
     if(strchr(yytext, '.') != NULL){
         printf("[LEXICO] Constant (Float): %s\n", yytext);
@@ -837,7 +838,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 91 "flex.l"
+#line 92 "flex.l"
 {
     printf("[LEXICO] Set operator: %s\n", yytext);
     columns += yyleng;
@@ -860,7 +861,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 111 "flex.l"
+#line 112 "flex.l"
 {
     printf("[LEXICO] Keyword: %s\n", yytext );
     columns += yyleng;
@@ -878,7 +879,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 126 "flex.l"
+#line 127 "flex.l"
 {
     columns += yyleng;
     printf("[LEXICO] Write: %s\n", yytext);
@@ -891,7 +892,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 136 "flex.l"
+#line 137 "flex.l"
 {
     printf("[LEXICO] Read: %s\n", yytext);
     columns += yyleng;
@@ -900,7 +901,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 142 "flex.l"
+#line 143 "flex.l"
 {
     columns += yyleng;
     printf("[LEXICO] Basic type: %s (%d)\n", yytext, yyleng);
@@ -914,19 +915,20 @@ YY_RULE_SETUP
 case 8:
 /* rule 8 can match eol */
 YY_RULE_SETUP
-#line 152 "flex.l"
+#line 153 "flex.l"
 {
     printf("[LEXICO] String: %s\n", yytext);
-    columns += yyleng;
     strcpy(yylval.body.tokenBody, yytext);
     yylval.body.line = lines;
-    yylval.body.colum = columns;
+    yylval.body.column = columns;
+    yylval.body.scope = top(&stackScope);
+    columns += yyleng;
     return STRING;
 }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 161 "flex.l"
+#line 163 "flex.l"
 {
     printf("[LEXICO] Custom type: %s\n", yytext);
     columns += yyleng;
@@ -939,7 +941,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 172 "flex.l"
+#line 174 "flex.l"
 {
     if(yyleng >= 33) {
         printf("[LEXICO] WARNING:The idenfier length is too long, the idenfier was truncated to the first 33 characters\n");
@@ -947,7 +949,8 @@ YY_RULE_SETUP
     }
     strcpy(yylval.body.tokenBody, yytext);
     yylval.body.line = lines;
-    yylval.body.colum = columns;
+    yylval.body.column = columns;
+    yylval.body.scope = top(&stackScope);
     printf("[LEXICO] Identifier: %s (%d)\n", yytext, yyleng);
     columns += yyleng;
     return ID;
@@ -955,7 +958,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 185 "flex.l"
+#line 188 "flex.l"
 {
     printf("[LEXICO] Logic AND operator: %s\n", yytext);
     columns += yyleng;
@@ -964,7 +967,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 191 "flex.l"
+#line 194 "flex.l"
 {
     printf("[LEXICO] Logic OR operator: %s\n", yytext);
     columns += yyleng;
@@ -973,43 +976,46 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 197 "flex.l"
+#line 200 "flex.l"
 {
     printf("[LEXICO] Relational operator: %s\n", yytext);
-    columns += yyleng;
     strcpy(yylval.body.tokenBody, yytext);
     yylval.body.line = lines;
-    yylval.body.colum = columns;
+    yylval.body.column = columns;
+    yylval.body.scope = top(&stackScope);
+    columns += yyleng;
     return RELATIONAL_OP;
 }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 206 "flex.l"
+#line 210 "flex.l"
 {
     printf("[LEXICO] Multiplicative operator: %s\n", yytext);
-    columns += yyleng;
     strcpy(yylval.body.tokenBody, yytext);
     yylval.body.line = lines;
-    yylval.body.colum = columns;
+    yylval.body.column = columns;
+    yylval.body.scope = top(&stackScope);
+    columns += yyleng;
     return MULTIPLICATIVE_OP;
 }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 215 "flex.l"
+#line 220 "flex.l"
 {
     printf("[LEXICO] Additive operator: %s\n", yytext);
-    columns += yyleng;
     strcpy(yylval.body.tokenBody, yytext);
     yylval.body.line = lines;
-    yylval.body.colum = columns;
+    yylval.body.column = columns;
+    columns += yyleng;
+    yylval.body.scope = top(&stackScope);
     return ADDITIVE_OP;
 }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 224 "flex.l"
+#line 230 "flex.l"
 {
     printf("[LEXICO] Enumerator operator: %s\n", yytext);
     columns += yyleng;
@@ -1018,7 +1024,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 230 "flex.l"
+#line 236 "flex.l"
 {
     printf("[LEXICO] Not operator: %s\n", yytext);
     columns += yyleng;
@@ -1027,7 +1033,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 236 "flex.l"
+#line 242 "flex.l"
 {
     printf("[LEXICO] Command separator: %s\n", yytext);
     columns += yyleng;
@@ -1036,22 +1042,24 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 242 "flex.l"
+#line 248 "flex.l"
 {
     columns += yyleng;
     printf("[LEXICO] Block delimiter: %s\n", yytext);
     if(yytext[0] == '{'){
-        push(&stackScope);  
+        push(&stackScope);
+        printf("ESCOPO: %d\n", top(&stackScope));  
         return '{';
     } else {
         pop(&stackScope);
+        printf("ESCOPO: %d\n", top(&stackScope));  
         return '}';
     }
 }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 254 "flex.l"
+#line 262 "flex.l"
 {
     printf("[LEXICO] Expression delimiter: %s (%d)\n", yytext, yyleng);
     columns += yyleng;
@@ -1064,7 +1072,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 264 "flex.l"
+#line 272 "flex.l"
 {
     printf("[LEXICO] Variable separator: %s\n", yytext);
     columns += yyleng;
@@ -1073,7 +1081,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 270 "flex.l"
+#line 278 "flex.l"
 {
     printf("[LEXICO] spaces(%d)\n",yyleng);
     columns += yyleng;
@@ -1082,7 +1090,7 @@ YY_RULE_SETUP
 case 23:
 /* rule 23 can match eol */
 YY_RULE_SETUP
-#line 275 "flex.l"
+#line 283 "flex.l"
 {
     printf("[LEXICO] ENDL\n");
     lines++;
@@ -1091,7 +1099,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 281 "flex.l"
+#line 289 "flex.l"
 {
     errors++;
     printf("[LEXICO] ERROR line: %d columns: %d Undentified char: %s \n", lines, columns, yytext );
@@ -1099,10 +1107,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 286 "flex.l"
+#line 294 "flex.l"
 ECHO;
 	YY_BREAK
-#line 1106 "lex.yy.c"
+#line 1114 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2070,5 +2078,5 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 286 "flex.l"
+#line 294 "flex.l"
 

@@ -17,9 +17,9 @@
 
     extern char lastType[200];
 
-    extern int lines;
+    int lines = 1;
+    int columns = 1;
     extern int errors;
-    extern int columns;
 
 %}
 
@@ -71,10 +71,11 @@ COMMENT                         "//"
 }
 
 {CONSTANT}|{DIGIT}+"."{DIGIT}+|{DIGIT}+ {
-    columns += yyleng;
     strcpy(yylval.body.tokenBody, yytext);
     yylval.body.line = lines;
-    yylval.body.colum = columns;
+    yylval.body.column = columns;
+    columns += yyleng;
+    yylval.body.scope = top(&stackScope);
 
     if(strchr(yytext, '.') != NULL){
         printf("[LEXICO] Constant (Float): %s\n", yytext);
@@ -151,10 +152,11 @@ COMMENT                         "//"
 
 {STRING} {
     printf("[LEXICO] String: %s\n", yytext);
-    columns += yyleng;
     strcpy(yylval.body.tokenBody, yytext);
     yylval.body.line = lines;
-    yylval.body.colum = columns;
+    yylval.body.column = columns;
+    yylval.body.scope = top(&stackScope);
+    columns += yyleng;
     return STRING;
 }
 
@@ -176,7 +178,8 @@ COMMENT                         "//"
     }
     strcpy(yylval.body.tokenBody, yytext);
     yylval.body.line = lines;
-    yylval.body.colum = columns;
+    yylval.body.column = columns;
+    yylval.body.scope = top(&stackScope);
     printf("[LEXICO] Identifier: %s (%d)\n", yytext, yyleng);
     columns += yyleng;
     return ID;
@@ -196,28 +199,31 @@ COMMENT                         "//"
 
 {RELATIONAL_OP} {
     printf("[LEXICO] Relational operator: %s\n", yytext);
-    columns += yyleng;
     strcpy(yylval.body.tokenBody, yytext);
     yylval.body.line = lines;
-    yylval.body.colum = columns;
+    yylval.body.column = columns;
+    yylval.body.scope = top(&stackScope);
+    columns += yyleng;
     return RELATIONAL_OP;
 }
 
 {MULTIPLICATIVE_OP} {
     printf("[LEXICO] Multiplicative operator: %s\n", yytext);
-    columns += yyleng;
     strcpy(yylval.body.tokenBody, yytext);
     yylval.body.line = lines;
-    yylval.body.colum = columns;
+    yylval.body.column = columns;
+    yylval.body.scope = top(&stackScope);
+    columns += yyleng;
     return MULTIPLICATIVE_OP;
 }
 
 {ADDITIVE_OP} {
     printf("[LEXICO] Additive operator: %s\n", yytext);
-    columns += yyleng;
     strcpy(yylval.body.tokenBody, yytext);
     yylval.body.line = lines;
-    yylval.body.colum = columns;
+    yylval.body.column = columns;
+    columns += yyleng;
+    yylval.body.scope = top(&stackScope);
     return ADDITIVE_OP;
 }
 
@@ -243,10 +249,12 @@ COMMENT                         "//"
     columns += yyleng;
     printf("[LEXICO] Block delimiter: %s\n", yytext);
     if(yytext[0] == '{'){
-        push(&stackScope);  
+        push(&stackScope);
+        printf("ESCOPO: %d\n", top(&stackScope));  
         return '{';
     } else {
         pop(&stackScope);
+        printf("ESCOPO: %d\n", top(&stackScope));  
         return '}';
     }
 }
