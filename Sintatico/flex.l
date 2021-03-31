@@ -16,6 +16,7 @@
     extern TreeNodeList treeNodeList;
     extern TreeNode* root;
 
+    extern int verbose;
     extern char lastType[200];
 
     int lines = 1;

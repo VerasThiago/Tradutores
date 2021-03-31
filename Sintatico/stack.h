@@ -14,6 +14,7 @@ int top(Stack* scope);
 Stack stackScope;
 
 int errors;
+int verbose;
 
 char lastType[200];
 
