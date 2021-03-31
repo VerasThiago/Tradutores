@@ -228,7 +228,7 @@ parameter:
         $$ = createNode("parameter");
         $$->children = $1;
         $$->symbol = createSymbol($2.line, $2.column, "variable", lastType, $2.tokenBody, $2.scope);
-        push_back(&tableList, createSymbol($2.line, $2.line, "func parameter", lastType, $2.tokenBody, $2.scope));
+        // push_back(&tableList, createSymbol($2.line, $2.line, "func parameter", lastType, $2.tokenBody, $2.scope));
     }
 ;
 
