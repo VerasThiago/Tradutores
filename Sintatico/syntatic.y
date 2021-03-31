@@ -39,13 +39,12 @@
 %token '}'
 %token ')'
 %token ';'
-%token '='
+%left '='
 %token '!'
 
 %token ELEM
-%token IF
-%token ELSE
-%right THEN ELSE
+%left IF
+%left ELSE
 %token SET
 %token FOR
 %token RETURN
@@ -60,7 +59,7 @@
 %token EXISTS
 %token FOR_ALL
 %token IS_SET
-%token IN
+%left IN
 
 %token <body> INT_VALUE
 %token <body> FLOAT_VALUE
@@ -886,7 +885,7 @@ arguments_list:
 ;
 
 conditional:
-    IF conditional_expression statements %prec THEN{
+    IF conditional_expression statements {
         printf("[SYNTATIC] (conditional) IF conditional_expression statements\n");
 
         $$ = createNode("conditional");
