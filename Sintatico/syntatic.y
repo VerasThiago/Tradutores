@@ -747,14 +747,22 @@ is_set_statement:
 
 is_set_expression: 
     IS_SET '(' ID ')' {
-        printf("[SYNTATIC] (is_set) IS_SET '(' ID(%s) ')' ';'\n", $3.tokenBody);
+        printf("[SYNTATIC] (is_set_expression) IS_SET '(' ID(%s) ')' ';'\n", $3.tokenBody);
 
         $$ = createNode("is_set_expression");
         push_back_node(&treeNodeList, $$);
         
         $$->symbol = createSymbol($3.line, $3.column, "variable", lastType, $3.tokenBody, $3.scope); 
     }
-;
+    | '!' IS_SET '(' ID ')' {
+        printf("[SYNTATIC] (is_set_expression) ! IS_SET '(' ID(%s) ')' ';'\n", $4.tokenBody);
+
+        $$ = createNode("is_set_expression");
+        push_back_node(&treeNodeList, $$);
+        
+        $$->symbol = createSymbol($4.line, $4.column, "variable", lastType, $4.tokenBody, $4.scope); 
+    }
+;   
 
 for:
     FOR '(' for_expression ')' statements {
@@ -999,7 +1007,7 @@ const:
 %%
 
 int yyerror(const char* message){
-    printf("[SYNTATIC] [%d,%d] ERROR %s\n", yylval.body.line, yylval.body.column, message);
+    printf("\n[SYNTATIC] [%d,%d] ERROR %s\n\n", yylval.body.line, yylval.body.column, message);
     errors++;
     return 0;
 }

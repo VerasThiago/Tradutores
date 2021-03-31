@@ -1108,7 +1108,7 @@ YY_RULE_SETUP
 #line 295 "flex.l"
 {
     errors++;
-    printf("[LEXICO] ERROR line: %d columns: %d Undentified char: %s \n", lines, columns, yytext );
+    printf("\n[LEXICO] ERROR line: %d columns: %d Undentified char: %s \n\n", lines, columns, yytext );
 }
 	YY_BREAK
 case 25:
