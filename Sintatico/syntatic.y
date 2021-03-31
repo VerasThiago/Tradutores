@@ -561,6 +561,17 @@ expression_assignment:
         $$->children = $3;
         $$->symbol = createSymbol($1.line, $1.column, "variable", lastType, $1.tokenBody, $1.scope);
     }
+    | ID '=' set_boolean_expression {
+        printf("[SYNTATIC] (expression_assignment) ID(%s) '='  set_boolean_expression\n", $1.tokenBody);
+
+        $$ = createNode("expression_assignment");
+        push_back_node(&treeNodeList, $$);
+        
+        $$->children = $3;
+        $$->symbol = createSymbol($1.line, $1.column, "variable", lastType, $1.tokenBody, $1.scope);
+    }
+
+    
 ;
 
 expression_logical:
