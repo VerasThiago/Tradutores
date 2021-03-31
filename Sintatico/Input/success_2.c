@@ -49,7 +49,9 @@ int test_set_expression() {
     exists(a in add(exists(b in s) in s));
     boolean = 4 in add(1 in add(2 in s));
     boolean = is_set(s);
-    // boolean = is_set(add(1 in s));
+    boolean = is_set(add(1 in s));
+    boolean = is_set(remove(1 in s));
+    boolean = is_set(exists(1 in s));
     boolean = !is_set(a);
     boolean = !is_set(a) || is_set(b);
     forall(a in s) {

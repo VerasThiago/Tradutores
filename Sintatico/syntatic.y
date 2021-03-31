@@ -70,7 +70,7 @@
 %left <body> MULTIPLICATIVE_OP
 %left <body> ADDITIVE_OP
 %left <body> AND_OP
-%left <body>  OR_OP
+%left <body> OR_OP
 
 %type <node> start
 %type <node> program
@@ -772,6 +772,32 @@ is_set_expression:
         push_back_node(&treeNodeList, $$);
         
         $$->symbol = createSymbol($4.line, $4.column, "variable", lastType, $4.tokenBody, $4.scope); 
+    } 
+    | IS_SET '(' set_statement_add_remove ')' {
+        printf("[SYNTATIC] (is_set_expression) IS_SET '(' set_statement_add_remove ')' ';'\n");
+
+        $$ = createNode("is_set_expression");
+        push_back_node(&treeNodeList, $$);
+         
+    }
+    | '!' IS_SET '(' set_statement_add_remove ')' {
+        printf("[SYNTATIC] (is_set_expression) ! IS_SET '(' set_statement_add_remove ')' ';'\n");
+
+        $$ = createNode("is_set_expression");
+        push_back_node(&treeNodeList, $$);
+    }
+    | IS_SET '(' set_statement_exists ')' {
+        printf("[SYNTATIC] (is_set_expression) IS_SET '(' set_statement_exists ')' ';'\n");
+
+        $$ = createNode("is_set_expression");
+        push_back_node(&treeNodeList, $$);
+         
+    }
+    | '!' IS_SET '(' set_statement_exists ')' {
+        printf("[SYNTATIC] (is_set_expression) ! IS_SET '(' set_statement_exists ')' ';'\n");
+
+        $$ = createNode("is_set_expression");
+        push_back_node(&treeNodeList, $$);
     }
 ;   
 
