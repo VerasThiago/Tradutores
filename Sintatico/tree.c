@@ -39,17 +39,16 @@ void printTree(TreeNode* root, int ident, int *ok){
 
     printf("\n");
 
+    printTree(root->children, ident + 2, ok);
     printTree(root->nxt, ident, ok);
     
-    printTree(root->children, ident + 2, ok);
 }
 
 void freeTree(TreeNode* root){
     if(!root) return;
 
-    
-    freeTree(root->nxt);
     freeTree(root->children);
+    freeTree(root->nxt);
     
     if(root->symbol){
         free(root->symbol->classType);

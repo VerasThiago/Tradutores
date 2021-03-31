@@ -31,7 +31,7 @@ int main() {
     set f2; // 6
     for(i = 0; i < n; i = i + 1){
         // 7
-        if(x > 3){
+        if(x || 3){
             // 8
             return 0;
         }
@@ -42,7 +42,7 @@ int main() {
 // 0
 int main(){
     // 9
-    if(f( (1 + 2) - b, 3 / (((3))), exists(b in add(1 in add(2 in s))))){
+    if(f( (1 + 2) - b, 3 / (((3))), exists(b in add(1 in add(2 in s)))) && 2 > 3 || 4){
         // 10
         write("puts");
     }
