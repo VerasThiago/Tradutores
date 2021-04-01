@@ -1,7 +1,6 @@
-int f() {
-	if(int x){
+int f {
+	if(x){
         erro();
     }
-
 	return 0;
 }

@@ -1031,7 +1031,7 @@ io_statement:
     READ '(' ID ')' ';' {
         printf("[SYNTATIC] (io_statement) READ '(' ID(%s) ')' ';'\n", $3.tokenBody);
 
-        $$ = createNode("io_statement");
+        $$ = createNode("io_statement - READ");
         push_back_node(&treeNodeList, $$);
         $$->symbol = createSymbol($3.line, $3.column, "variable", lastType, $3.tokenBody, $3.scope);
         
@@ -1039,7 +1039,7 @@ io_statement:
     | WRITE '(' STRING ')' ';' {
         printf("[SYNTATIC] (io_statement) WRITE '(' STRING(%s) ')' ';'\n", $3.tokenBody);
       
-        $$ = createNode("io_statement");
+        $$ = createNode("io_statement - WRITE");
         $$->symbol = createSymbol($3.line, $3.column, "string", "", $3.tokenBody, $3.scope);
         
         push_back_node(&treeNodeList, $$);
@@ -1049,7 +1049,7 @@ io_statement:
         printf("[SYNTATIC] (io_statement) WRITE '(' expression ')' ';'\n");
 
         if(verbose){
-            $$ = createNode("io_statement");
+            $$ = createNode("io_statement - WRITE");
             $$->children = $3;
            
             push_back_node(&treeNodeList, $$);
@@ -1061,7 +1061,7 @@ io_statement:
     | WRITELN '(' STRING ')' ';' {
         printf("[SYNTATIC] (io_statement) WRITELN '(' STRING(%s) ')' ';'\n", $3.tokenBody);
 
-        $$ = createNode("io_statement");
+        $$ = createNode("io_statement - WRITELN");
         $$->symbol = createSymbol($3.line, $3.column, "string", "", $3.tokenBody, $3.scope);
         
         push_back_node(&treeNodeList, $$);
@@ -1071,7 +1071,7 @@ io_statement:
         printf("[SYNTATIC] (io_statement) WRITELN '(' expression ')' ';'\n");
 
         if(verbose){
-            $$ = createNode("io_statement");
+            $$ = createNode("io_statement - WRITELN");
             $$->children = $3;
            
             push_back_node(&treeNodeList, $$);
