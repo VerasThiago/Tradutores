@@ -945,9 +945,9 @@ case 10:
 YY_RULE_SETUP
 #line 176 "flex.l"
 {
-    if(yyleng >= 33) {
-        // printf("[LEXICO] WARNING:The idenfier length is too long, the idenfier was truncated to the first 33 characters\n");
-        yytext[33] = 0;
+    if(yyleng >= 50) {
+        // printf("[LEXICO] WARNING: Variable size greater than 50, changed to size 50\n");
+        yytext[55] = 0;
     }
     strcpy(yylval.body.tokenBody, yytext);
     yylval.body.line = lines;
@@ -1109,7 +1109,7 @@ YY_RULE_SETUP
 #line 296 "flex.l"
 {
     errors++;
-    printf("\n[LEXICO] ERROR line: %d columns: %d Undentified char: %s \n\n", lines, columns, yytext );
+    printf("\n[LEXICO] ERROR line: %d columns: %d undentified char: %s \n\n", lines, columns, yytext );
 }
 	YY_BREAK
 case 25:

@@ -8,6 +8,7 @@ typedef struct TreeNode {
     struct TreeNode* nxt;
     char* rule;
     Symbol* symbol;
+    int type;
 } TreeNode;
 
 typedef struct TreeNodeList {
@@ -26,6 +27,10 @@ void printTree(TreeNode* root, int ident,int *ok);
 void freeTree(TreeNode* root);
 
 void printToken(Symbol* s, int ident,int *ok);
+
+void getParamsType(TreeNode* root, char* ans);
+
+int getTypeID(char* type);
 
 TreeNode* root;
 

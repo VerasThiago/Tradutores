@@ -9,7 +9,22 @@ TreeNode* createNode(char* rule){
     node->children = NULL;
     node->nxt = NULL;
     node->symbol = NULL;
+    node->type = -1;
     return node;
+}
+
+int getTypeID(char* type){
+    if (strcmp(type, "INT") == 0) {
+        return 0;
+    } else if(strcmp(type, "SET") == 0) {
+        return 1;
+    } else if(strcmp(type, "FLOAT") == 0) {
+        return 2;
+    } else if (strcmp(type, "ELEM") == 0) {
+        return 3;
+    } else {
+        return -1;
+    }
 }
 
 void printToken(Symbol* s, int ident, int *ok){
@@ -42,6 +57,17 @@ void printTree(TreeNode* root, int ident, int *ok){
     printTree(root->children, ident + 2, ok);
     printTree(root->nxt, ident, ok);
     
+}
+
+void getParamsType(TreeNode* root, char ans []){
+    if(!root) return;
+
+    if(root->type != -1){
+        char aux[4][7] = {"0", "1", "2", "3"};
+        strcat(ans, aux[root->type]);
+    }
+    getParamsType(root->children, ans);
+    getParamsType(root->nxt, ans);
 }
 
 void freeTree(TreeNode* root){
