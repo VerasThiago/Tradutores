@@ -9,7 +9,7 @@ typedef struct Symbol {
     char* type;
     char* body;
     int scope;
-    char* paramsType; // 0 INT 1 FLOAT 2 SET 3 ELEM
+    int paramsQnt;
 } Symbol;
 
 typedef struct TableList {

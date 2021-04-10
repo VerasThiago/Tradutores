@@ -164,25 +164,16 @@ program:
 ;
 
 function_definition:
-	function_declaration '(' {
-        push(&stackScope);
-
-    } parameters {
-        char paramsAsString[] = "";
-        getParamsType($4, paramsAsString);
-        $1->symbol->paramsType = strdup(paramsAsString);
-
-    } ')'  function_body {
+	function_declaration '(' parameters ')' function_body {
         printf("[SYNTATIC] (function_definition) function_declaration '(' parameters ')' function_body\n");
         
         $$ = createNode("function_definition");
-
         $$->children = $1;
-        $1->nxt = $4;
-        $4->nxt = $7;
+        $1->nxt = $3;
+        $3->nxt = $5;
         
         push_back_node(&treeNodeList, $$);
-        pop(&stackScope);
+        
     }
     | function_declaration '(' ')' function_body {
         printf("[SYNTATIC] (function_definition) function_declaration '(' ')' function_body\n");
@@ -191,7 +182,8 @@ function_definition:
         $$->children = $1;
         $1->nxt = $4;
         
-        push_back_node(&treeNodeList, $$);   
+        push_back_node(&treeNodeList, $$);
+        
     }
 ;
 
@@ -208,9 +200,9 @@ function_declaration:
             $$ = createNode(aux);
         }
 
-        $$->symbol = createSymbol($2.line, $2.column, "function", lastType, $2.tokenBody, $2.scope);
+        $$->symbol = createSymbol($2.line, $2.column, "variable", lastType, $2.tokenBody, $2.scope);
         push_back_node(&treeNodeList, $$);
-        push_back(&tableList, $$->symbol);
+        push_back(&tableList, createSymbol($2.line, $2.column, "function", lastType, $2.tokenBody, $2.scope));
     }
 ;
 
@@ -287,10 +279,9 @@ parameter:
             strcat(aux , $1->symbol->body);
             $$ = createNode(aux);
         }
-        $$->type = getTypeID($1->symbol->body);
-        $$->symbol = createSymbol($2.line, $2.column, "param variable", lastType, $2.tokenBody, $2.scope);
+
+        $$->symbol = createSymbol($2.line, $2.column, "variable", lastType, $2.tokenBody, $2.scope);
         push_back_node(&treeNodeList, $$);
-        push_back(&tableList, $$->symbol);
     }
 ;
 
@@ -827,7 +818,7 @@ expression_multiplicative:
     }
     | expression_multiplicative MULTIPLICATIVE_OP expression_multiplicative {
         printf("[SYNTATIC] (expression_multiplicative)  expression_multiplicative MULTIPLICATIVE_OP(%s) expression_multiplicative \n", $2.tokenBody);
-        
+
         $$ = createNode("expression_multiplicative");
         $$->children = $1;   
         $1->nxt = $3;
@@ -1273,7 +1264,7 @@ variables_declaration:
         $$->symbol = createSymbol($2.line, $2.column, "variable", lastType, $2.tokenBody, $2.scope);
 
         push_back_node(&treeNodeList, $$);
-        push_back(&tableList, $$->symbol);
+        push_back(&tableList, createSymbol($2.line, $2.line, "variable", lastType, $2.tokenBody, $2.scope));
     }
 ;
 
@@ -1360,10 +1351,7 @@ int main(int argc, char ** argv) {
     }    
     printTable(&tableList);
     
-    // Don't need to free the table because 
-    // the table only contains symbols and the freeNodeList will free that pointer
-    // freeTable(&tableList); 
-
+    freeTable(&tableList);
     freeNodeList(&treeNodeList);
 
     fclose(yyin);

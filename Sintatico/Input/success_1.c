@@ -1,6 +1,5 @@
-int main(int a, set b, float c, elem d) {
-}
-
-int ababaab(float a, set b, float c, set d, int x, int y){
-
+int main(){
+x = exists(a in b);
+a = 2 in s;
+x = exists(2 in s);
 }

@@ -1,4 +1,4 @@
-int semParenteses {
+int f {
 	if(x){
         erro();
     }
