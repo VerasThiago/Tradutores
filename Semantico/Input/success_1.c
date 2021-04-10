@@ -1,11 +1,6 @@
-int main(int a, float b, float c) {
-}
+int varGlobal;
 
-int ababaab(float a, set b, float c, set d, int x, int y){
-    int a;
-    int b;
-    int c;
-    main(10, 10.4, EMPTY);
-    main(10, 10.4);
-    main(10, 10.4, 10, 20, 30);
+int main(){
+   int x;
+   x =  1 + 2 - 3 / 4 * 5 > 6 + 2 < 8 <= 9 != 10 && varGlobal || 12;
 }

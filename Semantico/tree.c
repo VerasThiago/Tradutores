@@ -41,20 +41,28 @@ char* getIDType(int ID){
     } else if (ID == 4) {
         return strdup("EMPTY");
     } else {
-        return strdup("?");
+        return strdup("??");
     }
 }
 
 char* getArgsList(char *args){
     char* argsList;
+    char* curr;
+    char* tmp;
     argsList = "";
 
     for(int i = 0; i < strlen(args); i++){
-        char * curr;
         curr = getIDType(args[i] - '0');
-        char * tmp = (char *) malloc(2 + strlen(argsList)+ strlen(curr) );
-        strcpy(tmp, argsList);
-        if(i) strcat(tmp, ", ");
+        
+        if(i){
+            tmp = (char *) malloc(3 + strlen(argsList)+ strlen(curr) );
+            strcpy(tmp, argsList);
+            strcat(tmp, ", ");
+        } else {
+            tmp = (char *) malloc(1 + strlen(argsList)+ strlen(curr) );
+            strcpy(tmp, argsList);
+        }
+
         strcat(tmp, curr);
         argsList = tmp;
     }
@@ -63,8 +71,11 @@ char* getArgsList(char *args){
 
 void printToken(Symbol* s, int ident, int *ok){
     printf(" ── [%d:%d] %s", s->line, s->colum, s->classType);
-    if(strcmp(s->classType, s->body))
+    if(strcmp(s->classType, "variable") == 0){
+        printf(" : %s %s", s->type, s->body);
+    } else if(strcmp(s->classType, s->body) != 0){
         printf(" : %s", s->body);
+    }
 }
 
 void printRule(char* s, int ident, int *ok){
@@ -100,8 +111,17 @@ void getTreeTypeList(TreeNode* root, char ans[]){
         char aux[5][2] = {"0", "1", "2", "3", "4"};
         strcat(ans, aux[root->type]);
     }
-    getTreeTypeList(root->children, ans);
+    
+    if(!startsWith(root->rule, "expression")){
+        getTreeTypeList(root->children, ans);
+    }
     getTreeTypeList(root->nxt, ans);
+}
+
+int startsWith(char* a, char* b){
+    if(strlen(a) < strlen(b)) return 0;
+    for(int i = 0; i < strlen(b); i++) if(a[i] != b[i]) return 0;
+    return 1;
 }
 
 void freeTree(TreeNode* root){

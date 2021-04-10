@@ -18,6 +18,8 @@ enum ERR_CODE {
     FEW_ARGS,
     MANY_ARGS,
     WRONG_ARGS,
+    UNDECLARED_VAR,
+    MISS_TYPE,
 };
 
 #endif

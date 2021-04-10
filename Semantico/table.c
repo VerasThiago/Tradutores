@@ -35,7 +35,16 @@ Symbol* createSymbol(int line, int colum,char* classType, char* type, char* body
     return ret;
 }
 
-Symbol* getFuncSymbol(TableList* tl, char *body, int scope){
+
+Symbol* getSymbolRecursive(TableList* tl, char *body, int scope){
+    if(scope == -1) return NULL;
+    for(int i = 0; i <= tl->size; i++){
+        if(strcmp(tl->arr[i]->body, body) == 0 && scope == tl->arr[i]->scope) return tl->arr[i];
+    }
+    return getSymbolRecursive(tl, body, scope - 1);
+}
+
+Symbol* getSymbol(TableList* tl, char *body, int scope){
     for(int i = 0; i <= tl->size; i++){
         if(strcmp(tl->arr[i]->body, body) == 0 && scope == tl->arr[i]->scope) return tl->arr[i];
     }

@@ -36,6 +36,8 @@ char* getIDType(int ID);
 
 char* getArgsList(char *args);
 
+int startsWith(char* a, char* b);
+
 TreeNode* root;
 
 TreeNodeList treeNodeList;

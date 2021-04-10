@@ -26,7 +26,9 @@ void printTable(TableList* tl);
 
 Symbol* createSymbol(int line, int colum,char* classType, char* type, char* body, int scope);
 
-Symbol* getFuncSymbol(TableList* tl, char *body, int scope);
+Symbol* getSymbol(TableList* tl, char *body, int scope);
+
+Symbol* getSymbolRecursive(TableList* tl, char *body, int scope);
 
 TableList tableList;
 
