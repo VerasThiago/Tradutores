@@ -17,17 +17,17 @@ void printTable(TableList* tl){
 
     } else {
         for(int i = 0; i <= tl->size; i++){
-            printf("| %-15d | %-15d | %-15s | %-15s | %-15d | %-15s |\n", tl->arr[i]->line, tl->arr[i]->colum, tl->arr[i]->classType, tl->arr[i]->type, tl->arr[i]->scope, tl->arr[i]->body);
+            printf("| %-15d | %-15d | %-15s | %-15s | %-15d | %-15s |\n", tl->arr[i]->line, tl->arr[i]->column, tl->arr[i]->classType, tl->arr[i]->type, tl->arr[i]->scope, tl->arr[i]->body);
         }
         printf(" -----------------------------------------------------------------------------------------------------------\n");
     }
 }
 
-Symbol* createSymbol(int line, int colum,char* classType, char* type, char* body, int scope){
+Symbol* createSymbol(int line, int column, char* classType, char* type, char* body, int scope){
     Symbol* ret = (Symbol*) malloc(sizeof(Symbol));
     ret->scope = scope;
     ret->line = line;
-    ret->colum = colum;
+    ret->column = column;
     ret->classType = strdup(classType);
     ret->type = strdup(type);
     ret->body = strdup(body);
@@ -36,12 +36,16 @@ Symbol* createSymbol(int line, int colum,char* classType, char* type, char* body
 }
 
 
-Symbol* getSymbolRecursive(TableList* tl, char *body, int scope){
+Symbol* getSymbolRecursive(TableList* tl, char *body, int scope, int func){
     if(scope == -1) return NULL;
     for(int i = 0; i <= tl->size; i++){
-        if(strcmp(tl->arr[i]->body, body) == 0 && scope == tl->arr[i]->scope) return tl->arr[i];
+        if(strcmp(tl->arr[i]->body, body) == 0 && scope == tl->arr[i]->scope){
+            if( (func && strcmp(tl->arr[i]->classType, "function") == 0) ||
+                (!func && strcmp(tl->arr[i]->classType, "function") != 0)
+            ) return tl->arr[i];
+        } 
     }
-    return getSymbolRecursive(tl, body, scope - 1);
+    return getSymbolRecursive(tl, body, scope - 1, func);
 }
 
 Symbol* getSymbol(TableList* tl, char *body, int scope){

@@ -17,5 +17,6 @@ int errors;
 int verbose;
 
 char lastType[200];
+char fileName[200];
 
 #endif

@@ -70,7 +70,7 @@ char* getArgsList(char *args){
 }
 
 void printToken(Symbol* s, int ident, int *ok){
-    printf(" ── [%d:%d] %s", s->line, s->colum, s->classType);
+    printf(" ── [%d:%d] %s", s->line, s->column, s->classType);
     if(strcmp(s->classType, "variable") == 0){
         printf(" : %s %s", s->type, s->body);
     } else if(strcmp(s->classType, s->body) != 0){

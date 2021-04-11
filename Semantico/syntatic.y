@@ -13,6 +13,7 @@
     #include "table.h"
     #include "tree.h"
     #include "error.h"
+    #include "semantic.h"
 
     extern int yylex();
     extern int yyparse();
@@ -200,6 +201,8 @@ function_declaration:
 	type_identifier ID {
         // printf("[SYNTATIC] (function_declaration) type_identifier ID(%s)\n", $2.tokenBody);
 
+        checkDuplicatedFunc(&tableList, $2.line, $2.column, $2.tokenBody, $2.scope);
+
         if(verbose){
             $$ = createNode("function_declaration");
             $$->children = $1;
@@ -210,6 +213,8 @@ function_declaration:
         }
 
         $$->symbol = createSymbol($2.line, $2.column, "function", lastType, $2.tokenBody, $2.scope);
+        $$->type = getTypeID($1->symbol->body);
+
         push_back_node(&treeNodeList, $$);
         push_back(&tableList, $$->symbol);
     }
@@ -682,13 +687,8 @@ expression_assignment:
     | ID '=' expression {
         // printf("[SYNTATIC] (expression_assignment) ID(%s) '='  expression\n", $1.tokenBody);
         
-        Symbol* s = getSymbolRecursive(&tableList, $1.tokenBody, $1.scope);
-
-        if(!s){
-            throwError(newError($1.line, $1.column, $1.tokenBody, "", "", UNDECLARED_VAR));
-        } else if(getTypeID(s->type) != $3->type){
-            throwError(newError($1.line, $1.column, "=", s->type, getIDType($3->type), MISS_TYPE));
-        }
+        Symbol* s = checkVarExist(&tableList, $1.line, $1.column, $1.tokenBody, $1.scope);
+        checkMissType(s ? getTypeID(s->type):-2, $3->type, $1.line, $1.column, "=");
 
         if(verbose){
             $$ = createNode("expression_assignment");
@@ -762,9 +762,7 @@ expression_logical:
         $$->symbol = createSymbol($2.line, $2.column, "logical operator", "", $2.tokenBody, $2.scope);  
         $$->type = $1->type;
 
-        if($1->type != $3->type){
-            throwError(newError($2.line, $2.column, $2.tokenBody, getIDType($1->type), getIDType($3->type), MISS_TYPE));
-        }
+        checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
 
         push_back_node(&treeNodeList, $$);
     }
@@ -777,10 +775,8 @@ expression_logical:
         $$->symbol = createSymbol($2.line, $2.column, "logical operator", "", $2.tokenBody, $2.scope);   
         $$->type = $1->type;
 
-        if($1->type != $3->type){
-            throwError(newError($2.line, $2.column, $2.tokenBody, getIDType($1->type), getIDType($3->type), MISS_TYPE));
-        }
-
+        checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
+    
         push_back_node(&treeNodeList, $$);
     }
 ;
@@ -806,9 +802,7 @@ expression_relational:
         $$->symbol = createSymbol($2.line, $2.column, "relational operator", "", $2.tokenBody, $2.scope);
         $$->type = $1->type;
 
-        if($1->type != $3->type){
-            throwError(newError($2.line, $2.column, $2.tokenBody, getIDType($1->type), getIDType($3->type), MISS_TYPE));
-        }
+        checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
         
         push_back_node(&treeNodeList, $$);
     }
@@ -836,9 +830,7 @@ expression_additive:
         $$->symbol = createSymbol($2.line, $2.column, "additive operator", "", $2.tokenBody, $2.scope);
         $$->type = $1->type;
 
-        if($1->type != $3->type){
-            throwError(newError($2.line, $2.column, $2.tokenBody, getIDType($1->type), getIDType($3->type), MISS_TYPE));
-        }
+        checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
 
         push_back_node(&treeNodeList, $$);
     }
@@ -866,9 +858,7 @@ expression_multiplicative:
         $$->symbol = createSymbol($2.line, $2.column, "multiplicative operator", "", $2.tokenBody, $2.scope);
         $$->type = $1->type;
 
-        if($1->type != $3->type){
-            throwError(newError($2.line, $2.column, $2.tokenBody, getIDType($1->type), getIDType($3->type), MISS_TYPE));
-        }
+        checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
 
         push_back_node(&treeNodeList, $$);
     }
@@ -1220,20 +1210,15 @@ return:
 value:
     ID {
         // printf("[SYNTATIC] (value) ID = %s\n", $1.tokenBody);
-
         $$ = createNode("value");
+        Symbol* s = checkVarExist(&tableList, $1.line, $1.column, $1.tokenBody, $1.scope);
 
-        Symbol* s = getSymbolRecursive(&tableList, $1.tokenBody, $1.scope);
+        $$->symbol = s ? createSymbol($1.line, $1.column, "variable", s->type, $1.tokenBody, $1.scope) :
+                         createSymbol($1.line, $1.column, "variable", "??", $1.tokenBody, $1.scope);
 
-        if(!s){
-            throwError(newError($1.line, $1.column, $1.tokenBody, "", "", UNDECLARED_VAR));
-            $$->symbol = createSymbol($1.line, $1.column, "variable", "??", $1.tokenBody, $1.scope);
-        } else {
-            $$->type = getTypeID(s->type);
-            $$->symbol = createSymbol($1.line, $1.column, "variable", s->type, $1.tokenBody, $1.scope);
-        }
+        $$->type = getTypeID($$->symbol->type);
+
         push_back_node(&treeNodeList, $$);
-        
     }
     | const {
         // printf("[SYNTATIC] (value) const\n");
@@ -1285,18 +1270,19 @@ function_call:
 
         $$ = createNode("function_call");
         $$->children = $3;
-        $$->symbol = createSymbol($1.line, $1.column, "function_call", "", $1.tokenBody, $1.scope);
 
-        char argsAsString[] = "";
-        getTreeTypeList($3, argsAsString);
-        Symbol *func = getSymbol(&tableList, $1.tokenBody, 0);
+        Symbol* s = checkFuncExist(&tableList, $1.line, $1.column, $1.tokenBody, $1.scope);
 
-        if(strlen(argsAsString) < strlen(func->paramsType)){
-            throwError(newError($1.line, $1.column, $1.tokenBody, func->paramsType, argsAsString, FEW_ARGS));
-        } else if(strlen(argsAsString) > strlen(func->paramsType)) {
-            throwError(newError($1.line, $1.column, $1.tokenBody, func->paramsType, argsAsString, MANY_ARGS));
-        } else if(strcmp(argsAsString, func->paramsType) != 0) {
-            throwError(newError($1.line, $1.column, $1.tokenBody, func->paramsType, argsAsString, WRONG_ARGS));
+        $$->symbol = s ? createSymbol($1.line, $1.column, "function_call", s->type, $1.tokenBody, $1.scope) :
+                         createSymbol($1.line, $1.column, "function_call", "??", $1.tokenBody, $1.scope);
+
+        $$->type = getTypeID($$->symbol->type);
+
+        if($$->type != -1){
+            char argsAsString[] = "";
+            getTreeTypeList($3, argsAsString);
+
+            checkArgsParms(argsAsString, getSymbol(&tableList, $1.tokenBody, 0)->paramsType, $1.line, $1.column, $1.tokenBody);
         }
         
         push_back_node(&treeNodeList, $$);
@@ -1306,10 +1292,15 @@ function_call:
         // printf("[SYNTATIC] (function_call) ID(%s) '(' ')'\n", $1.tokenBody);
 
         $$ = createNode("function_call");
-        $$->symbol = createSymbol($1.line, $1.column, "function_call", "", $1.tokenBody, $1.scope);
+
+        Symbol* s = checkFuncExist(&tableList, $1.line, $1.column, $1.tokenBody, $1.scope);
+
+        $$->symbol = s ? createSymbol($1.line, $1.column, "function_call", s->type, $1.tokenBody, $1.scope) :
+                         createSymbol($1.line, $1.column, "function_call", "??", $1.tokenBody, $1.scope);
+
+        $$->type = getTypeID($$->symbol->type);
        
         push_back_node(&treeNodeList, $$);
-        
     }
 ;
 
@@ -1317,6 +1308,8 @@ variables_declaration:
     type_identifier ID ';' {
         // printf("[SYNTATIC] (variables_declaration) type_identifier ID(%s) ';'\n", $2.tokenBody);
         
+        checkDuplicatedVar(&tableList, $2.line, $2.column, $2.tokenBody, $2.scope);
+
         if(verbose){
             $$ = createNode("variables_declaration");
             $$->children = $1;
@@ -1327,7 +1320,7 @@ variables_declaration:
             $$ = createNode(aux);
         }
         $$->symbol = createSymbol($2.line, $2.column, "variable", lastType, $2.tokenBody, $2.scope);
-        $$->type = getTypeID(lastType);
+        $$->type = getTypeID($$->symbol->type);
 
         push_back_node(&treeNodeList, $$);
         push_back(&tableList, $$->symbol);
@@ -1377,6 +1370,7 @@ int main(int argc, char ** argv) {
     ++argv, --argc;
     if(argc > 0) {
         yyin = fopen(argv[0], "r");
+        strcpy(fileName, argv[0]);
     }
     else {
         yyin = stdin;
@@ -1399,6 +1393,7 @@ int main(int argc, char ** argv) {
     int ok[10000];
     memset(ok, 0, sizeof(ok));
 
+    printf("\n");
     yyparse();
     printf("\n");
 

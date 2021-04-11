@@ -4,7 +4,7 @@
 
 typedef struct Symbol {
     int line;
-    int colum;
+    int column;
     char* classType;
     char* type;
     char* body;
@@ -24,11 +24,11 @@ void freeTable(TableList* tl);
 
 void printTable(TableList* tl);
 
-Symbol* createSymbol(int line, int colum,char* classType, char* type, char* body, int scope);
+Symbol* createSymbol(int line, int column ,char* classType, char* type, char* body, int scope);
 
 Symbol* getSymbol(TableList* tl, char *body, int scope);
 
-Symbol* getSymbolRecursive(TableList* tl, char *body, int scope);
+Symbol* getSymbolRecursive(TableList* tl, char *body, int scope, int func);
 
 TableList tableList;
 
