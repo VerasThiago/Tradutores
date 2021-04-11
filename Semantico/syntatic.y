@@ -174,6 +174,9 @@ function_definition:
         getTreeTypeList($4, paramsAsString);
         $1->symbol->paramsType = strdup(paramsAsString);
 
+        pop(&stackScope);
+        stackScope.nxtScope--; // Gambiarra here
+
     } ')'  function_body {
         // printf("[SYNTATIC] (function_definition) function_declaration '(' parameters ')' function_body\n");
         
@@ -184,7 +187,6 @@ function_definition:
         $4->nxt = $7;
         
         push_back_node(&treeNodeList, $$);
-        pop(&stackScope);
     }
     | function_declaration '(' ')' function_body {
         // printf("[SYNTATIC] (function_definition) function_declaration '(' ')' function_body\n");
@@ -1084,14 +1086,10 @@ io_statement:
     | WRITE '(' expression ')' ';' {
         // printf("[SYNTATIC] (io_statement) WRITE '(' expression ')' ';'\n");
 
-        if(verbose){
-            $$ = createNode("io_statement - WRITE");
-            $$->children = $3;
-           
-            push_back_node(&treeNodeList, $$);
-        } else {
-            $$ = $3;  
-        }
+        $$ = createNode("io_statement - WRITE");
+        $$->children = $3;
+        
+        push_back_node(&treeNodeList, $$);
         
     }
     | WRITELN '(' STRING ')' ';' {
@@ -1106,14 +1104,10 @@ io_statement:
     | WRITELN '(' expression ')' ';' {
         // printf("[SYNTATIC] (io_statement) WRITELN '(' expression ')' ';'\n");
 
-        if(verbose){
-            $$ = createNode("io_statement - WRITELN");
-            $$->children = $3;
-           
-            push_back_node(&treeNodeList, $$);
-        } else {
-            $$ = $3;  
-        }
+        $$ = createNode("io_statement - WRITELN");
+        $$->children = $3;
+        
+        push_back_node(&treeNodeList, $$);
         
     }
 ;
@@ -1299,6 +1293,11 @@ function_call:
                          createSymbol($1.line, $1.column, "function_call", "??", $1.tokenBody, $1.scope);
 
         $$->type = getTypeID($$->symbol->type);
+
+        if($$->type != -1){
+            char argsAsString[] = "";
+            checkArgsParms(argsAsString, getSymbol(&tableList, $1.tokenBody, 0)->paramsType, $1.line, $1.column, $1.tokenBody);
+        }
        
         push_back_node(&treeNodeList, $$);
     }

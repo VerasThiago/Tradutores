@@ -19,26 +19,29 @@ void checkArgsParms(char* args, char* params, int line, int column, char* body){
 }
 
 Symbol* checkVarExist(TableList *tableList, int line, int column, char* body, int scope){
-    Symbol* s = getSymbolRecursive(tableList, body, scope, 0);
-    if(!s){
-        throwError(newError(line, column, body, "", "", UNDECLARED_VAR));
+    for(int i = stackScope.size; i >= 0; i--){
+        Symbol* s = getSymbol(tableList, body, stackScope.st[i]);
+        if(s) return s;
     }
-    return s;
+    throwError(newError(line, column, body, "", "", UNDECLARED_VAR));
+    return NULL;
 }
 
 Symbol* checkFuncExist(TableList *tableList, int line, int column, char* body, int scope){
-    Symbol* s = getSymbolRecursive(tableList, body, scope, 1);
+    Symbol* s = getSymbolRecursive(tableList, body, 0, 1);
     if(!s){
-        Symbol* var = getSymbolRecursive(tableList, body, scope, 0);
-        if(!var){
-            throwError(newError(line, column, body, "", "", UNDECLARED_FUNC));
-        } else {
-            char redeclaredLine[10]; 
-            char redeclaredColumn[10];
-            sprintf(redeclaredLine, "%d", var->line);
-            sprintf(redeclaredColumn, "%d", var->column);
-            throwError(newError(line, column, body, redeclaredLine, redeclaredColumn, INVALID_FUNC_CALL));
+        for(int i = stackScope.size; i >= 0; i--){
+            Symbol* var = getSymbol(tableList, body, stackScope.st[i]);
+            if(var){
+                char redeclaredLine[10]; 
+                char redeclaredColumn[10];
+                sprintf(redeclaredLine, "%d", var->line);
+                sprintf(redeclaredColumn, "%d", var->column);
+                throwError(newError(line, column, body, redeclaredLine, redeclaredColumn, INVALID_FUNC_CALL));
+                return var;
+            }
         }
+        throwError(newError(line, column, body, "", "", UNDECLARED_FUNC));
     }
     return s;
 }
@@ -51,7 +54,6 @@ void checkMissType(int typeL, int typeR, int line, int column, char* body) {
 
 Symbol* checkDuplicatedVar(TableList *tableList, int line, int column, char* body, int scope){
     Symbol* s = getSymbol(tableList, body, scope);
-    if(!s) s = getSymbol(tableList, body, scope - 1);
     if(s){
         char redeclaredLine[10]; 
         char redeclaredColumn[10];
@@ -63,7 +65,7 @@ Symbol* checkDuplicatedVar(TableList *tableList, int line, int column, char* bod
 }
 
 Symbol* checkDuplicatedFunc(TableList *tableList, int line, int column, char* body, int scope){
-    Symbol* s = getSymbolRecursive(tableList, body, scope, 1);
+    Symbol* s = getSymbol(tableList, body, scope);
     if(s){
         char redeclaredLine[10]; 
         char redeclaredColumn[10];

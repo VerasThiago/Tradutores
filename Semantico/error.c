@@ -29,7 +29,7 @@ void throwError(Error e){
         break;
 
         case UNDECLARED_VAR:
-            printf("%s:%d:%d: error: ‘%s’ undeclared (first use in this function)\n\n",fileName, e.line, e.column, e.message);
+            printf("%s:%d:%d: error: ‘%s’ undeclared\n\n",fileName, e.line, e.column, e.message);
         break;
 
         case UNDECLARED_FUNC:
