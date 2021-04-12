@@ -7,7 +7,11 @@ Symbol* checkVarExist(TableList *tableList, int line, int column, char* body, in
 
 int checkCast(TreeNode* L, TreeNode* R);
 
+int checkCastSymbol(Symbol* L, TreeNode* R);
+
 void execCast(TreeNode* L, TreeNode* R);
+
+void execCastSymbol(Symbol* L, TreeNode* R);
 
 Symbol* checkFuncExist(TableList *tableList, int line, int column, char* body, int scope);
 

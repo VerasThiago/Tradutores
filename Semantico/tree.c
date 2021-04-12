@@ -34,6 +34,16 @@ char* getCastExpression(TreeNode* L, TreeNode* R, char* operator){
     return strdup(fullExpression);
 }
 
+char* getCastExpressionSymbol(Symbol* L, TreeNode* R, char* operator){
+    char fullExpression[30];
+
+    char *left = L? strdup(L->type):"??";
+    char *right = R->cast != -1? getCastString(R->cast):getIDType(R->type);
+
+    sprintf(fullExpression, "%s %s %s", left, operator, right);
+    return strdup(fullExpression);
+}
+
 char* getIDType(int type){
     if (type == T_INT) return strdup("INT");
     else if(type == T_SET) return strdup("SET");

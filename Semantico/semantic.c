@@ -45,6 +45,21 @@ int checkCast(TreeNode* L, TreeNode* R){
     return  (L->type == T_INT && R->type == T_FLOAT) || (L->type == T_FLOAT && R->type == T_INT);
 }
 
+int checkCastSymbol(Symbol* L, TreeNode* R){
+    if(!L) return 0;
+    return  (getTypeID(L->type) == T_INT && R->type == T_FLOAT) || (getTypeID(L->type) == T_FLOAT && R->type == T_INT);
+}
+
+void execCastSymbol(Symbol* L, TreeNode* R){
+    if(getTypeID(L->type) == T_INT){
+        R->type = T_INT;
+        R->cast = FLOAT_TO_INT;
+    } else {
+        R->type = T_FLOAT;
+        R->cast = INT_TO_FLOAT;
+    }
+}
+
 void execCast(TreeNode* L, TreeNode* R){
     if(L->type == T_INT && R->type == T_FLOAT){
         L->type = T_FLOAT;

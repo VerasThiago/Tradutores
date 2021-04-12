@@ -41,6 +41,8 @@ int startsWith(char* a, char* b);
 
 char* getCastExpression(TreeNode* L, TreeNode* R, char* operator);
 
+char* getCastExpressionSymbol(Symbol* L, TreeNode* R, char* operator);
+
 TreeNode* root;
 
 TreeNodeList treeNodeList;

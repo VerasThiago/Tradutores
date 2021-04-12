@@ -698,22 +698,16 @@ expression_assignment:
     }
     | ID '=' expression {
         // printf("[SYNTATIC] (expression_assignment) ID(%s) '='  expression\n", $1.tokenBody);
+        $$ = createNode("expression_assignment");
+        $$->children = $3;
         
         Symbol* s = checkVarExist(&tableList, $1.line, $1.column, $1.tokenBody, $1.scope);
-        checkMissType(s ? getTypeID(s->type):-2, $3->type, $1.line, $1.column, "=");
-
-        if(verbose){
-            $$ = createNode("expression_assignment");
-            $$->children = $3;
-            $$->type = getTypeID(s->type);
-            $$->symbol = createSymbol($1.line, $1.column, "variable", lastType, $1.tokenBody, $1.scope);
-            
-            push_back_node(&treeNodeList, $$);
-        } else {
-            $$ = $3;   
+        if(s){
+            if(checkCastSymbol(s, $3)) execCastSymbol(s, $3);
+            checkMissType(getTypeID(s->type), $3->type, $1.line, $1.column, "=");
         }
-
-
+        $$->symbol = createSymbol($1.line, $1.column, "expression_assignment", "", getCastExpressionSymbol(s, $3, "="), $1.scope);
+        push_back_node(&treeNodeList, $$);
     }
     | ID '=' set_boolean_expression {
         // printf("[SYNTATIC] (expression_assignment) ID(%s) '='  set_boolean_expression\n", $1.tokenBody);
