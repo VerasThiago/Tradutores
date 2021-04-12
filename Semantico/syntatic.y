@@ -421,6 +421,16 @@ statement:
             $$ = $1;   
         }
     }
+    | statements_braced {
+        if(verbose){
+            $$ = createNode("statement");
+            $$->children = $1;   
+            
+            push_back_node(&treeNodeList, $$);
+        } else {
+            $$ = $1;   
+        }
+    }
 	| return {
         // printf("[SYNTATIC] (statement) return\n");
         if(verbose){
@@ -761,10 +771,11 @@ expression_logical:
         $$ = createNode("expression_logical");
         $$->children = $1;
         $1->nxt = $3;
-        $$->symbol = createSymbol($2.line, $2.column, "logical operator", "", $2.tokenBody, $2.scope);  
-        $$->type = $1->type;
 
+        if(checkCast($1, $3)) execCast($1, $3);
+        $$->type = $1->type;
         checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
+        $$->symbol = createSymbol($2.line, $2.column, "logical operator", "", getCastExpression($1, $3, $2.tokenBody), $2.scope);
 
         push_back_node(&treeNodeList, $$);
     }
@@ -774,10 +785,11 @@ expression_logical:
         $$ = createNode("expression_logical");
         $$->children = $1;
         $1->nxt = $3;
-        $$->symbol = createSymbol($2.line, $2.column, "logical operator", "", $2.tokenBody, $2.scope);   
-        $$->type = $1->type;
 
+        if(checkCast($1, $3)) execCast($1, $3);
+        $$->type = $1->type;
         checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
+        $$->symbol = createSymbol($2.line, $2.column, "logical operator", "", getCastExpression($1, $3, $2.tokenBody), $2.scope);
     
         push_back_node(&treeNodeList, $$);
     }
@@ -801,10 +813,12 @@ expression_relational:
         $$ = createNode("expression_relational");
         $$->children = $1;   
         $1->nxt = $3;
-        $$->symbol = createSymbol($2.line, $2.column, "relational operator", "", $2.tokenBody, $2.scope);
+
+        if(checkCast($1, $3)) execCast($1, $3);
         $$->type = $1->type;
 
         checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
+        $$->symbol = createSymbol($2.line, $2.column, "relational operator", "", getCastExpression($1, $3, $2.tokenBody), $2.scope);
         
         push_back_node(&treeNodeList, $$);
     }
@@ -829,10 +843,11 @@ expression_additive:
         $$ = createNode("expression_additive");
         $$->children = $1;   
         $1->nxt = $3;
-        $$->symbol = createSymbol($2.line, $2.column, "additive operator", "", $2.tokenBody, $2.scope);
-        $$->type = $1->type;
 
+        if(checkCast($1, $3)) execCast($1, $3);
+        $$->type = $1->type;
         checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
+        $$->symbol = createSymbol($2.line, $2.column, "additive operator", "", getCastExpression($1, $3, $2.tokenBody), $2.scope);
 
         push_back_node(&treeNodeList, $$);
     }
@@ -857,10 +872,11 @@ expression_multiplicative:
         $$ = createNode("expression_multiplicative");
         $$->children = $1;   
         $1->nxt = $3;
-        $$->symbol = createSymbol($2.line, $2.column, "multiplicative operator", "", $2.tokenBody, $2.scope);
-        $$->type = $1->type;
 
+        if(checkCast($1, $3)) execCast($1, $3);
+        $$->type = $1->type;
         checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
+        $$->symbol = createSymbol($2.line, $2.column, "multiplicative operator", "", getCastExpression($1, $3, $2.tokenBody), $2.scope);
 
         push_back_node(&treeNodeList, $$);
     }

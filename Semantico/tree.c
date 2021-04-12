@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "tree.h"
+#include "semantic.h"
 
 TreeNode* createNode(char* rule){
     TreeNode* node = (TreeNode*) malloc(sizeof(TreeNode));
@@ -10,39 +11,36 @@ TreeNode* createNode(char* rule){
     node->nxt = NULL;
     node->symbol = NULL;
     node->type = -1;
+    node->cast = -1;
     return node;
 }
 
 int getTypeID(char* type){
-    if (strcmp(type, "INT") == 0) {
-        return 0;
-    } else if(strcmp(type, "SET") == 0) {
-        return 1;
-    } else if(strcmp(type, "FLOAT") == 0) {
-        return 2;
-    } else if (strcmp(type, "ELEM") == 0) {
-        return 3;
-    } else if (strcmp(type, "EMPTY") == 0) {
-        return 4;
-    } else {
-        return -1;
-    }
+    if (strcmp(type, "INT") == 0) return T_INT;
+    else if(strcmp(type, "SET") == 0) return T_SET;
+    else if(strcmp(type, "FLOAT") == 0) return T_FLOAT;
+    else if (strcmp(type, "ELEM") == 0) return T_ELEM;
+    else if (strcmp(type, "EMPTY") == 0) return T_EMPTY;
+    else return -1;
 }
 
-char* getIDType(int ID){
-    if (ID == 0) {
-        return strdup("INT");
-    } else if(ID == 1) {
-        return strdup("SET");
-    } else if(ID == 2) {
-        return strdup("FLOAT");
-    } else if (ID == 3) {
-        return strdup("ELEM");
-    } else if (ID == 4) {
-        return strdup("EMPTY");
-    } else {
-        return strdup("??");
-    }
+char* getCastExpression(TreeNode* L, TreeNode* R, char* operator){
+    char fullExpression[30];
+
+    char *left = L->cast != -1? getCastString(L->cast):getIDType(L->type);
+    char *right = R->cast != -1? getCastString(R->cast):getIDType(R->type);
+
+    sprintf(fullExpression, "%s %s %s", left, operator, right);
+    return strdup(fullExpression);
+}
+
+char* getIDType(int type){
+    if (type == T_INT) return strdup("INT");
+    else if(type == T_SET) return strdup("SET");
+    else if(type == T_FLOAT) return strdup("FLOAT");
+    else if (type == T_ELEM) return strdup("ELEM");
+    else if (type == T_EMPTY) return strdup("EMPTY");
+    else return strdup("??");
 }
 
 char* getArgsList(char *args){

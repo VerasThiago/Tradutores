@@ -13,4 +13,3 @@ void pop(Stack* scope){
 int top(Stack* scope){
     return scope->st[scope->size];
 }
-

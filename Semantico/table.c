@@ -1,6 +1,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "table.h"
+#include "stack.h"
 #include<string.h>
 
 void push_back(TableList* tl, Symbol* val){
@@ -46,6 +47,14 @@ Symbol* getSymbolRecursive(TableList* tl, char *body, int scope, int func){
         } 
     }
     return getSymbolRecursive(tl, body, scope - 1, func);
+}
+
+Symbol* getSymbolStack(TableList *tl, char* body){
+    for(int i = stackScope.size; i >= 0; i--){
+        Symbol* s = getSymbol(tl, body, stackScope.st[i]);
+        if(s) return s;
+    }
+    return NULL;
 }
 
 Symbol* getSymbol(TableList* tl, char *body, int scope){

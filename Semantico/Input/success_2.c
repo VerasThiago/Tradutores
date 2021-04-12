@@ -1,9 +1,5 @@
 int varGlobal;
 
-int f(int a, int b){
-    
-}
-
 int w(){
     return 10;
 }
@@ -17,9 +13,7 @@ int main(){
     set s;
     elem l;
     x = 10 / 3 - varGlobal + s;
-    f();
-    f(x, s);
-    f(s);
+    f(varGlobal, varGlobal);
     s = l;
     x = s;
 }

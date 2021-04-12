@@ -5,8 +5,7 @@
 #include "tree.h"
 #include "stack.h"
 #include "table.h"
-
-#define atoa(x) #x
+#include "semantic.h"
 
 void checkArgsParms(char* args, char* params, int line, int column, char* body){
     if(strlen(args) < strlen(params)){
@@ -19,10 +18,8 @@ void checkArgsParms(char* args, char* params, int line, int column, char* body){
 }
 
 Symbol* checkVarExist(TableList *tableList, int line, int column, char* body, int scope){
-    for(int i = stackScope.size; i >= 0; i--){
-        Symbol* s = getSymbol(tableList, body, stackScope.st[i]);
-        if(s) return s;
-    }
+    Symbol* s = getSymbolStack(tableList, body);
+    if(s) return s;
     throwError(newError(line, column, body, "", "", UNDECLARED_VAR));
     return NULL;
 }
@@ -30,24 +27,41 @@ Symbol* checkVarExist(TableList *tableList, int line, int column, char* body, in
 Symbol* checkFuncExist(TableList *tableList, int line, int column, char* body, int scope){
     Symbol* s = getSymbolRecursive(tableList, body, 0, 1);
     if(!s){
-        for(int i = stackScope.size; i >= 0; i--){
-            Symbol* var = getSymbol(tableList, body, stackScope.st[i]);
-            if(var){
-                char redeclaredLine[10]; 
-                char redeclaredColumn[10];
-                sprintf(redeclaredLine, "%d", var->line);
-                sprintf(redeclaredColumn, "%d", var->column);
-                throwError(newError(line, column, body, redeclaredLine, redeclaredColumn, INVALID_FUNC_CALL));
-                return var;
-            }
+        Symbol* var = getSymbolStack(tableList, body);
+        if(var){
+            char redeclaredLine[10]; 
+            char redeclaredColumn[10];
+            sprintf(redeclaredLine, "%d", var->line);
+            sprintf(redeclaredColumn, "%d", var->column);
+            throwError(newError(line, column, body, redeclaredLine, redeclaredColumn, INVALID_FUNC_CALL));
+            return var;
         }
         throwError(newError(line, column, body, "", "", UNDECLARED_FUNC));
     }
     return s;
 }
 
+int checkCast(TreeNode* L, TreeNode* R){
+    return  (L->type == T_INT && R->type == T_FLOAT) || (L->type == T_FLOAT && R->type == T_INT);
+}
+
+void execCast(TreeNode* L, TreeNode* R){
+    if(L->type == T_INT && R->type == T_FLOAT){
+        L->type = T_FLOAT;
+        L->cast = INT_TO_FLOAT;
+    } else if(L->type == T_FLOAT && R->type == T_INT){
+        R->type = T_FLOAT;
+        R->cast = INT_TO_FLOAT;
+    }
+}
+
+char *getCastString(int castCode){
+    if(castCode == INT_TO_FLOAT) return strdup("(float)INT");
+    if(castCode == FLOAT_TO_INT) return strdup("(int)FLOAT");
+}
+
 void checkMissType(int typeL, int typeR, int line, int column, char* body) {
-    if(typeL != -2 && typeR != -2 && typeL != typeR){
+    if(typeL != typeR){
         throwError(newError(line, column, body, getIDType(typeL), getIDType(typeR), MISS_TYPE));
     }
 }
@@ -75,4 +89,3 @@ Symbol* checkDuplicatedFunc(TableList *tableList, int line, int column, char* bo
     }
     return s;
 }
-

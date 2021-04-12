@@ -9,10 +9,11 @@ typedef struct TreeNode {
     char* rule;
     Symbol* symbol;
     int type;
+    int cast;
 } TreeNode;
 
 typedef struct TreeNodeList {
-    struct TreeNode* arr[10000];
+    struct TreeNode* arr[1000];
     int size;
 } TreeNodeList;
 
@@ -38,8 +39,18 @@ char* getArgsList(char *args);
 
 int startsWith(char* a, char* b);
 
+char* getCastExpression(TreeNode* L, TreeNode* R, char* operator);
+
 TreeNode* root;
 
 TreeNodeList treeNodeList;
+
+enum TYPE_CODE {
+    T_INT,
+    T_SET,
+    T_FLOAT,
+    T_ELEM,
+    T_EMPTY,
+};
 
 #endif
