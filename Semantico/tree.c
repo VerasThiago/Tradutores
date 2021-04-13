@@ -15,6 +15,15 @@ TreeNode* createNode(char* rule){
     return node;
 }
 
+TreeNode* createIDNode(Symbol* s, int line, int column, char* body, int scope){
+    TreeNode* node = createNode("value");
+    node->symbol = s ? createSymbol(line, column, "variable", s->type, body, scope) :
+                       createSymbol(line, column, "variable", "??", body, scope);
+    node->type = getTypeID(node->symbol->type);
+    push_back_node(&treeNodeList, node);
+    return node;
+}
+
 int getTypeID(char* type){
     if (strcmp(type, "INT") == 0) return T_INT;
     else if(strcmp(type, "SET") == 0) return T_SET;
@@ -77,6 +86,30 @@ char* getArgsList(char *args){
     return argsList;
 }
 
+char* getArgsListSetIn(char *args){
+    char* argsList;
+    char* curr;
+    char* tmp;
+    argsList = "";
+
+    for(int i = 0; i < strlen(args); i++){
+        curr = getIDType(args[i] - '0');
+        
+        if(i){
+            tmp = (char *) malloc(3 + strlen(argsList)+ strlen(curr) );
+            strcpy(tmp, argsList);
+            strcat(tmp, " IN ");
+        } else {
+            tmp = (char *) malloc(1 + strlen(argsList)+ strlen(curr) );
+            strcpy(tmp, argsList);
+        }
+
+        strcat(tmp, curr);
+        argsList = tmp;
+    }
+    return argsList;
+}
+
 void printToken(Symbol* s, int ident, int *ok){
     printf(" ── [%d:%d] %s", s->line, s->column, s->classType);
     if(strcmp(s->classType, "variable") == 0){
@@ -116,8 +149,9 @@ void getTreeTypeList(TreeNode* root, char ans[]){
     if(!root) return;
 
     if(root->type != -1){
-        char aux[5][2] = {"0", "1", "2", "3", "4"};
-        strcat(ans, aux[root->type]);
+        char aux[] = "0";
+        aux[0] += root->type;
+        strcat(ans, aux);
     }
     
     if(!startsWith(root->rule, "expression")){

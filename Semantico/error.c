@@ -24,6 +24,12 @@ void throwError(Error e){
             printf("%s:%d:%d: error: incompatible types for argument of ‘%s’\n Expected: %s(%s)\n Got: %s(%s)\n\n",fileName, e.line, e.column, e.message, e.message, expected, e.message, got);
         break;
 
+        case WRONG_SET_ARGS:
+            expected = getArgsListSetIn(e.expected);
+            got = getArgsListSetIn(e.got);
+            printf("%s:%d:%d: error: incompatible types for argument of ‘%s’\n Expected: %s\n Got: %s\n\n",fileName, e.line, e.column, e.message, expected, got);
+        break;
+
         case MISS_TYPE:
             printf("%s:%d:%d: error: miss type expression\n Expected: %s %s %s\n Got: %s %s %s\n\n",fileName, e.line, e.column, e.expected, e.message, e.expected, e.expected, e.message, e.got);
         break;

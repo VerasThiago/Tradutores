@@ -37,11 +37,15 @@ char* getIDType(int ID);
 
 char* getArgsList(char *args);
 
+char* getArgsListSetIn(char *args);
+
 int startsWith(char* a, char* b);
 
 char* getCastExpression(TreeNode* L, TreeNode* R, char* operator);
 
 char* getCastExpressionSymbol(Symbol* L, TreeNode* R, char* operator);
+
+TreeNode* createIDNode(Symbol* s, int line, int column, char* body, int scope);
 
 TreeNode* root;
 

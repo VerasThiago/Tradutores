@@ -108,6 +108,10 @@ COMMENT                         "//"
     } else if ( yytext[1] == 's'){
         return IS_SET;
     } else {
+        strcpy(yylval.body.tokenBody, yytext);
+        yylval.body.line = lines;
+        yylval.body.column = columns;
+        yylval.body.scope = top(&stackScope);
         return IN;
     }
 

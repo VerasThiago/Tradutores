@@ -24,6 +24,7 @@ enum ERR_CODE {
     DUPLICATED_FUNC,
     INVALID_FUNC_CALL,
     MISS_TYPE,
+    WRONG_SET_ARGS,
 };
 
 #endif

@@ -17,6 +17,16 @@ void checkArgsParms(char* args, char* params, int line, int column, char* body){
     }
 }
 
+void checkStructureBoolINSet(int left, int right, int expectedLeft, int expectedRight, int line, int column, char* body){
+    if(left != expectedLeft || right != expectedRight){
+        char expected[30];
+        char got[30];
+        sprintf(got, "%d%d", left, right);
+        sprintf(expected, "%d%d", expectedLeft, expectedRight);
+        throwError(newError(line, column, body, expected, got, WRONG_SET_ARGS));
+    }
+}
+
 Symbol* checkVarExist(TableList *tableList, int line, int column, char* body, int scope){
     Symbol* s = getSymbolStack(tableList, body);
     if(s) return s;
@@ -25,17 +35,17 @@ Symbol* checkVarExist(TableList *tableList, int line, int column, char* body, in
 }
 
 Symbol* checkFuncExist(TableList *tableList, int line, int column, char* body, int scope){
+    Symbol* var = getSymbolStack(tableList, body);
+    if(var && strcmp(var->classType, "function") != 0){
+        char redeclaredLine[10]; 
+        char redeclaredColumn[10];
+        sprintf(redeclaredLine, "%d", var->line);
+        sprintf(redeclaredColumn, "%d", var->column);
+        throwError(newError(line, column, body, redeclaredLine, redeclaredColumn, INVALID_FUNC_CALL));
+        return var;
+    }
     Symbol* s = getSymbolRecursive(tableList, body, 0, 1);
     if(!s){
-        Symbol* var = getSymbolStack(tableList, body);
-        if(var){
-            char redeclaredLine[10]; 
-            char redeclaredColumn[10];
-            sprintf(redeclaredLine, "%d", var->line);
-            sprintf(redeclaredColumn, "%d", var->column);
-            throwError(newError(line, column, body, redeclaredLine, redeclaredColumn, INVALID_FUNC_CALL));
-            return var;
-        }
         throwError(newError(line, column, body, "", "", UNDECLARED_FUNC));
     }
     return s;

@@ -60,7 +60,6 @@
 %token EXISTS
 %token FOR_ALL
 %token IS_SET
-%left IN
 
 %token <body> INT_VALUE
 %token <body> FLOAT_VALUE
@@ -68,6 +67,7 @@
 %token <body> ID
 %token <body> STRING
 
+%left <body> IN 
 %left <body> RELATIONAL_OP
 %left <body> MULTIPLICATIVE_OP
 %left <body> ADDITIVE_OP
@@ -552,27 +552,19 @@ set_pre_statement:
 set_statement_add_remove:
     ADD '(' set_boolean_expression ')' {
         // printf("[SYNTATIC] (set_statement_add_remove) ADD '(' set_boolean_expression ')'\n"); 
+        $$ = createNode("set_statement_add_remove");
+        $$->children = $3;
+        $$->type = getTypeID("SET");
         
-        if(verbose){
-            $$ = createNode("set_statement_add_remove");
-            $$->children = $3;
-            
-            push_back_node(&treeNodeList, $$);
-        } else {
-            $$ = $3;   
-        }
+        push_back_node(&treeNodeList, $$);
     }
     | REMOVE '(' set_boolean_expression ')' {
         // printf("[SYNTATIC] (set_statement_add_remove) REMOVE '(' set_boolean_expression ')'\n"); 
-
-        if(verbose){
-            $$ = createNode("set_statement_add_remove");
-            $$->children = $3;
-            
-            push_back_node(&treeNodeList, $$);
-        } else {
-            $$ = $3;   
-        }
+        $$ = createNode("set_statement_add_remove");
+        $$->children = $3;
+        $$->type = getTypeID("SET");   
+        
+        push_back_node(&treeNodeList, $$);
     }
 ;
 
@@ -592,15 +584,11 @@ set_statement_for_all:
 set_statement_exists:
     EXISTS '(' set_assignment_expression ')' {
         // printf("[SYNTATIC] (set_statement_exists) EXISTS '(' set_assignment_expression ')'\n"); 
-
-        if(verbose){
-            $$ = createNode("set_statement_exists");
-            $$->children = $3;
-            
-            push_back_node(&treeNodeList, $$);
-        } else {
-            $$ = $3;   
-        }
+        $$ = createNode("set_statement_exists");
+        $$->children = $3;
+        $$->type = getTypeID("ELEM");
+        
+        push_back_node(&treeNodeList, $$);
     }
 ;
 
@@ -608,24 +596,29 @@ set_boolean_expression:
     expression IN set_statement_add_remove {
         // printf("[SYNTATIC] (set_boolean_expression) expression IN set_statement_add_remove\n");
 
+        checkStructureBoolINSet($1->type, $3->type, getTypeID("ELEM"), getTypeID("SET"), $2.line, $2.column, $2.tokenBody);
+
         $$ = createNode("set_boolean_expression");
+        $$->symbol = createSymbol($2.line, $2.column, "boolean operator", "", getCastExpression($1, $3, $2.tokenBody), $2.scope);
         $$->children = $1;
         $1->nxt = $3;
-        
+        $$->type = getTypeID("INT");
         push_back_node(&treeNodeList, $$);
         
     }
     | expression IN ID {
         // printf("[SYNTATIC] (set_boolean_expression) expression IN ID(%s)\n", $3.tokenBody);
 
-        if(verbose){
-            $$ = createNode("set_boolean_expression");
-            $$->children = $1;
-            
-            push_back_node(&treeNodeList, $$);
-        } else {
-            $$ = $1;   
-        }
+        Symbol* s = checkVarExist(&tableList, $3.line, $3.column, $3.tokenBody, $3.scope);
+
+        checkStructureBoolINSet($1->type, s ? getTypeID(s->type):9, getTypeID("ELEM"), getTypeID("SET"), $2.line, $2.column, $2.tokenBody);
+
+        $$ = createNode("set_boolean_expression");
+        $$->symbol = createSymbol($2.line, $2.column, "boolean operator", "", $2.tokenBody, $2.scope);
+        $$->children = $1;
+        $1->nxt = createIDNode(s, $3.line, $3.column, $3.tokenBody, $3.scope);
+        $$->type = getTypeID("INT");
+        push_back_node(&treeNodeList, $$);
     }
 ;
 
@@ -633,21 +626,32 @@ set_assignment_expression:
     ID IN set_statement_add_remove {
         // printf("[SYNTATIC] (set_assignment_expression) expression IN set_statement_add_remove\n");
 
-        if(verbose){
-            $$ = createNode("set_assignment_expression");
-            $$->children = $3;
-            
-            push_back_node(&treeNodeList, $$);
-        } else {
-            $$ = $3;   
-        }
+        Symbol* s = checkVarExist(&tableList, $1.line, $1.column, $1.tokenBody, $1.scope);
+        checkStructureBoolINSet(s ? getTypeID(s->type):9, $3->type, getTypeID("ELEM"), getTypeID("SET"), $2.line, $2.column, $2.tokenBody);
+        
+        $$ = createNode("set_assignment_expression");
+        $$->symbol = createSymbol($2.line, $2.column, "assignment operator", "", getCastExpressionSymbol(s, $3, $2.tokenBody), $2.scope);
+        $$->children = createIDNode(s, $1.line, $1.column, $1.tokenBody, $1.scope);
+        $$->children->nxt = $3;
+        $$->type = getTypeID("ELEM");   
+        
+        push_back_node(&treeNodeList, $$);
+        
     }
     | ID IN ID {
         // printf("[SYNTATIC] (set_assignment_expression) ID(%s) IN ID(%s)\n", $1.tokenBody, $3.tokenBody);
 
+        Symbol* s1 = checkVarExist(&tableList, $1.line, $1.column, $1.tokenBody, $1.scope);
+        Symbol* s2 = checkVarExist(&tableList, $3.line, $3.column, $3.tokenBody, $3.scope);
+
+        checkStructureBoolINSet(s1 ? getTypeID(s1->type):9, s2 ? getTypeID(s2->type):9, getTypeID("ELEM"), getTypeID("SET"), $2.line, $2.column, $2.tokenBody);
+
         $$ = createNode("set_assignment_expression");
-        $$->symbol = createSymbol($1.line, $1.column, "variable", lastType, $1.tokenBody, $1.scope);
-        
+        $$->children = createIDNode(s1, $1.line, $1.column, $1.tokenBody, $1.scope);
+        $$->children->nxt = createIDNode(s2, $3.line, $3.column, $3.tokenBody, $3.scope);
+        $$->symbol = createSymbol($2.line, $2.column, "assignment operator", "", $2.tokenBody, $2.scope);
+        $$->type = getTypeID("ELEM");
+
         push_back_node(&treeNodeList, $$);
     }
 ;
@@ -655,7 +659,6 @@ set_assignment_expression:
 expression_statement:
     expression ';' {
         // printf("[SYNTATIC] (expression_statement) expression\n");
-
         if(verbose){
             $$ = createNode("expression_statement");
             $$->children = $1;
@@ -664,14 +667,12 @@ expression_statement:
         } else {
             $$ = $1;   
         }
-
     }
 ;
 
 expression:
     expression_assignment {
         // printf("[SYNTATIC] (expression) expression_assignment\n");
-
         if(verbose){
             $$ = createNode("expression");
             $$->children = $1;
@@ -686,7 +687,6 @@ expression:
 expression_assignment:
     expression_logical {
         // printf("[SYNTATIC] (expression_assignment) expression_logical\n");
-
         if(verbose){
             $$ = createNode("expression_assignment");
             $$->children = $1;   
@@ -711,10 +711,15 @@ expression_assignment:
     }
     | ID '=' set_boolean_expression {
         // printf("[SYNTATIC] (expression_assignment) ID(%s) '='  set_boolean_expression\n", $1.tokenBody);
-
         $$ = createNode("expression_assignment");
         $$->children = $3;
-        $$->symbol = createSymbol($1.line, $1.column, "variable", lastType, $1.tokenBody, $1.scope);
+        
+        Symbol* s = checkVarExist(&tableList, $1.line, $1.column, $1.tokenBody, $1.scope);
+        if(s){
+            if(checkCastSymbol(s, $3)) execCastSymbol(s, $3);
+            checkMissType(getTypeID(s->type), $3->type, $1.line, $1.column, "=");
+        }
+        $$->symbol = createSymbol($1.line, $1.column, "expression_assignment", "", getCastExpressionSymbol(s, $3, "="), $1.scope);
         
         push_back_node(&treeNodeList, $$);
     }
@@ -903,11 +908,10 @@ expression_value:
     }
     | ADDITIVE_OP '(' expression ')' {
         // printf("[SYNTATIC] (expression_value) ADDITIVE_OP(%s) '(' expression ')' \n", $1.tokenBody);
-
         $$ = createNode("expression_value");
         $$->children = $3;
         $$->symbol = createSymbol($1.line, $1.column, "additive operator", "", $1.tokenBody, $1.scope); 
-        
+        $$->type = $3->type;
         push_back_node(&treeNodeList, $$);
     }
     | value {
@@ -936,12 +940,7 @@ expression_value:
     }
     | ADDITIVE_OP value {
         // printf("[SYNTATIC] (expression_value) ADDITIVE_OP(%s) value \n", $1.tokenBody);
-
-        $$ = createNode("expression_value");
-        $$->children = $2;
-        $$->symbol = createSymbol($1.line, $1.column, "additive operator", "", $1.tokenBody, $1.scope);
-        
-        push_back_node(&treeNodeList, $$);
+        $$ = $2;
     }
     | set_statement_exists {
         // printf("[SYNTATIC] (expression_value) set_statement_exists\n");
@@ -982,7 +981,8 @@ is_set_expression:
 
             push_back_node(&treeNodeList, $$);
         } else {
-            $$ = $3;  
+            $$ = $3;
+            $$->type = getTypeID("INT");  
         }
     }
     | '!' IS_SET '(' expression ')' {
@@ -994,7 +994,8 @@ is_set_expression:
 
             push_back_node(&treeNodeList, $$);
         } else {
-            $$ = $4;  
+            $$ = $4;
+            $$->type = getTypeID("INT");    
         }
     } 
     | IS_SET '(' set_statement_add_remove ')' {
@@ -1006,7 +1007,8 @@ is_set_expression:
 
             push_back_node(&treeNodeList, $$);
         } else {
-            $$ = $3;  
+            $$ = $3;
+            $$->type = getTypeID("INT");    
         }
          
     }
@@ -1019,7 +1021,8 @@ is_set_expression:
 
             push_back_node(&treeNodeList, $$);
         } else {
-            $$ = $4;  
+            $$ = $4;
+            $$->type = getTypeID("INT");    
         }
     }
     | IS_SET '(' set_statement_exists ')' {
@@ -1031,7 +1034,8 @@ is_set_expression:
 
             push_back_node(&treeNodeList, $$);
         } else {
-            $$ = $3;  
+            $$ = $3;
+            $$->type = getTypeID("INT");    
         }
          
     }
@@ -1044,7 +1048,8 @@ is_set_expression:
 
             push_back_node(&treeNodeList, $$);
         } else {
-            $$ = $4;  
+            $$ = $4;
+            $$->type = getTypeID("INT");    
         }
     }
 ;   
@@ -1280,9 +1285,9 @@ function_call:
         $$->symbol = s ? createSymbol($1.line, $1.column, "function_call", s->type, $1.tokenBody, $1.scope) :
                          createSymbol($1.line, $1.column, "function_call", "??", $1.tokenBody, $1.scope);
 
-        $$->type = getTypeID($$->symbol->type);
 
-        if($$->type != -1){
+        if(strcmp(s->classType, "function") == 0){
+            $$->type = getTypeID($$->symbol->type);
             char argsAsString[] = "";
             getTreeTypeList($3, argsAsString);
 
@@ -1302,9 +1307,9 @@ function_call:
         $$->symbol = s ? createSymbol($1.line, $1.column, "function_call", s->type, $1.tokenBody, $1.scope) :
                          createSymbol($1.line, $1.column, "function_call", "??", $1.tokenBody, $1.scope);
 
-        $$->type = getTypeID($$->symbol->type);
 
-        if($$->type != -1){
+        if(strcmp(s->classType, "function_call") == 0) {
+            $$->type = getTypeID($$->symbol->type);
             char argsAsString[] = "";
             checkArgsParms(argsAsString, getSymbol(&tableList, $1.tokenBody, 0)->paramsType, $1.line, $1.column, $1.tokenBody);
         }
@@ -1318,16 +1323,11 @@ variables_declaration:
         // printf("[SYNTATIC] (variables_declaration) type_identifier ID(%s) ';'\n", $2.tokenBody);
         
         checkDuplicatedVar(&tableList, $2.line, $2.column, $2.tokenBody, $2.scope);
+        
+        char aux[] = "variables_declaration - ";
+        strcat(aux , $1->symbol->body);
+        $$ = createNode(aux);
 
-        if(verbose){
-            $$ = createNode("variables_declaration");
-            $$->children = $1;
-
-        } else {
-            char aux[] = "variables_declaration - ";
-            strcat(aux , $1->symbol->body);
-            $$ = createNode(aux);
-        }
         $$->symbol = createSymbol($2.line, $2.column, "variable", lastType, $2.tokenBody, $2.scope);
         $$->type = getTypeID($$->symbol->type);
 

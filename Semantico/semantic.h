@@ -13,6 +13,8 @@ void execCast(TreeNode* L, TreeNode* R);
 
 void execCastSymbol(Symbol* L, TreeNode* R);
 
+void checkStructureBoolINSet(int left, int right, int expectedLeft, int expectedRight, int line, int column, char* body);
+
 Symbol* checkFuncExist(TableList *tableList, int line, int column, char* body, int scope);
 
 Symbol* checkDuplicatedFunc(TableList *tableList, int line, int column, char* body, int scope);
