@@ -55,12 +55,12 @@
 %token READ
 %token FLOAT
 %token INT
-%token ADD
-%token REMOVE
-%token EXISTS
 %token FOR_ALL
-%token IS_SET
 
+%token <body> ADD
+%token <body> REMOVE
+%token <body> EXISTS
+%token <body> IS_SET
 %token <body> INT_VALUE
 %token <body> FLOAT_VALUE
 %token <body> EMPTY
@@ -554,6 +554,7 @@ set_statement_add_remove:
         // printf("[SYNTATIC] (set_statement_add_remove) ADD '(' set_boolean_expression ')'\n"); 
         $$ = createNode("set_statement_add_remove");
         $$->children = $3;
+        $$->symbol = createSymbol($1.line, $1.column, "set function", "", $1.tokenBody, $1.scope);
         $$->type = getTypeID("SET");
         
         push_back_node(&treeNodeList, $$);
@@ -561,6 +562,7 @@ set_statement_add_remove:
     | REMOVE '(' set_boolean_expression ')' {
         // printf("[SYNTATIC] (set_statement_add_remove) REMOVE '(' set_boolean_expression ')'\n"); 
         $$ = createNode("set_statement_add_remove");
+        $$->symbol = createSymbol($1.line, $1.column, "set function", "", $1.tokenBody, $1.scope);
         $$->children = $3;
         $$->type = getTypeID("SET");   
         
@@ -585,6 +587,7 @@ set_statement_exists:
     EXISTS '(' set_assignment_expression ')' {
         // printf("[SYNTATIC] (set_statement_exists) EXISTS '(' set_assignment_expression ')'\n"); 
         $$ = createNode("set_statement_exists");
+        $$->symbol = createSymbol($1.line, $1.column, "set function", "", $1.tokenBody, $1.scope);
         $$->children = $3;
         $$->type = getTypeID("ELEM");
         
@@ -974,83 +977,57 @@ is_set_statement:
 is_set_expression: 
     IS_SET '(' expression ')' {
         // printf("[SYNTATIC] (is_set_expression) IS_SET '(' expression ')' ';'\n");
+        $$ = createNode("is_set_expression");
+        $$->symbol = createSymbol($1.line, $1.column, "set function", "", $1.tokenBody, $1.scope);
+        $$->children = $3;
+        $$->type = getTypeID("INT");  
 
-        if(verbose){
-            $$ = createNode("is_set_expression");
-            $$->children = $3;  
-
-            push_back_node(&treeNodeList, $$);
-        } else {
-            $$ = $3;
-            $$->type = getTypeID("INT");  
-        }
+        push_back_node(&treeNodeList, $$);
     }
     | '!' IS_SET '(' expression ')' {
         // printf("[SYNTATIC] (is_set_expression) ! IS_SET '(' expression ')' ';'\n");
-
-        if(verbose){
-            $$ = createNode("is_set_expression");
-            $$->children = $4;
-
-            push_back_node(&treeNodeList, $$);
-        } else {
-            $$ = $4;
-            $$->type = getTypeID("INT");    
-        }
+        $$ = createNode("is_set_expression");
+        $$->symbol = createSymbol($2.line, $2.column, "set function", "", $2.tokenBody, $2.scope);
+        $$->children = $4;
+        $$->type = getTypeID("INT");    
+        push_back_node(&treeNodeList, $$);
     } 
     | IS_SET '(' set_statement_add_remove ')' {
         // printf("[SYNTATIC] (is_set_expression) IS_SET '(' set_statement_add_remove ')' ';'\n");
-
-        if(verbose){
-            $$ = createNode("is_set_expression");
-            $$->children = $3;  
-
-            push_back_node(&treeNodeList, $$);
-        } else {
-            $$ = $3;
-            $$->type = getTypeID("INT");    
-        }
+        $$ = createNode("is_set_expression");
+        $$->symbol = createSymbol($1.line, $1.column, "set function", "", $1.tokenBody, $1.scope);
+        $$->children = $3;  
+        $$->type = getTypeID("INT");    
+        push_back_node(&treeNodeList, $$);
          
     }
     | '!' IS_SET '(' set_statement_add_remove ')' {
         // printf("[SYNTATIC] (is_set_expression) ! IS_SET '(' set_statement_add_remove ')' ';'\n");
+        $$ = createNode("is_set_expression");
+        $$->symbol = createSymbol($2.line, $2.column, "set function", "", $2.tokenBody, $2.scope);
+        $$->children = $4;  
+        $$->type = getTypeID("INT");    
 
-        if(verbose){
-            $$ = createNode("is_set_expression");
-            $$->children = $4;  
-
-            push_back_node(&treeNodeList, $$);
-        } else {
-            $$ = $4;
-            $$->type = getTypeID("INT");    
-        }
+        push_back_node(&treeNodeList, $$);
     }
     | IS_SET '(' set_statement_exists ')' {
         // printf("[SYNTATIC] (is_set_expression) IS_SET '(' set_statement_exists ')' ';'\n");
 
-        if(verbose){
-            $$ = createNode("is_set_expression");
-            $$->children = $3;  
+        $$ = createNode("is_set_expression");
+        $$->symbol = createSymbol($1.line, $1.column, "set function", "", $1.tokenBody, $1.scope);
+        $$->type = getTypeID("INT");    
+        $$->children = $3;  
 
-            push_back_node(&treeNodeList, $$);
-        } else {
-            $$ = $3;
-            $$->type = getTypeID("INT");    
-        }
+        push_back_node(&treeNodeList, $$);
          
     }
     | '!' IS_SET '(' set_statement_exists ')' {
         // printf("[SYNTATIC] (is_set_expression) ! IS_SET '(' set_statement_exists ')' ';'\n");
-
-        if(verbose){
-            $$ = createNode("is_set_expression");
-            $$->children = $4;  
-
-            push_back_node(&treeNodeList, $$);
-        } else {
-            $$ = $4;
-            $$->type = getTypeID("INT");    
-        }
+        $$ = createNode("is_set_expression");
+        $$->symbol = createSymbol($2.line, $2.column, "set function", "", $2.tokenBody, $2.scope);
+        $$->type = getTypeID("INT");    
+        $$->children = $4;  
+        push_back_node(&treeNodeList, $$);
     }
 ;   
 

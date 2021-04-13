@@ -98,14 +98,30 @@ COMMENT                         "//"
     columns += yyleng;
 
     if(yytext[0] == 'a'){
+        strcpy(yylval.body.tokenBody, yytext);
+        yylval.body.line = lines;
+        yylval.body.column = columns;
+        yylval.body.scope = top(&stackScope);
         return ADD;
     } else if ( yytext[0] == 'r'){
+        strcpy(yylval.body.tokenBody, yytext);
+        yylval.body.line = lines;
+        yylval.body.column = columns;
+        yylval.body.scope = top(&stackScope);
         return REMOVE;
     } else if ( yytext[0] == 'e'){
+        strcpy(yylval.body.tokenBody, yytext);
+        yylval.body.line = lines;
+        yylval.body.column = columns;
+        yylval.body.scope = top(&stackScope);
         return EXISTS;
     } else if ( yytext[0] == 'f'){
         return FOR_ALL;
     } else if ( yytext[1] == 's'){
+        strcpy(yylval.body.tokenBody, yytext);
+        yylval.body.line = lines;
+        yylval.body.column = columns;
+        yylval.body.scope = top(&stackScope);
         return IS_SET;
     } else {
         strcpy(yylval.body.tokenBody, yytext);
