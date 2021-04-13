@@ -598,7 +598,7 @@ set_statement_exists:
 set_boolean_expression:
     expression IN set_statement_add_remove {
         // printf("[SYNTATIC] (set_boolean_expression) expression IN set_statement_add_remove\n");
-
+        if(checkSingleCast($1, getTypeID("ELEM"))) execSingleCast($1, getTypeID("ELEM"));
         checkStructureBoolINSet($1->type, $3->type, getTypeID("ELEM"), getTypeID("SET"), $2.line, $2.column, $2.tokenBody);
 
         $$ = createNode("set_boolean_expression");
@@ -607,19 +607,19 @@ set_boolean_expression:
         $1->nxt = $3;
         $$->type = getTypeID("INT");
         push_back_node(&treeNodeList, $$);
-        
     }
     | expression IN ID {
         // printf("[SYNTATIC] (set_boolean_expression) expression IN ID(%s)\n", $3.tokenBody);
-
         Symbol* s = checkVarExist(&tableList, $3.line, $3.column, $3.tokenBody, $3.scope);
+        TreeNode* nodeID = createIDNode(s, $3.line, $3.column, $3.tokenBody, $3.scope);
 
+        if(checkSingleCast($1, getTypeID("ELEM"))) execSingleCast($1, getTypeID("ELEM"));
         checkStructureBoolINSet($1->type, s ? getTypeID(s->type):9, getTypeID("ELEM"), getTypeID("SET"), $2.line, $2.column, $2.tokenBody);
 
         $$ = createNode("set_boolean_expression");
-        $$->symbol = createSymbol($2.line, $2.column, "boolean operator", "", $2.tokenBody, $2.scope);
+        $$->symbol = createSymbol($2.line, $2.column, "boolean operator", "", getCastExpression($1, nodeID, $2.tokenBody), $2.scope);
         $$->children = $1;
-        $1->nxt = createIDNode(s, $3.line, $3.column, $3.tokenBody, $3.scope);
+        $1->nxt = nodeID;
         $$->type = getTypeID("INT");
         push_back_node(&treeNodeList, $$);
     }
@@ -628,18 +628,18 @@ set_boolean_expression:
 set_assignment_expression:
     ID IN set_statement_add_remove {
         // printf("[SYNTATIC] (set_assignment_expression) expression IN set_statement_add_remove\n");
-
         Symbol* s = checkVarExist(&tableList, $1.line, $1.column, $1.tokenBody, $1.scope);
+        TreeNode* nodeID = createIDNode(s, $1.line, $1.column, $1.tokenBody, $1.scope);
+
+        if(checkSingleCast(nodeID, getTypeID("ELEM"))) execSingleCast(nodeID, getTypeID("ELEM"));
         checkStructureBoolINSet(s ? getTypeID(s->type):9, $3->type, getTypeID("ELEM"), getTypeID("SET"), $2.line, $2.column, $2.tokenBody);
         
         $$ = createNode("set_assignment_expression");
         $$->symbol = createSymbol($2.line, $2.column, "assignment operator", "", getCastExpressionSymbol(s, $3, $2.tokenBody), $2.scope);
-        $$->children = createIDNode(s, $1.line, $1.column, $1.tokenBody, $1.scope);
+        $$->children = nodeID;
         $$->children->nxt = $3;
         $$->type = getTypeID("ELEM");   
-        
         push_back_node(&treeNodeList, $$);
-        
     }
     | ID IN ID {
         // printf("[SYNTATIC] (set_assignment_expression) ID(%s) IN ID(%s)\n", $1.tokenBody, $3.tokenBody);
@@ -647,12 +647,18 @@ set_assignment_expression:
         Symbol* s1 = checkVarExist(&tableList, $1.line, $1.column, $1.tokenBody, $1.scope);
         Symbol* s2 = checkVarExist(&tableList, $3.line, $3.column, $3.tokenBody, $3.scope);
 
-        checkStructureBoolINSet(s1 ? getTypeID(s1->type):9, s2 ? getTypeID(s2->type):9, getTypeID("ELEM"), getTypeID("SET"), $2.line, $2.column, $2.tokenBody);
+        TreeNode* nodeID1 = createIDNode(s1, $1.line, $1.column, $1.tokenBody, $1.scope);
+        TreeNode* nodeID2 = createIDNode(s2, $3.line, $3.column, $3.tokenBody, $3.scope);
+
+        if(checkSingleCast(nodeID1, getTypeID("ELEM"))) execSingleCast(nodeID1, getTypeID("ELEM"));
+        if(checkSingleCast(nodeID2, getTypeID("SET"))) execSingleCast(nodeID2, getTypeID("SET"));
+
+        checkStructureBoolINSet(nodeID1->type, nodeID2->type, getTypeID("ELEM"), getTypeID("SET"), $2.line, $2.column, $2.tokenBody);
 
         $$ = createNode("set_assignment_expression");
-        $$->children = createIDNode(s1, $1.line, $1.column, $1.tokenBody, $1.scope);
-        $$->children->nxt = createIDNode(s2, $3.line, $3.column, $3.tokenBody, $3.scope);
-        $$->symbol = createSymbol($2.line, $2.column, "assignment operator", "", $2.tokenBody, $2.scope);
+        $$->children = nodeID1;
+        $$->children->nxt = nodeID2;
+        $$->symbol = createSymbol($2.line, $2.column, "assignment operator", "", getCastExpression(nodeID1, nodeID2, $2.tokenBody), $2.scope);
         $$->type = getTypeID("ELEM");
 
         push_back_node(&treeNodeList, $$);

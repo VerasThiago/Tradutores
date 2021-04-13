@@ -52,7 +52,25 @@ Symbol* checkFuncExist(TableList *tableList, int line, int column, char* body, i
 }
 
 int checkCast(TreeNode* L, TreeNode* R){
-    return  (L->type == T_INT && R->type == T_FLOAT) || (L->type == T_FLOAT && R->type == T_INT);
+    return  (L->type == T_INT && R->type == T_FLOAT)    ||
+            (L->type == T_FLOAT && R->type == T_INT)    ||
+            (L->type == T_ELEM && R->type == T_INT)     ||
+            (L->type == T_INT && R->type == T_ELEM)     ||
+            (L->type == T_ELEM && R->type == T_FLOAT)   ||
+            (L->type == T_FLOAT && R->type == T_ELEM);
+}
+
+int checkSingleCast(TreeNode* L, int expected){
+    return  (L->type == T_INT && expected == T_FLOAT)    ||
+            (L->type == T_INT && expected == T_ELEM)     ||
+            (L->type == T_FLOAT && expected == T_ELEM);
+}
+
+int checkSingleCastSymbol(Symbol* L, int expected){
+    if(!L) return 0;
+    return  (getTypeID(L->type) == T_INT && expected == T_FLOAT)    || 
+            (getTypeID(L->type) == T_INT && expected == T_ELEM)     ||
+            (getTypeID(L->type) == T_FLOAT && expected == T_ELEM);
 }
 
 int checkCastSymbol(Symbol* L, TreeNode* R){
@@ -61,28 +79,70 @@ int checkCastSymbol(Symbol* L, TreeNode* R){
 }
 
 void execCastSymbol(Symbol* L, TreeNode* R){
-    if(getTypeID(L->type) == T_INT){
-        R->type = T_INT;
-        R->cast = FLOAT_TO_INT;
-    } else {
+    if(getTypeID(L->type) == T_FLOAT && R->type == T_INT){
         R->type = T_FLOAT;
         R->cast = INT_TO_FLOAT;
+    } else if(getTypeID(L->type) == T_FLOAT && R->type == T_ELEM){
+        R->type = T_FLOAT;
+        R->cast = ELEM_TO_FLOAT;
+    } else if(getTypeID(L->type) == T_INT && R->type == T_FLOAT){
+        R->type = T_INT;
+        R->cast = FLOAT_TO_INT;
+    } else if(getTypeID(L->type) == T_INT && R->type == T_ELEM){
+        R->type = T_INT;
+        R->cast = ELEM_TO_INT;
+    } else if (getTypeID(L->type) == T_ELEM && R->type == T_INT){
+        R->type = T_ELEM;
+        R->cast = INT_TO_ELEM;
+    } else if (getTypeID(L->type) == T_ELEM && R->type == T_FLOAT){
+        R->type = T_ELEM;
+        R->cast = FLOAT_TO_ELEM;
     }
+
 }
 
 void execCast(TreeNode* L, TreeNode* R){
-    if(L->type == T_INT && R->type == T_FLOAT){
+    if (L->type == T_INT && R->type == T_FLOAT){
         L->type = T_FLOAT;
         L->cast = INT_TO_FLOAT;
     } else if(L->type == T_FLOAT && R->type == T_INT){
         R->type = T_FLOAT;
         R->cast = INT_TO_FLOAT;
+    } else if (L->type == T_ELEM && R->type == T_INT){
+        R->type = T_ELEM;
+        R->cast = INT_TO_ELEM;
+    } else if (L->type == T_INT && R->type == T_ELEM){
+        L->type = T_ELEM;
+        L->cast = INT_TO_ELEM;
+    } else if (L->type == T_ELEM && R->type == T_FLOAT){
+        R->type = T_ELEM;
+        R->cast = FLOAT_TO_ELEM;
+    } else if (L->type == T_FLOAT && R->type == T_ELEM){
+        L->type = T_ELEM;
+        L->cast = FLOAT_TO_ELEM;
+    }
+}
+
+void execSingleCast(TreeNode* L, int castType){
+    if (L->type == T_INT && castType == T_FLOAT){
+        L->type = T_FLOAT;
+        L->cast = INT_TO_FLOAT;
+    } else if (L->type == T_INT && castType == T_ELEM){
+        L->type = T_ELEM;
+        L->cast = INT_TO_ELEM;
+    } else if (L->type == T_FLOAT && castType == T_ELEM){
+        L->type = T_ELEM;
+        L->cast = FLOAT_TO_ELEM;
     }
 }
 
 char *getCastString(int castCode){
-    if(castCode == INT_TO_FLOAT) return strdup("(float)INT");
+    if(castCode == ELEM_TO_INT) return strdup("(int)ELEM");
     if(castCode == FLOAT_TO_INT) return strdup("(int)FLOAT");
+    if(castCode == INT_TO_FLOAT) return strdup("(float)INT");
+    if(castCode == ELEM_TO_FLOAT) return strdup("(float)ELEM");
+    if(castCode == INT_TO_ELEM) return strdup("(elem)INT");
+    if(castCode == FLOAT_TO_ELEM) return strdup("(elem)FLOAT");
 }
 
 void checkMissType(int typeL, int typeR, int line, int column, char* body) {
