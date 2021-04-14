@@ -57,25 +57,44 @@ int checkCast(TreeNode* L, TreeNode* R){
             (L->type == T_ELEM && R->type == T_INT)     ||
             (L->type == T_INT && R->type == T_ELEM)     ||
             (L->type == T_ELEM && R->type == T_FLOAT)   ||
+            (L->type == T_ELEM && R->type == T_SET)     ||
+            (L->type == T_SET && R->type == T_ELEM)     ||
             (L->type == T_FLOAT && R->type == T_ELEM);
 }
 
 int checkSingleCast(TreeNode* L, int expected){
     return  (L->type == T_INT && expected == T_FLOAT)    ||
+            (L->type == T_FLOAT && expected == T_INT)    ||
+            (L->type == T_ELEM && expected == T_INT)     ||
             (L->type == T_INT && expected == T_ELEM)     ||
+            (L->type == T_ELEM && expected == T_FLOAT)   ||
+            (L->type == T_ELEM && expected == T_SET)     ||
+            (L->type == T_SET && expected == T_ELEM)     ||
             (L->type == T_FLOAT && expected == T_ELEM);
 }
 
 int checkSingleCastSymbol(Symbol* L, int expected){
     if(!L) return 0;
-    return  (getTypeID(L->type) == T_INT && expected == T_FLOAT)    || 
+     return (getTypeID(L->type) == T_INT && expected == T_FLOAT)    ||
+            (getTypeID(L->type) == T_FLOAT && expected == T_INT)    ||
+            (getTypeID(L->type) == T_ELEM && expected == T_INT)     ||
             (getTypeID(L->type) == T_INT && expected == T_ELEM)     ||
+            (getTypeID(L->type) == T_ELEM && expected == T_FLOAT)   ||
+            (getTypeID(L->type) == T_ELEM && expected == T_SET)     ||
+            (getTypeID(L->type) == T_SET && expected == T_ELEM)     ||
             (getTypeID(L->type) == T_FLOAT && expected == T_ELEM);
 }
 
 int checkCastSymbol(Symbol* L, TreeNode* R){
     if(!L) return 0;
-    return  (getTypeID(L->type) == T_INT && R->type == T_FLOAT) || (getTypeID(L->type) == T_FLOAT && R->type == T_INT);
+    return  (getTypeID(L->type) == T_INT && R->type == T_FLOAT)    ||
+            (getTypeID(L->type) == T_FLOAT && R->type == T_INT)    ||
+            (getTypeID(L->type) == T_ELEM && R->type == T_INT)     ||
+            (getTypeID(L->type) == T_INT && R->type == T_ELEM)     ||
+            (getTypeID(L->type) == T_ELEM && R->type == T_FLOAT)   ||
+            (getTypeID(L->type) == T_ELEM && R->type == T_SET)     ||
+            (getTypeID(L->type) == T_SET && R->type == T_ELEM)     ||
+            (getTypeID(L->type) == T_FLOAT && R->type == T_ELEM);
 }
 
 void execCastSymbol(Symbol* L, TreeNode* R){
@@ -97,6 +116,9 @@ void execCastSymbol(Symbol* L, TreeNode* R){
     } else if (getTypeID(L->type) == T_ELEM && R->type == T_FLOAT){
         R->type = T_ELEM;
         R->cast = FLOAT_TO_ELEM;
+    } else if (getTypeID(L->type) == T_ELEM && R->type == T_SET){
+        R->type = T_ELEM;
+        R->cast = SET_TO_ELEM;
     }
 
 }
@@ -120,6 +142,12 @@ void execCast(TreeNode* L, TreeNode* R){
     } else if (L->type == T_FLOAT && R->type == T_ELEM){
         L->type = T_ELEM;
         L->cast = FLOAT_TO_ELEM;
+    } else if (L->type == T_SET && R->type == T_ELEM){
+        L->type = T_ELEM;
+        L->cast = SET_TO_ELEM;
+    } else if (L->type == T_ELEM && R->type == T_SET){
+        R->type = T_ELEM;
+        R->cast = SET_TO_ELEM;
     }
 }
 
@@ -133,6 +161,9 @@ void execSingleCast(TreeNode* L, int castType){
     } else if (L->type == T_FLOAT && castType == T_ELEM){
         L->type = T_ELEM;
         L->cast = FLOAT_TO_ELEM;
+    } else if (L->type == T_SET && castType == T_ELEM){
+        L->type = T_ELEM;
+        L->cast = SET_TO_ELEM;
     }
 }
 
@@ -143,6 +174,8 @@ char *getCastString(int castCode){
     if(castCode == ELEM_TO_FLOAT) return strdup("(float)ELEM");
     if(castCode == INT_TO_ELEM) return strdup("(elem)INT");
     if(castCode == FLOAT_TO_ELEM) return strdup("(elem)FLOAT");
+    if(castCode == SET_TO_ELEM) return strdup("(elem)SET");
+    if(castCode == ELEM_TO_SET) return strdup("(set)ELEM");
 }
 
 void checkMissType(int typeL, int typeR, int line, int column, char* body) {

@@ -39,6 +39,8 @@ enum CAST_CODE {
     FLOAT_TO_ELEM,
     ELEM_TO_INT,
     ELEM_TO_FLOAT,
+    ELEM_TO_SET,
+    SET_TO_ELEM,
 };
 
 #endif
