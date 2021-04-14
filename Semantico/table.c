@@ -64,6 +64,15 @@ Symbol* getSymbol(TableList* tl, char *body, int scope){
     return NULL;
 }
 
+Symbol* getClosestFunctionFromLine(TableList* tl, int line){
+    Symbol* s = NULL;
+    for(int i = 0; i <= tl->size; i++){
+        if(tl->arr[i]->line >= line) break;
+        if(strcmp(tl->arr[i]->classType, "function") == 0 ) s = tl->arr[i];
+    }
+    return s;
+}
+
 void freeTable(TableList* tl){
     for(int i = 0; i <= tl->size; i++){
         free(tl->arr[i]->classType);

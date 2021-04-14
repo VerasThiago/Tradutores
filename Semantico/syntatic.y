@@ -1173,15 +1173,17 @@ conditional_expression:
 return:
     RETURN expression ';' {
         // printf("[SYNTATIC] (return) RETURN expression ';'\n");
-
-        if(verbose){
-            $$ = createNode("return");
-            $$->children = $2;
-            
-            push_back_node(&treeNodeList, $$);
-        } else {
-            $$ = $2;  
+        Symbol* s = getClosestFunctionFromLine(&tableList, $1.line);
+        
+        if(s){
+            checkAndExecForceCast($2, getTypeID(s->type));
+            checkMissTypeReturn(getTypeID(s->type), $2->type, $1.line, $1.column, s->body);
         }
+
+        $$ = createNode("return");
+        $$->children = $2;
+        
+        push_back_node(&treeNodeList, $$);
         
     }
     | RETURN ';' {

@@ -34,6 +34,10 @@ void throwError(Error e){
             printf("%s:%d:%d: error: miss type expression\n Expected: %s %s %s\n Got: %s %s %s\n\n",fileName, e.line, e.column, e.expected, e.message, e.expected, e.expected, e.message, e.got);
         break;
 
+        case MISS_TYPE_RETURN:
+            printf("%s:%d:%d: error: miss type return of ‘%s’\n Expected: return (%s);\n Got: return (%s);\n\n",fileName, e.line, e.column, e.message, e.expected, e.got);
+        break;
+
         case UNDECLARED_VAR:
             printf("%s:%d:%d: error: ‘%s’ undeclared\n\n",fileName, e.line, e.column, e.message);
         break;

@@ -164,7 +164,7 @@ void checkAndExecForceCastArgs(TreeNode* root, char argsType[], int *idx){
     if(!root) return;
 
     if(root->type != -1){
-        if(checkSingleCast(root, argsType[*idx] - '0')) {printf("PINTO\n");execSingleForceCast(root, argsType[*idx] - '0');}
+        if(checkSingleCast(root, argsType[*idx] - '0')) execSingleForceCast(root, argsType[*idx] - '0');
         (*idx)++;
         if(root->cast != -1){
             if(strcmp(root->symbol->type, "") == 0){
@@ -175,14 +175,26 @@ void checkAndExecForceCastArgs(TreeNode* root, char argsType[], int *idx){
                 root->symbol->type = getCastString(root->cast);
             }
         }
-        char aux[2] = "0";
-        aux[0] += root->type;
     }
     
     if(!startsWith(root->rule, "expression")){
         checkAndExecForceCastArgs(root->children, argsType, idx);
     }
     checkAndExecForceCastArgs(root->nxt, argsType, idx);
+}
+
+void checkAndExecForceCast(TreeNode* L, int type){
+    if(!L || L->type == -1) return;
+    if(checkSingleCast(L, type)) execSingleForceCast(L, type);
+    if(L->cast != -1){
+        if(strcmp(L->symbol->type, "") == 0){
+            char aux[50];
+            sprintf(aux, "(%s)(%s)", getExternalCastString(L->cast), L->symbol->body);
+            L->symbol->body = strdup(aux);
+        } else {
+            L->symbol->type = getCastString(L->cast);
+        }
+    }
 }
 
 int startsWith(char* a, char* b){

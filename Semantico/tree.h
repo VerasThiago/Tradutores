@@ -49,6 +49,8 @@ TreeNode* createIDNode(Symbol* s, int line, int column, char* body, int scope);
 
 void checkAndExecForceCastArgs(TreeNode* root, char argsType[], int *idx);
 
+void checkAndExecForceCast(TreeNode* L, int type);
+
 TreeNode* root;
 
 TreeNodeList treeNodeList;

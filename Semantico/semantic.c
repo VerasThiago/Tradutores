@@ -222,6 +222,12 @@ void checkMissType(int typeL, int typeR, int line, int column, char* body) {
     }
 }
 
+void checkMissTypeReturn(int typeL, int typeR, int line, int column, char* body) {
+    if(typeL != typeR){
+        throwError(newError(line, column, body, getIDType(typeL), getIDType(typeR), MISS_TYPE_RETURN));
+    }
+}
+
 Symbol* checkDuplicatedVar(TableList *tableList, int line, int column, char* body, int scope){
     Symbol* s = getSymbol(tableList, body, scope);
     if(s){
