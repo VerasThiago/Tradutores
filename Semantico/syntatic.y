@@ -295,6 +295,7 @@ parameter:
             strcat(aux , $1->symbol->body);
             $$ = createNode(aux);
         }
+        checkDuplicatedVar(&tableList, $2.line, $2.column, $2.tokenBody, $2.scope);
         $$->type = getTypeID($1->symbol->body);
         $$->symbol = createSymbol($2.line, $2.column, "param variable", lastType, $2.tokenBody, $2.scope);
         push_back_node(&treeNodeList, $$);
