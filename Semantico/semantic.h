@@ -33,6 +33,8 @@ char *getCastString(int castCode);
 
 void checkMissType(int typeL, int typeR, int line, int column, char* body);
 
+char *getExternalCastString(int castCode);
+
 enum CAST_CODE {
     INT_TO_FLOAT,
     INT_TO_ELEM,

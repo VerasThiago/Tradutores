@@ -49,7 +49,6 @@
 %left ELSE
 %token SET
 %token FOR
-%token RETURN
 %token WRITE
 %token WRITELN
 %token READ
@@ -57,6 +56,7 @@
 %token INT
 %token FOR_ALL
 
+%token <body> RETURN
 %token <body> ADD
 %token <body> REMOVE
 %token <body> EXISTS
@@ -1271,7 +1271,7 @@ function_call:
             char argsAsString[100] = "";
             char *funcParams = getSymbol(&tableList, $1.tokenBody, 0)->paramsType;
             
-            checkAndExecCastArgs($3, funcParams, &x);
+            checkAndExecForceCastArgs($3, funcParams, &x);
 
             getTreeTypeList($3, argsAsString);
             checkArgsParms(argsAsString, funcParams, $1.line, $1.column, $1.tokenBody);

@@ -44,7 +44,7 @@ Symbol* checkFuncExist(TableList *tableList, int line, int column, char* body, i
         throwError(newError(line, column, body, redeclaredLine, redeclaredColumn, INVALID_FUNC_CALL));
         return var;
     }
-    Symbol* s = getSymbolRecursive(tableList, body, 0, 1);
+    Symbol* s = getSymbol(tableList, body, 0);
     if(!s){
         throwError(newError(line, column, body, "", "", UNDECLARED_FUNC));
     }
@@ -188,6 +188,9 @@ void execSingleForceCast(TreeNode* L, int castType){
     } else if (L->type == T_ELEM && castType == T_SET){
         L->type = T_SET;
         L->cast = ELEM_TO_SET;
+    } else if(L->type == T_SET && castType == T_ELEM){
+        L->type = T_ELEM;
+        L->cast = SET_TO_ELEM;
     }
 }
 
@@ -200,6 +203,17 @@ char *getCastString(int castCode){
     if(castCode == FLOAT_TO_ELEM) return strdup("(elem)FLOAT");
     if(castCode == SET_TO_ELEM) return strdup("(elem)SET");
     if(castCode == ELEM_TO_SET) return strdup("(set)ELEM");
+}
+
+char *getExternalCastString(int castCode){
+    if(castCode == ELEM_TO_INT) return strdup("int");
+    if(castCode == FLOAT_TO_INT) return strdup("int");
+    if(castCode == INT_TO_FLOAT) return strdup("float");
+    if(castCode == ELEM_TO_FLOAT) return strdup("float");
+    if(castCode == INT_TO_ELEM) return strdup("elem");
+    if(castCode == FLOAT_TO_ELEM) return strdup("elem");
+    if(castCode == SET_TO_ELEM) return strdup("elem");
+    if(castCode == ELEM_TO_SET) return strdup("set");
 }
 
 void checkMissType(int typeL, int typeR, int line, int column, char* body) {

@@ -144,6 +144,11 @@ COMMENT                         "//"
     } else if(yytext[0] == 'f'){
         return FOR;
     } else if(yytext[0] == 'r'){
+        strcpy(yylval.body.tokenBody, yytext);
+        columns += yyleng;
+        yylval.body.line = lines;
+        yylval.body.column = columns;
+        yylval.body.scope = top(&stackScope);
         return RETURN;
     } 
 }

@@ -47,7 +47,7 @@ char* getCastExpressionSymbol(Symbol* L, TreeNode* R, char* operator);
 
 TreeNode* createIDNode(Symbol* s, int line, int column, char* body, int scope);
 
-void checkAndExecCastArgs(TreeNode* root, char argsType[], int *idx);
+void checkAndExecForceCastArgs(TreeNode* root, char argsType[], int *idx);
 
 TreeNode* root;
 

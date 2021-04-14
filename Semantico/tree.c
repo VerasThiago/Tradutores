@@ -160,23 +160,29 @@ void getTreeTypeList(TreeNode* root, char ans[]){
     getTreeTypeList(root->nxt, ans);
 }
 
-void checkAndExecCastArgs(TreeNode* root, char argsType[], int *idx){
+void checkAndExecForceCastArgs(TreeNode* root, char argsType[], int *idx){
     if(!root) return;
 
     if(root->type != -1){
-        if(checkSingleCast(root, argsType[*idx] - '0')) execSingleForceCast(root, argsType[*idx] - '0');
+        if(checkSingleCast(root, argsType[*idx] - '0')) {printf("PINTO\n");execSingleForceCast(root, argsType[*idx] - '0');}
         (*idx)++;
         if(root->cast != -1){
-            root->symbol->type = getCastString(root->cast);
+            if(strcmp(root->symbol->type, "") == 0){
+                char aux[50];
+                sprintf(aux, "(%s)(%s)", getExternalCastString(root->cast), root->symbol->body);
+                root->symbol->body = strdup(aux);
+            } else {
+                root->symbol->type = getCastString(root->cast);
+            }
         }
         char aux[2] = "0";
         aux[0] += root->type;
     }
     
     if(!startsWith(root->rule, "expression")){
-        checkAndExecCastArgs(root->children, argsType, idx);
+        checkAndExecForceCastArgs(root->children, argsType, idx);
     }
-    checkAndExecCastArgs(root->nxt, argsType, idx);
+    checkAndExecForceCastArgs(root->nxt, argsType, idx);
 }
 
 int startsWith(char* a, char* b){
