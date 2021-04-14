@@ -13,8 +13,9 @@ int checkSingleCastSymbol(Symbol* L, int expected);
 
 void execCast(TreeNode* L, TreeNode* R);
 
-void execCastSymbol(Symbol* L, TreeNode* R);
+void execForceCastSymbol(Symbol* L, TreeNode* R);
 
+void execSingleForceCast(TreeNode* L, int castType);
 
 int checkSingleCast(TreeNode* L, int expected);
 

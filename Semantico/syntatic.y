@@ -170,7 +170,7 @@ function_definition:
         push(&stackScope);
 
     } parameters {
-        char paramsAsString[] = "";
+        char paramsAsString[100] = "";
         getTreeTypeList($4, paramsAsString);
         $1->symbol->paramsType = strdup(paramsAsString);
 
@@ -631,8 +631,7 @@ set_assignment_expression:
         Symbol* s = checkVarExist(&tableList, $1.line, $1.column, $1.tokenBody, $1.scope);
         TreeNode* nodeID = createIDNode(s, $1.line, $1.column, $1.tokenBody, $1.scope);
 
-        if(checkSingleCast(nodeID, getTypeID("ELEM"))) execSingleCast(nodeID, getTypeID("ELEM"));
-        checkStructureBoolINSet(s ? getTypeID(s->type):9, $3->type, getTypeID("ELEM"), getTypeID("SET"), $2.line, $2.column, $2.tokenBody);
+        if(checkSingleCast($3, getTypeID("SET"))) execSingleCast($3, getTypeID("SET"));
         
         $$ = createNode("set_assignment_expression");
         $$->symbol = createSymbol($2.line, $2.column, "assignment operator", "", getCastExpressionSymbol(s, $3, $2.tokenBody), $2.scope);
@@ -650,10 +649,7 @@ set_assignment_expression:
         TreeNode* nodeID1 = createIDNode(s1, $1.line, $1.column, $1.tokenBody, $1.scope);
         TreeNode* nodeID2 = createIDNode(s2, $3.line, $3.column, $3.tokenBody, $3.scope);
 
-        if(checkSingleCast(nodeID1, getTypeID("ELEM"))) execSingleCast(nodeID1, getTypeID("ELEM"));
         if(checkSingleCast(nodeID2, getTypeID("SET"))) execSingleCast(nodeID2, getTypeID("SET"));
-
-        checkStructureBoolINSet(nodeID1->type, nodeID2->type, getTypeID("ELEM"), getTypeID("SET"), $2.line, $2.column, $2.tokenBody);
 
         $$ = createNode("set_assignment_expression");
         $$->children = nodeID1;
@@ -712,7 +708,7 @@ expression_assignment:
         
         Symbol* s = checkVarExist(&tableList, $1.line, $1.column, $1.tokenBody, $1.scope);
         if(s){
-            if(checkCastSymbol(s, $3)) execCastSymbol(s, $3);
+            if(checkCastSymbol(s, $3)) execForceCastSymbol(s, $3);
             checkMissType(getTypeID(s->type), $3->type, $1.line, $1.column, "=");
         }
         $$->symbol = createSymbol($1.line, $1.column, "expression_assignment", "", getCastExpressionSymbol(s, $3, "="), $1.scope);
@@ -725,7 +721,7 @@ expression_assignment:
         
         Symbol* s = checkVarExist(&tableList, $1.line, $1.column, $1.tokenBody, $1.scope);
         if(s){
-            if(checkCastSymbol(s, $3)) execCastSymbol(s, $3);
+            if(checkCastSymbol(s, $3)) execForceCastSymbol(s, $3);
             checkMissType(getTypeID(s->type), $3->type, $1.line, $1.column, "=");
         }
         $$->symbol = createSymbol($1.line, $1.column, "expression_assignment", "", getCastExpressionSymbol(s, $3, "="), $1.scope);
@@ -824,7 +820,6 @@ expression_relational:
 
         if(checkCast($1, $3)) execCast($1, $3);
         $$->type = $1->type;
-
         checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
         $$->symbol = createSymbol($2.line, $2.column, "relational operator", "", getCastExpression($1, $3, $2.tokenBody), $2.scope);
         
@@ -1271,10 +1266,15 @@ function_call:
 
         if(strcmp(s->classType, "function") == 0){
             $$->type = getTypeID($$->symbol->type);
-            char argsAsString[] = "";
-            getTreeTypeList($3, argsAsString);
 
-            checkArgsParms(argsAsString, getSymbol(&tableList, $1.tokenBody, 0)->paramsType, $1.line, $1.column, $1.tokenBody);
+            int x = 0;
+            char argsAsString[100] = "";
+            char *funcParams = getSymbol(&tableList, $1.tokenBody, 0)->paramsType;
+            
+            checkAndExecCastArgs($3, funcParams, &x);
+
+            getTreeTypeList($3, argsAsString);
+            checkArgsParms(argsAsString, funcParams, $1.line, $1.column, $1.tokenBody);
         }
         
         push_back_node(&treeNodeList, $$);

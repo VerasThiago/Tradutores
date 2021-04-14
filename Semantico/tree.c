@@ -29,7 +29,7 @@ int getTypeID(char* type){
     else if(strcmp(type, "SET") == 0) return T_SET;
     else if(strcmp(type, "FLOAT") == 0) return T_FLOAT;
     else if (strcmp(type, "ELEM") == 0) return T_ELEM;
-    else if (strcmp(type, "EMPTY") == 0) return T_EMPTY;
+    else if (strcmp(type, "EMPTY") == 0) return T_SET;
     else return -1;
 }
 
@@ -58,7 +58,7 @@ char* getIDType(int type){
     else if(type == T_SET) return strdup("SET");
     else if(type == T_FLOAT) return strdup("FLOAT");
     else if (type == T_ELEM) return strdup("ELEM");
-    else if (type == T_EMPTY) return strdup("EMPTY");
+    else if (type == T_EMPTY) return strdup("SET");
     else return strdup("??");
 }
 
@@ -158,6 +158,25 @@ void getTreeTypeList(TreeNode* root, char ans[]){
         getTreeTypeList(root->children, ans);
     }
     getTreeTypeList(root->nxt, ans);
+}
+
+void checkAndExecCastArgs(TreeNode* root, char argsType[], int *idx){
+    if(!root) return;
+
+    if(root->type != -1){
+        if(checkSingleCast(root, argsType[*idx] - '0')) execSingleForceCast(root, argsType[*idx] - '0');
+        (*idx)++;
+        if(root->cast != -1){
+            root->symbol->type = getCastString(root->cast);
+        }
+        char aux[2] = "0";
+        aux[0] += root->type;
+    }
+    
+    if(!startsWith(root->rule, "expression")){
+        checkAndExecCastArgs(root->children, argsType, idx);
+    }
+    checkAndExecCastArgs(root->nxt, argsType, idx);
 }
 
 int startsWith(char* a, char* b){

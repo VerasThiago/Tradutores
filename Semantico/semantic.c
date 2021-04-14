@@ -97,7 +97,7 @@ int checkCastSymbol(Symbol* L, TreeNode* R){
             (getTypeID(L->type) == T_FLOAT && R->type == T_ELEM);
 }
 
-void execCastSymbol(Symbol* L, TreeNode* R){
+void execForceCastSymbol(Symbol* L, TreeNode* R){
     if(getTypeID(L->type) == T_FLOAT && R->type == T_INT){
         R->type = T_FLOAT;
         R->cast = INT_TO_FLOAT;
@@ -120,7 +120,6 @@ void execCastSymbol(Symbol* L, TreeNode* R){
         R->type = T_ELEM;
         R->cast = SET_TO_ELEM;
     }
-
 }
 
 void execCast(TreeNode* L, TreeNode* R){
@@ -164,6 +163,31 @@ void execSingleCast(TreeNode* L, int castType){
     } else if (L->type == T_SET && castType == T_ELEM){
         L->type = T_ELEM;
         L->cast = SET_TO_ELEM;
+    }
+}
+
+void execSingleForceCast(TreeNode* L, int castType){
+    if(L->type == T_FLOAT && castType == T_INT){
+        L->type = T_INT;
+        L->cast = FLOAT_TO_INT;
+    } else if(L->type == T_FLOAT && castType == T_ELEM){
+        L->type = T_ELEM;
+        L->cast = FLOAT_TO_ELEM;
+    } else if(L->type == T_INT && castType == T_FLOAT){
+        L->type = T_FLOAT;
+        L->cast = INT_TO_FLOAT;
+    } else if(L->type == T_INT && castType == T_ELEM){
+        L->type = T_ELEM;
+        L->cast = INT_TO_ELEM;
+    } else if (L->type == T_ELEM && castType == T_INT){
+        L->type = T_INT;
+        L->cast = ELEM_TO_INT;
+    } else if (L->type == T_ELEM && castType == T_FLOAT){
+        L->type = T_FLOAT;
+        L->cast = ELEM_TO_FLOAT;
+    } else if (L->type == T_ELEM && castType == T_SET){
+        L->type = T_SET;
+        L->cast = ELEM_TO_SET;
     }
 }
 
