@@ -1327,6 +1327,8 @@ int main(int argc, char ** argv) {
     yyparse();
     printf("\n");
 
+    checkMainFunc();
+
     if(errors){
         printf("Program analysis failed!\nAnalysis terminated with %d error(s)\n\n", errors);
     }

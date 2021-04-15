@@ -32,7 +32,10 @@ Symbol* checkDuplicatedVar(TableList *tableList, int line, int column, char* bod
 char *getCastString(int castCode);
 
 void checkMissType(int typeL, int typeR, int line, int column, char* body);
+
 void checkMissTypeReturn(int typeL, int typeR, int line, int column, char* body);
+
+void checkMainFunc();
 
 char *getExternalCastString(int castCode);
 

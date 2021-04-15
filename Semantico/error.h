@@ -26,6 +26,7 @@ enum ERR_CODE {
     MISS_TYPE,
     MISS_TYPE_RETURN,
     WRONG_SET_ARGS,
+    MISSING_MAIN,
 };
 
 #endif

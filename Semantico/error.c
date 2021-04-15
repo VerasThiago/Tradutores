@@ -61,6 +61,10 @@ void throwError(Error e){
             printf("%s:%s:%s: note: declared here\n\n",fileName, e.expected, e.got);
         break;
 
+        case MISSING_MAIN:
+            printf("%s:?:?: undefined reference to ‘main’\n\n", fileName);
+        break;
+        
         default:
             printf("Unhandled ERROR\n");
         break;

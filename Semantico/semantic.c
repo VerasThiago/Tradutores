@@ -228,6 +228,13 @@ void checkMissType(int typeL, int typeR, int line, int column, char* body) {
     }
 }
 
+void checkMainFunc() {
+    Symbol* s = getSymbol(&tableList, "main", 0);
+    if(!s){
+        throwError(newError(-1, -1, "", "", "", MISSING_MAIN));
+    }
+}
+
 void checkMissTypeReturn(int typeL, int typeR, int line, int column, char* body) {
     if(typeL != typeR){
         char* strTypeL = getIDType(typeL);
