@@ -36,8 +36,8 @@ int getTypeID(char* type){
 char* getCastExpression(TreeNode* L, TreeNode* R, char* operator){
     char fullExpression[30];
 
-    char *left = L->cast != -1? getCastString(L->cast):getIDType(L->type);
-    char *right = R->cast != -1? getCastString(R->cast):getIDType(R->type);
+    char *left = L->cast != -1 ? getCastString(L->cast):getIDType(L->type);
+    char *right = R->cast != -1 ? getCastString(R->cast):getIDType(R->type);
 
     sprintf(fullExpression, "%s %s %s", left, operator, right);
     pushGarbageCollector(NULL, left);
@@ -49,8 +49,8 @@ char* getCastExpression(TreeNode* L, TreeNode* R, char* operator){
 char* getCastExpressionSymbol(Symbol* L, TreeNode* R, char* operator){
     char fullExpression[30];
 
-    char *left = L? strdup(L->type):"??";
-    char *right = R->cast != -1? getCastString(R->cast):getIDType(R->type);
+    char *left = L ? strdup(L->type):"??";
+    char *right = R->cast != -1 ? getCastString(R->cast):getIDType(R->type);
 
     sprintf(fullExpression, "%s %s %s", left, operator, right);
     pushGarbageCollector(NULL, left);
@@ -76,6 +76,7 @@ char* getArgsList(char *args){
 
     for(int i = 0; i < strlen(args); i++){
         curr = getIDType(args[i] - '0');
+        pushGarbageCollector(NULL, curr);
         
         if(i){
             tmp = (char *) malloc(3 + strlen(argsList)+ strlen(curr) );
@@ -100,6 +101,7 @@ char* getArgsListSetIn(char *args){
 
     for(int i = 0; i < strlen(args); i++){
         curr = getIDType(args[i] - '0');
+        pushGarbageCollector(NULL, curr);
         
         if(i){
             tmp = (char *) malloc(3 + strlen(argsList)+ strlen(curr) );

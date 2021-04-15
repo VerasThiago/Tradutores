@@ -70,7 +70,7 @@ COMMENT                         "//"
 %%
 
 {COMMENT}.* {
-    // printf("[LEXICO] Comment on line %d\n", lines);
+    // printf("[LEXIC] Comment on line %d\n", lines);
 }
 
 {CONSTANT}|{DIGIT}+"."{DIGIT}+|{DIGIT}+ {
@@ -81,19 +81,19 @@ COMMENT                         "//"
     yylval.body.scope = top(&stackScope);
 
     if(strchr(yytext, '.') != NULL){
-        // printf("[LEXICO] Constant (Float): %s\n", yytext);
+        // printf("[LEXIC] Constant (Float): %s\n", yytext);
          return FLOAT_VALUE;
     } else if(yytext[0] == 'E'){
-        // printf("[LEXICO] Constant (Empty): %s\n", yytext);
+        // printf("[LEXIC] Constant (Empty): %s\n", yytext);
         return EMPTY;
     } else {
-        // printf("[LEXICO] Constant (Int): %s\n", yytext);
+        // printf("[LEXIC] Constant (Int): %s\n", yytext);
         return INT_VALUE;
     }
 }
 
 {SET_ADD}|{SET_REMOVE}|{SET_EXISTS}|{SET_IS_SET}|{SET_FOR_ALL}|{SET_IN} {
-    // printf("[LEXICO] Set operator: %s\n", yytext);
+    // printf("[LEXIC] Set operator: %s\n", yytext);
     columns += yyleng;
 
     if(yytext[0] == 'a'){
@@ -133,7 +133,7 @@ COMMENT                         "//"
 }
 
 {KEYWORD} {
-    // printf("[LEXICO] Keyword: %s\n", yytext );
+    // printf("[LEXIC] Keyword: %s\n", yytext );
     columns += yyleng;
 
     if(yytext[0] == 'i'){
@@ -154,7 +154,7 @@ COMMENT                         "//"
 
 {OUT} {
     columns += yyleng;
-    // printf("[LEXICO] Write: %s\n", yytext);
+    // printf("[LEXIC] Write: %s\n", yytext);
     if(yytext[yyleng - 1] == 'n'){
         return WRITELN;
     } else {
@@ -163,14 +163,14 @@ COMMENT                         "//"
 }
 
 {IN} {
-    // printf("[LEXICO] Read: %s\n", yytext);
+    // printf("[LEXIC] Read: %s\n", yytext);
     columns += yyleng;
     return READ;
 }
 
 {BASIC_TYPE} {
     columns += yyleng;
-    // printf("[LEXICO] Basic type: %s (%d)\n", yytext, yyleng);
+    // printf("[LEXIC] Basic type: %s (%d)\n", yytext, yyleng);
     if(yytext[0] == 'i'){
         return INT;
     } else {
@@ -179,7 +179,7 @@ COMMENT                         "//"
 }
 
 {STRING} {
-    // printf("[LEXICO] String: %s\n", yytext);
+    // printf("[LEXIC] String: %s\n", yytext);
     strcpy(yylval.body.tokenBody, yytext);
     yylval.body.line = lines;
     yylval.body.column = columns;
@@ -189,7 +189,7 @@ COMMENT                         "//"
 }
 
 {SET}|{ELEM} {
-    // printf("[LEXICO] Custom type: %s\n", yytext);
+    // printf("[LEXIC] Custom type: %s\n", yytext);
     columns += yyleng;
     if(yytext[0] == 's'){
         return SET;
@@ -201,20 +201,20 @@ COMMENT                         "//"
 
 {ID} {
     if(yyleng >= 50) {
-        // printf("[LEXICO] WARNING: Variable size greater than 50, changed to size 50\n");
+        // printf("[LEXIC] WARNING: Variable size greater than 50, changed to size 50\n");
         yytext[55] = 0;
     }
     strcpy(yylval.body.tokenBody, yytext);
     yylval.body.line = lines;
     yylval.body.column = columns;
     yylval.body.scope = top(&stackScope);
-    // printf("[LEXICO] Identifier: %s (%d)\n", yytext, yyleng);
+    // printf("[LEXIC] Identifier: %s (%d)\n", yytext, yyleng);
     columns += yyleng;
     return ID;
 }
 
 "&&" {
-    // printf("[LEXICO] Logic AND operator: %s\n", yytext);
+    // printf("[LEXIC] Logic AND operator: %s\n", yytext);
     strcpy(yylval.body.tokenBody, yytext);
     columns += yyleng;
     yylval.body.line = lines;
@@ -224,7 +224,7 @@ COMMENT                         "//"
 }
 
 "||" {
-    // printf("[LEXICO] Logic OR operator: %s\n", yytext);
+    // printf("[LEXIC] Logic OR operator: %s\n", yytext);
     strcpy(yylval.body.tokenBody, yytext);
     yylval.body.line = lines;
     yylval.body.column = columns;
@@ -234,7 +234,7 @@ COMMENT                         "//"
 }
 
 {RELATIONAL_OP} {
-    // printf("[LEXICO] Relational operator: %s\n", yytext);
+    // printf("[LEXIC] Relational operator: %s\n", yytext);
     strcpy(yylval.body.tokenBody, yytext);
     yylval.body.line = lines;
     yylval.body.column = columns;
@@ -244,7 +244,7 @@ COMMENT                         "//"
 }
 
 {MULTIPLICATIVE_OP} {
-    // printf("[LEXICO] Multiplicative operator: %s\n", yytext);
+    // printf("[LEXIC] Multiplicative operator: %s\n", yytext);
     strcpy(yylval.body.tokenBody, yytext);
     yylval.body.line = lines;
     yylval.body.column = columns;
@@ -254,7 +254,7 @@ COMMENT                         "//"
 }
 
 {ADDITIVE_OP} {
-    // printf("[LEXICO] Additive operator: %s\n", yytext);
+    // printf("[LEXIC] Additive operator: %s\n", yytext);
     strcpy(yylval.body.tokenBody, yytext);
     yylval.body.line = lines;
     yylval.body.column = columns;
@@ -264,26 +264,26 @@ COMMENT                         "//"
 }
 
 "=" {
-    // printf("[LEXICO] Enumerator operator: %s\n", yytext);
+    // printf("[LEXIC] Enumerator operator: %s\n", yytext);
     columns += yyleng;
     return '=';
 }
 
 "!" {
-    // printf("[LEXICO] Not operator: %s\n", yytext);
+    // printf("[LEXIC] Not operator: %s\n", yytext);
     columns += yyleng;
     return '!';
 }
 
 ";" {
-    // printf("[LEXICO] Command separator: %s\n", yytext);
+    // printf("[LEXIC] Command separator: %s\n", yytext);
     columns += yyleng;
     return ';';
 }
 
 "{"|"}" {
     columns += yyleng;
-    // printf("[LEXICO] Block delimiter: %s\n", yytext);
+    // printf("[LEXIC] Block delimiter: %s\n", yytext);
     if(yytext[0] == '{'){
         push(&stackScope);
         return '{';
@@ -294,7 +294,7 @@ COMMENT                         "//"
 }
 
 "("|")" {
-    // printf("[LEXICO] Expression delimiter: %s (%d)\n", yytext, yyleng);
+    // printf("[LEXIC] Expression delimiter: %s (%d)\n", yytext, yyleng);
     columns += yyleng;
     if(yytext[0] == '('){
         return '(';
@@ -304,7 +304,7 @@ COMMENT                         "//"
 }
 
 "," {
-    // printf("[LEXICO] Variable separator: %s\n", yytext);
+    // printf("[LEXIC] Variable separator: %s\n", yytext);
     columns += yyleng;
     return ',';
 }
@@ -314,14 +314,14 @@ COMMENT                         "//"
 }
 
 \n|\r {
-    // printf("[LEXICO] ENDL\n");
+    // printf("[LEXIC] ENDL\n");
     lines++;
     columns = 1;
 }
 
 . {
     errors++;
-    printf("\n[LEXICO] ERROR line: %d columns: %d undentified char: %s \n\n", lines, columns, yytext );
+    printf("\n[LEXIC] ERROR line: %d columns: %d undentified char: %s \n\n", lines, columns, yytext );
 }
 
 %%

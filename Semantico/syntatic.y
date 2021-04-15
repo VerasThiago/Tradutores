@@ -1336,12 +1336,7 @@ int main(int argc, char ** argv) {
         printf("Correct program.\n\n");
     }
 
-    if(errors){
-        printf("Tree won't be displayed because unexpected behaviour can be found since it contains erros\n");
-    } else {
-        printf("\n");
-        printTree(root, 1, ok);
-    }    
+    printTree(root, 1, ok);
     printTable(&tableList);
     
     // Don't need to free the table because 
