@@ -14,7 +14,6 @@
 
     extern Stack stackScope;
     extern TableList tableList;
-    extern TreeNodeList treeNodeList;
     extern TreeNode* root;
 
     extern int verbose;

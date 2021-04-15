@@ -12,6 +12,7 @@ TreeNode* createNode(char* rule){
     node->symbol = NULL;
     node->type = -1;
     node->cast = -1;
+    pushGarbageCollector(node, NULL);
     return node;
 }
 
@@ -20,17 +21,16 @@ TreeNode* createIDNode(Symbol* s, int line, int column, char* body, int scope){
     node->symbol = s ? createSymbol(line, column, "variable", s->type, body, scope) :
                        createSymbol(line, column, "variable", "??", body, scope);
     node->type = getTypeID(node->symbol->type);
-    push_back_node(&treeNodeList, node);
     return node;
 }
 
 int getTypeID(char* type){
     if (strcmp(type, "INT") == 0) return T_INT;
-    else if(strcmp(type, "SET") == 0) return T_SET;
-    else if(strcmp(type, "FLOAT") == 0) return T_FLOAT;
-    else if (strcmp(type, "ELEM") == 0) return T_ELEM;
-    else if (strcmp(type, "EMPTY") == 0) return T_SET;
-    else return -1;
+    if(strcmp(type, "SET") == 0) return T_SET;
+    if(strcmp(type, "FLOAT") == 0) return T_FLOAT;
+    if (strcmp(type, "ELEM") == 0) return T_ELEM;
+    if (strcmp(type, "EMPTY") == 0) return T_SET;
+    return -1;
 }
 
 char* getCastExpression(TreeNode* L, TreeNode* R, char* operator){
@@ -40,6 +40,9 @@ char* getCastExpression(TreeNode* L, TreeNode* R, char* operator){
     char *right = R->cast != -1? getCastString(R->cast):getIDType(R->type);
 
     sprintf(fullExpression, "%s %s %s", left, operator, right);
+    pushGarbageCollector(NULL, left);
+    pushGarbageCollector(NULL, right);
+
     return strdup(fullExpression);
 }
 
@@ -50,6 +53,9 @@ char* getCastExpressionSymbol(Symbol* L, TreeNode* R, char* operator){
     char *right = R->cast != -1? getCastString(R->cast):getIDType(R->type);
 
     sprintf(fullExpression, "%s %s %s", left, operator, right);
+    pushGarbageCollector(NULL, left);
+    pushGarbageCollector(NULL, right);
+
     return strdup(fullExpression);
 }
 
@@ -168,10 +174,15 @@ void checkAndExecForceCastArgs(TreeNode* root, char argsType[], int *idx){
         (*idx)++;
         if(root->cast != -1){
             if(strcmp(root->symbol->type, "") == 0){
-                char aux[50];
-                sprintf(aux, "(%s)(%s)", getExternalCastString(root->cast), root->symbol->body);
-                root->symbol->body = strdup(aux);
+                char newCastStr[50];
+                char* externalCast = getExternalCastString(root->cast);
+                sprintf(newCastStr, "(%s)(%s)", externalCast, root->symbol->body);
+                pushGarbageCollector(NULL, root->symbol->body);
+                root->symbol->body = strdup(newCastStr);
+
+                pushGarbageCollector(NULL, externalCast);
             } else {
+                pushGarbageCollector(NULL, root->symbol->type);
                 root->symbol->type = getCastString(root->cast);
             }
         }
@@ -188,10 +199,15 @@ void checkAndExecForceCast(TreeNode* L, int type){
     if(checkSingleCast(L, type)) execSingleForceCast(L, type);
     if(L->cast != -1){
         if(strcmp(L->symbol->type, "") == 0){
-            char aux[50];
-            sprintf(aux, "(%s)(%s)", getExternalCastString(L->cast), L->symbol->body);
-            L->symbol->body = strdup(aux);
+            char newCastStr[50];
+            char* externalCast = getExternalCastString(L->cast);
+            sprintf(newCastStr, "(%s)(%s)", externalCast, L->symbol->body);
+            pushGarbageCollector(NULL, L->symbol->body);
+            L->symbol->body = strdup(newCastStr);
+
+            pushGarbageCollector(NULL, externalCast);
         } else {
+            pushGarbageCollector(NULL, L->symbol->type);
             L->symbol->type = getCastString(L->cast);
         }
     }
@@ -223,10 +239,10 @@ void freeTree(TreeNode* root){
     
 }
 
-void freeNodeList(TreeNodeList* tnl) {
-    for(int i = 0; i <= tnl->size; i++){
-        if(!tnl->arr[i]) continue;
-        TreeNode* root = tnl->arr[i];
+void freeGarbageCollector() {
+    for(int i = 0; i <= garbageCollector.nodeSize; i++){
+        if(!garbageCollector.nodeArr[i]) continue;
+        TreeNode* root = garbageCollector.nodeArr[i];
         if(root->symbol){
             free(root->symbol->classType);
             free(root->symbol->type);
@@ -239,8 +255,13 @@ void freeNodeList(TreeNodeList* tnl) {
         }
         free(root);
     }
+
+    for(int i = 0; i <= garbageCollector.strSize; i++){
+        if(garbageCollector.strArr[i]) free(garbageCollector.strArr[i]);
+    }
 }
 
-void push_back_node(TreeNodeList* tnl, TreeNode* node){
-    tnl->arr[++tnl->size] = node;
+void pushGarbageCollector(TreeNode* node, char* str){
+    if(node) garbageCollector.nodeArr[++garbageCollector.nodeSize] = node;
+    if(str) garbageCollector.strArr[++garbageCollector.strSize] = str;
 }

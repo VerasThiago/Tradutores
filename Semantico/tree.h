@@ -12,14 +12,16 @@ typedef struct TreeNode {
     int cast;
 } TreeNode;
 
-typedef struct TreeNodeList {
-    struct TreeNode* arr[1000];
-    int size;
-} TreeNodeList;
+typedef struct GarbageCollector {
+    struct TreeNode* nodeArr[1000];
+    char* strArr[1000];
+    int nodeSize;
+    int strSize;
+} GarbageCollector;
 
-void push_back_node(TreeNodeList* tnl, TreeNode* node);
+void pushGarbageCollector(TreeNode* node, char* str);
 
-void freeNodeList(TreeNodeList* tnl);
+void freeGarbageCollector();
 
 TreeNode* createNode(char* rule);
 
@@ -53,7 +55,7 @@ void checkAndExecForceCast(TreeNode* L, int type);
 
 TreeNode* root;
 
-TreeNodeList treeNodeList;
+GarbageCollector garbageCollector;
 
 enum TYPE_CODE {
     T_INT,

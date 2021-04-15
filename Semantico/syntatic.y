@@ -125,11 +125,8 @@ start:
         // printf("[SYNTATIC] (start) program\n");
         root = createNode("start");
 
-        push_back_node(&treeNodeList, root);
-
         $$ = root;
         $$->children = $1;
-     
     }
 ;
 
@@ -140,7 +137,6 @@ program:
         if(verbose){
             $$ = createNode("program");
             $$->children = $1;
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;
         }
@@ -152,7 +148,6 @@ program:
         $$->children = $1;
         $1->nxt = $2;
         
-        push_back_node(&treeNodeList, $$);
     }
 	| variables_declaration program {
         // printf("[SYNTATIC] (program) variables_declaration program\n");
@@ -161,7 +156,6 @@ program:
         $$->children = $1;
         $1->nxt = $2;
         
-        push_back_node(&treeNodeList, $$);
     }
 ;
 
@@ -186,7 +180,6 @@ function_definition:
         $1->nxt = $4;
         $4->nxt = $7;
         
-        push_back_node(&treeNodeList, $$);
     }
     | function_declaration '(' ')' function_body {
         // printf("[SYNTATIC] (function_definition) function_declaration '(' ')' function_body\n");
@@ -195,7 +188,6 @@ function_definition:
         $$->children = $1;
         $1->nxt = $4;
         
-        push_back_node(&treeNodeList, $$);   
     }
 ;
 
@@ -217,7 +209,6 @@ function_declaration:
         $$->symbol = createSymbol($2.line, $2.column, "function", lastType, $2.tokenBody, $2.scope);
         $$->type = getTypeID($1->symbol->body);
 
-        push_back_node(&treeNodeList, $$);
         push_back(&tableList, $$->symbol);
     }
 ;
@@ -230,7 +221,6 @@ function_body:
             $$ = createNode("function_body");
             $$->children = $2;
 
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $2;
         }
@@ -239,7 +229,6 @@ function_body:
         // printf("[SYNTATIC] (function_body) '{' '}'\n");
 
         $$ = createNode("function_body");
-        push_back_node(&treeNodeList, $$);
     }
 ;
 
@@ -251,7 +240,6 @@ parameters:
             $$ = createNode("parameters_list");
             $$->children = $1;
 
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;
         }
@@ -266,7 +254,6 @@ parameters_list:
         $$->children = $1;
         $1->nxt = $3;
         
-        push_back_node(&treeNodeList, $$);
         
     } 
 	| parameter {
@@ -276,7 +263,6 @@ parameters_list:
             $$ = createNode("parameters_list");
             $$->children = $1;
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;
         }
@@ -298,7 +284,6 @@ parameter:
         checkDuplicatedVar(&tableList, $2.line, $2.column, $2.tokenBody, $2.scope);
         $$->type = getTypeID($1->symbol->body);
         $$->symbol = createSymbol($2.line, $2.column, "param variable", lastType, $2.tokenBody, $2.scope);
-        push_back_node(&treeNodeList, $$);
         push_back(&tableList, $$->symbol);
     }
 ;
@@ -310,7 +295,6 @@ type_identifier:
         $$ = createNode("type_identifier");
         $$->symbol = createSymbol(-1 , -1, "Type", lastType, "INT", -1);
         
-        push_back_node(&treeNodeList, $$);
         
         strcpy(lastType, "INT");
 
@@ -321,7 +305,6 @@ type_identifier:
         $$ = createNode("type_identifier");
         $$->symbol = createSymbol(-1 , -1, "Type", lastType, "FLOAT", -1);
         
-        push_back_node(&treeNodeList, $$);
 
         strcpy(lastType, "FLOAT");
 
@@ -332,7 +315,6 @@ type_identifier:
         $$ = createNode("type_identifier");
         $$->symbol = createSymbol(-1 , -1, "Type", lastType, "ELEM", -1);
 
-        push_back_node(&treeNodeList, $$);
 
         strcpy(lastType, "ELEM");
 
@@ -343,7 +325,6 @@ type_identifier:
         $$ = createNode("type_identifier");
         $$->symbol = createSymbol(-1 , -1, "Type", lastType, "SET", -1);
 
-        push_back_node(&treeNodeList, $$);
 
         strcpy(lastType, "SET");
 
@@ -358,7 +339,6 @@ statements:
         $$->children = $1;
         $1->nxt = $2;
         
-        push_back_node(&treeNodeList, $$);
     }
 
 	| statement {
@@ -368,7 +348,6 @@ statements:
             $$ = createNode("statements");
             $$->children = $1;
             
-            push_back_node(&treeNodeList, $$);
         } else {
              $$ = $1;
         }
@@ -380,7 +359,6 @@ statements:
             $$ = createNode("statements");
             $$->children = $1;
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;
         }
@@ -395,7 +373,6 @@ statements_braced:
             $$ = createNode("statements_braced");
             $$->children = $2;
 
-            push_back_node(&treeNodeList, $$);
         } else{
             $$ = $2;
         }
@@ -405,7 +382,6 @@ statements_braced:
         // printf("[SYNTATIC] (statements_braced) '{' '}'\n");
 
         $$ = createNode("statements_braced");
-        push_back_node(&treeNodeList, $$);
         
     }
 ;
@@ -417,7 +393,6 @@ statement:
             $$ = createNode("statement");
             $$->children = $1;   
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -427,7 +402,6 @@ statement:
             $$ = createNode("statement");
             $$->children = $1;   
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -438,7 +412,6 @@ statement:
             $$ = createNode("statement");
             $$->children = $1;    
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -449,7 +422,6 @@ statement:
             $$ = createNode("statement");
             $$->children = $1;  
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -460,7 +432,6 @@ statement:
             $$ = createNode("statement");
             $$->children = $1;   
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -471,7 +442,6 @@ statement:
             $$ = createNode("statement");
             $$->children = $1;  
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -483,7 +453,6 @@ statement:
             $$ = createNode("statement");
             $$->children = $1; 
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -494,7 +463,6 @@ statement:
             $$ = createNode("statement");
             $$->children = $1;   
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -505,7 +473,6 @@ statement:
             $$ = createNode("statement");
             $$->children = $1;  
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -516,7 +483,6 @@ statement:
             $$ = createNode("statement");
             $$->children = $1;  
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -531,7 +497,6 @@ set_pre_statement:
             $$ = createNode("set_pre_statement");
             $$->children = $1;
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -543,7 +508,6 @@ set_pre_statement:
             $$ = createNode("set_pre_statement");
             $$->children = $1;
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -558,7 +522,6 @@ set_statement_add_remove:
         $$->symbol = createSymbol($1.line, $1.column, "set function", "", $1.tokenBody, $1.scope);
         $$->type = getTypeID("SET");
         
-        push_back_node(&treeNodeList, $$);
     }
     | REMOVE '(' set_boolean_expression ')' {
         // printf("[SYNTATIC] (set_statement_add_remove) REMOVE '(' set_boolean_expression ')'\n"); 
@@ -567,7 +530,6 @@ set_statement_add_remove:
         $$->children = $3;
         $$->type = getTypeID("SET");   
         
-        push_back_node(&treeNodeList, $$);
     }
 ;
 
@@ -579,7 +541,6 @@ set_statement_for_all:
         $$->children = $3;
         $3->nxt = $5;
         
-        push_back_node(&treeNodeList, $$);
 
     }
 ;
@@ -592,7 +553,6 @@ set_statement_exists:
         $$->children = $3;
         $$->type = getTypeID("ELEM");
         
-        push_back_node(&treeNodeList, $$);
     }
 ;
 
@@ -603,11 +563,13 @@ set_boolean_expression:
         checkStructureBoolINSet($1->type, $3->type, getTypeID("ELEM"), getTypeID("SET"), $2.line, $2.column, $2.tokenBody);
 
         $$ = createNode("set_boolean_expression");
-        $$->symbol = createSymbol($2.line, $2.column, "boolean operator", "", getCastExpression($1, $3, $2.tokenBody), $2.scope);
         $$->children = $1;
         $1->nxt = $3;
         $$->type = getTypeID("INT");
-        push_back_node(&treeNodeList, $$);
+
+        char *body = getCastExpression($1, $3, $2.tokenBody);
+        $$->symbol = createSymbol($2.line, $2.column, "boolean operator", "", body, $2.scope);
+        pushGarbageCollector(NULL, body);
     }
     | expression IN ID {
         // printf("[SYNTATIC] (set_boolean_expression) expression IN ID(%s)\n", $3.tokenBody);
@@ -618,11 +580,13 @@ set_boolean_expression:
         checkStructureBoolINSet($1->type, s ? getTypeID(s->type):9, getTypeID("ELEM"), getTypeID("SET"), $2.line, $2.column, $2.tokenBody);
 
         $$ = createNode("set_boolean_expression");
-        $$->symbol = createSymbol($2.line, $2.column, "boolean operator", "", getCastExpression($1, nodeID, $2.tokenBody), $2.scope);
         $$->children = $1;
         $1->nxt = nodeID;
         $$->type = getTypeID("INT");
-        push_back_node(&treeNodeList, $$);
+
+        char *body = getCastExpression($1, nodeID, $2.tokenBody);
+        $$->symbol = createSymbol($2.line, $2.column, "boolean operator", "", body, $2.scope);
+        pushGarbageCollector(NULL, body);
     }
 ;
 
@@ -635,11 +599,13 @@ set_assignment_expression:
         if(checkSingleCast($3, getTypeID("SET"))) execSingleCast($3, getTypeID("SET"));
         
         $$ = createNode("set_assignment_expression");
-        $$->symbol = createSymbol($2.line, $2.column, "assignment operator", "", getCastExpressionSymbol(s, $3, $2.tokenBody), $2.scope);
         $$->children = nodeID;
         $$->children->nxt = $3;
         $$->type = getTypeID("ELEM");   
-        push_back_node(&treeNodeList, $$);
+
+        char *body =  getCastExpressionSymbol(s, $3, $2.tokenBody);
+        $$->symbol = createSymbol($2.line, $2.column, "assignment operator", "", body, $2.scope);
+        pushGarbageCollector(NULL, body);
     }
     | ID IN ID {
         // printf("[SYNTATIC] (set_assignment_expression) ID(%s) IN ID(%s)\n", $1.tokenBody, $3.tokenBody);
@@ -655,10 +621,11 @@ set_assignment_expression:
         $$ = createNode("set_assignment_expression");
         $$->children = nodeID1;
         $$->children->nxt = nodeID2;
-        $$->symbol = createSymbol($2.line, $2.column, "assignment operator", "", getCastExpression(nodeID1, nodeID2, $2.tokenBody), $2.scope);
         $$->type = getTypeID("ELEM");
 
-        push_back_node(&treeNodeList, $$);
+        char *body =  getCastExpression(nodeID1, nodeID2, $2.tokenBody);
+        $$->symbol = createSymbol($2.line, $2.column, "assignment operator", "", body, $2.scope);
+        pushGarbageCollector(NULL, body);
     }
 ;
 
@@ -669,7 +636,6 @@ expression_statement:
             $$ = createNode("expression_statement");
             $$->children = $1;
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -683,7 +649,6 @@ expression:
             $$ = createNode("expression");
             $$->children = $1;
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -697,7 +662,6 @@ expression_assignment:
             $$ = createNode("expression_assignment");
             $$->children = $1;   
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -712,8 +676,10 @@ expression_assignment:
             if(checkCastSymbol(s, $3)) execForceCastSymbol(s, $3);
             checkMissType(getTypeID(s->type), $3->type, $1.line, $1.column, "=");
         }
-        $$->symbol = createSymbol($1.line, $1.column, "expression_assignment", "", getCastExpressionSymbol(s, $3, "="), $1.scope);
-        push_back_node(&treeNodeList, $$);
+
+        char *body =  getCastExpressionSymbol(s, $3, "=");
+        $$->symbol = createSymbol($1.line, $1.column, "expression_assignment", "", body, $1.scope);
+        pushGarbageCollector(NULL, body);
     }
     | ID '=' set_boolean_expression {
         // printf("[SYNTATIC] (expression_assignment) ID(%s) '='  set_boolean_expression\n", $1.tokenBody);
@@ -725,9 +691,10 @@ expression_assignment:
             if(checkCastSymbol(s, $3)) execForceCastSymbol(s, $3);
             checkMissType(getTypeID(s->type), $3->type, $1.line, $1.column, "=");
         }
-        $$->symbol = createSymbol($1.line, $1.column, "expression_assignment", "", getCastExpressionSymbol(s, $3, "="), $1.scope);
-        
-        push_back_node(&treeNodeList, $$);
+
+        char *body =  getCastExpressionSymbol(s, $3, "=");
+        $$->symbol = createSymbol($1.line, $1.column, "expression_assignment", "", body, $1.scope);
+        pushGarbageCollector(NULL, body);
     }
 
     
@@ -741,7 +708,6 @@ expression_logical:
             $$ = createNode("expression_logical");
             $$->children = $1;   
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -753,7 +719,6 @@ expression_logical:
             $$ = createNode("expression_logical");
             $$->children = $1;   
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -765,7 +730,6 @@ expression_logical:
             $$ = createNode("expression_logical");
             $$->children = $1;   
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -780,9 +744,11 @@ expression_logical:
         if(checkCast($1, $3)) execCast($1, $3);
         $$->type = $1->type;
         checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
-        $$->symbol = createSymbol($2.line, $2.column, "logical operator", "", getCastExpression($1, $3, $2.tokenBody), $2.scope);
 
-        push_back_node(&treeNodeList, $$);
+        char* body = getCastExpression($1, $3, $2.tokenBody);
+        $$->symbol = createSymbol($2.line, $2.column, "logical operator", "", body, $2.scope);
+        pushGarbageCollector(NULL, body);
+
     }
     | expression_logical OR_OP expression_logical {
         // printf("[SYNTATIC] (expression_logical) expression_logical OR_OP(||) expression_logical\n");
@@ -794,9 +760,11 @@ expression_logical:
         if(checkCast($1, $3)) execCast($1, $3);
         $$->type = $1->type;
         checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
-        $$->symbol = createSymbol($2.line, $2.column, "logical operator", "", getCastExpression($1, $3, $2.tokenBody), $2.scope);
+
+        char* body = getCastExpression($1, $3, $2.tokenBody);
+        $$->symbol = createSymbol($2.line, $2.column, "logical operator", "", body, $2.scope);
+        pushGarbageCollector(NULL, body);
     
-        push_back_node(&treeNodeList, $$);
     }
 ;
 
@@ -807,7 +775,6 @@ expression_relational:
             $$ = createNode("expression_relational");
             $$->children = $1;   
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -822,9 +789,10 @@ expression_relational:
         if(checkCast($1, $3)) execCast($1, $3);
         $$->type = getTypeID("INT");
         checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
-        $$->symbol = createSymbol($2.line, $2.column, "relational operator", "", getCastExpression($1, $3, $2.tokenBody), $2.scope);
-        
-        push_back_node(&treeNodeList, $$);
+
+        char *body =  getCastExpression($1, $3, $2.tokenBody);
+        $$->symbol = createSymbol($2.line, $2.column, "relational operator", "", body, $2.scope);
+        pushGarbageCollector(NULL, body);
     }
 ;
 
@@ -836,7 +804,6 @@ expression_additive:
             $$ = createNode("expression_additive");
             $$->children = $1;   
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -851,9 +818,11 @@ expression_additive:
         if(checkCast($1, $3)) execCast($1, $3);
         $$->type = $1->type;
         checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
-        $$->symbol = createSymbol($2.line, $2.column, "additive operator", "", getCastExpression($1, $3, $2.tokenBody), $2.scope);
+        
+        char *body = getCastExpression($1, $3, $2.tokenBody);
+        $$->symbol = createSymbol($2.line, $2.column, "additive operator", "", body, $2.scope);
+        pushGarbageCollector(NULL, body);
 
-        push_back_node(&treeNodeList, $$);
     }
 ;
 
@@ -865,7 +834,6 @@ expression_multiplicative:
             $$ = createNode("expression_multiplicative");
             $$->children = $1;
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -880,9 +848,10 @@ expression_multiplicative:
         if(checkCast($1, $3)) execCast($1, $3);
         $$->type = $1->type;
         checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
-        $$->symbol = createSymbol($2.line, $2.column, "multiplicative operator", "", getCastExpression($1, $3, $2.tokenBody), $2.scope);
 
-        push_back_node(&treeNodeList, $$);
+        char *body = getCastExpression($1, $3, $2.tokenBody);
+        $$->symbol = createSymbol($2.line, $2.column, "multiplicative operator", "", body, $2.scope);
+        pushGarbageCollector(NULL, body);
     }
 ;
 
@@ -892,7 +861,6 @@ expression_value:
 
         if(verbose){
             $$ = createNode("expression_value");
-            push_back_node(&treeNodeList, $$);
             
             $$->children = $2;   
         } else {
@@ -906,7 +874,6 @@ expression_value:
             $$ = createNode("expression_value");
             $$->children = $3;
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $3;   
         }
@@ -917,7 +884,6 @@ expression_value:
         $$->children = $3;
         $$->symbol = createSymbol($1.line, $1.column, "additive operator", "", $1.tokenBody, $1.scope); 
         $$->type = $3->type;
-        push_back_node(&treeNodeList, $$);
     }
     | value {
         // printf("[SYNTATIC] (expression_value) value \n");
@@ -926,7 +892,6 @@ expression_value:
             $$ = createNode("expression_value");
             $$->children = $1;
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -936,7 +901,6 @@ expression_value:
 
         if(verbose){
             $$ = createNode("expression_value");
-            push_back_node(&treeNodeList, $$);
             
             $$->children = $2;
         } else {
@@ -954,7 +918,6 @@ expression_value:
             $$ = createNode("expression_value");
             $$->children = $1;  
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -964,7 +927,6 @@ expression_value:
             $$ = createNode("expression_value");
             $$->children = $1;  
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -979,7 +941,6 @@ is_set_statement:
             $$ = createNode("is_set_statement");
             $$->children = $1;  
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;   
         }
@@ -994,7 +955,6 @@ is_set_expression:
         $$->children = $3;
         $$->type = getTypeID("INT");  
 
-        push_back_node(&treeNodeList, $$);
     }
     | '!' IS_SET '(' expression ')' {
         // printf("[SYNTATIC] (is_set_expression) ! IS_SET '(' expression ')' ';'\n");
@@ -1002,7 +962,6 @@ is_set_expression:
         $$->symbol = createSymbol($2.line, $2.column, "set function", "", $2.tokenBody, $2.scope);
         $$->children = $4;
         $$->type = getTypeID("INT");    
-        push_back_node(&treeNodeList, $$);
     } 
     | IS_SET '(' set_statement_add_remove ')' {
         // printf("[SYNTATIC] (is_set_expression) IS_SET '(' set_statement_add_remove ')' ';'\n");
@@ -1010,7 +969,6 @@ is_set_expression:
         $$->symbol = createSymbol($1.line, $1.column, "set function", "", $1.tokenBody, $1.scope);
         $$->children = $3;  
         $$->type = getTypeID("INT");    
-        push_back_node(&treeNodeList, $$);
          
     }
     | '!' IS_SET '(' set_statement_add_remove ')' {
@@ -1020,7 +978,6 @@ is_set_expression:
         $$->children = $4;  
         $$->type = getTypeID("INT");    
 
-        push_back_node(&treeNodeList, $$);
     }
     | IS_SET '(' set_statement_exists ')' {
         // printf("[SYNTATIC] (is_set_expression) IS_SET '(' set_statement_exists ')' ';'\n");
@@ -1030,7 +987,6 @@ is_set_expression:
         $$->type = getTypeID("INT");    
         $$->children = $3;  
 
-        push_back_node(&treeNodeList, $$);
          
     }
     | '!' IS_SET '(' set_statement_exists ')' {
@@ -1039,7 +995,6 @@ is_set_expression:
         $$->symbol = createSymbol($2.line, $2.column, "set function", "", $2.tokenBody, $2.scope);
         $$->type = getTypeID("INT");    
         $$->children = $4;  
-        push_back_node(&treeNodeList, $$);
     }
 ;   
 
@@ -1051,7 +1006,6 @@ for:
         $$->children = $3;
         $3->nxt = $5;  
         
-        push_back_node(&treeNodeList, $$);
     }
 ;
 
@@ -1063,7 +1017,6 @@ for_expression:
         $$->children = $1;
         $1->nxt = $3;  
         
-        push_back_node(&treeNodeList, $$);
         $3->nxt = $5;  
         
     }
@@ -1074,7 +1027,6 @@ io_statement:
         // printf("[SYNTATIC] (io_statement) READ '(' ID(%s) ')' ';'\n", $3.tokenBody);
 
         $$ = createNode("io_statement - READ");
-        push_back_node(&treeNodeList, $$);
         $$->symbol = createSymbol($3.line, $3.column, "variable", lastType, $3.tokenBody, $3.scope);
         
     }
@@ -1084,7 +1036,6 @@ io_statement:
         $$ = createNode("io_statement - WRITE");
         $$->symbol = createSymbol($3.line, $3.column, "string", "", $3.tokenBody, $3.scope);
         
-        push_back_node(&treeNodeList, $$);
         
     }
     | WRITE '(' expression ')' ';' {
@@ -1093,7 +1044,6 @@ io_statement:
         $$ = createNode("io_statement - WRITE");
         $$->children = $3;
         
-        push_back_node(&treeNodeList, $$);
         
     }
     | WRITELN '(' STRING ')' ';' {
@@ -1102,7 +1052,6 @@ io_statement:
         $$ = createNode("io_statement - WRITELN");
         $$->symbol = createSymbol($3.line, $3.column, "string", "", $3.tokenBody, $3.scope);
         
-        push_back_node(&treeNodeList, $$);
       
     }
     | WRITELN '(' expression ')' ';' {
@@ -1111,7 +1060,6 @@ io_statement:
         $$ = createNode("io_statement - WRITELN");
         $$->children = $3;
         
-        push_back_node(&treeNodeList, $$);
         
     }
 ;
@@ -1124,7 +1072,6 @@ arguments_list:
         $$->children = $1;
         $1->nxt = $3;
         
-        push_back_node(&treeNodeList, $$);
         
     }
     | expression {
@@ -1134,7 +1081,6 @@ arguments_list:
             $$ = createNode("arguments_list");
             $$->children = $1;
            
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;  
         }
@@ -1149,7 +1095,6 @@ conditional:
         $$ = createNode("conditional");
         $$->children = $2;
         $2->nxt = $3;
-        push_back_node(&treeNodeList, $$);
  
     }
     | IF conditional_expression statements ELSE statements {
@@ -1160,7 +1105,6 @@ conditional:
         $2->nxt = $3;
         $3->nxt = $5;
         
-        push_back_node(&treeNodeList, $$);
         
     }
 ;
@@ -1173,7 +1117,6 @@ conditional_expression:
             $$ = createNode("conditional_expression");
             $$->children = $2;
             
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $2;  
         }
@@ -1194,7 +1137,6 @@ return:
         $$ = createNode("return");
         $$->children = $2;
         
-        push_back_node(&treeNodeList, $$);
         
     }
     | RETURN ';' {
@@ -1202,7 +1144,6 @@ return:
 
         $$ = createNode("return");
         
-        push_back_node(&treeNodeList, $$);
         
     }
 ;
@@ -1218,7 +1159,6 @@ value:
 
         $$->type = getTypeID($$->symbol->type);
 
-        push_back_node(&treeNodeList, $$);
     }
     | const {
         // printf("[SYNTATIC] (value) const\n");
@@ -1226,7 +1166,6 @@ value:
         if(verbose){
             $$ = createNode("value");
             $$->children = $1;
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;  
         }
@@ -1240,7 +1179,6 @@ value:
             $$ = createNode("value");
             $$->children = $1;
            
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;  
         }
@@ -1256,7 +1194,6 @@ function_call_statement:
             $$ = createNode("function_call_statement");
             $$->children = $1;
            
-            push_back_node(&treeNodeList, $$);
         } else {
             $$ = $1;  
         }
@@ -1290,7 +1227,6 @@ function_call:
             checkArgsParms(argsAsString, funcParams, $1.line, $1.column, $1.tokenBody);
         }
         
-        push_back_node(&treeNodeList, $$);
         
     }
     | ID '(' ')' {
@@ -1310,7 +1246,6 @@ function_call:
             checkArgsParms(argsAsString, getSymbol(&tableList, $1.tokenBody, 0)->paramsType, $1.line, $1.column, $1.tokenBody);
         }
        
-        push_back_node(&treeNodeList, $$);
     }
 ;
 
@@ -1327,7 +1262,6 @@ variables_declaration:
         $$->symbol = createSymbol($2.line, $2.column, "variable", lastType, $2.tokenBody, $2.scope);
         $$->type = getTypeID($$->symbol->type);
 
-        push_back_node(&treeNodeList, $$);
         push_back(&tableList, $$->symbol);
     }
 ;
@@ -1335,31 +1269,21 @@ variables_declaration:
 const:
     INT_VALUE {
         // printf("[SYNTATIC] (const) INT_VALUE = %s\n", $1.tokenBody);
-        
         $$ = createNode("const");
         $$->symbol = createSymbol($1.line, $1.column, "INT", "INT", $1.tokenBody, $1.scope);
-        
-        push_back_node(&treeNodeList, $$);
         $$->type = getTypeID("INT");
     }
     | FLOAT_VALUE {
         // printf("[SYNTATIC] (const) FLOAT_VALUE = %s\n", $1.tokenBody);
-        
         $$ = createNode("const");
         $$->symbol = createSymbol($1.line, $1.column, "FLOAT", "FLOAT", $1.tokenBody, $1.scope);
-        
-        push_back_node(&treeNodeList, $$);
         $$->type = getTypeID("FLOAT");
     }
     | EMPTY {
         // printf("[SYNTATIC] (const) EMPTY\n");
-        
         $$ = createNode("const");
         $$->symbol = createSymbol($1.line, $1.column, "EMPTY", "EMPTY", $1.tokenBody, $1.scope);
-        
-        push_back_node(&treeNodeList, $$);
         $$->type = getTypeID("EMPTY");
-        
     }
 ;
 
@@ -1389,7 +1313,8 @@ int main(int argc, char ** argv) {
 
     stackScope.size = stackScope.nxtScope = -1;
     tableList.size = -1;
-    treeNodeList.size = -1;
+    garbageCollector.nodeSize = -1;
+    garbageCollector.strSize = -1;
 
     push(&stackScope);
 
@@ -1421,7 +1346,7 @@ int main(int argc, char ** argv) {
     // the table only contains symbols and the freeNodeList will free that pointer
     // freeTable(&tableList); 
 
-    freeNodeList(&treeNodeList);
+    freeGarbageCollector();
 
     fclose(yyin);
     yylex_destroy();

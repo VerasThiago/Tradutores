@@ -203,6 +203,7 @@ char *getCastString(int castCode){
     if(castCode == FLOAT_TO_ELEM) return strdup("(elem)FLOAT");
     if(castCode == SET_TO_ELEM) return strdup("(elem)SET");
     if(castCode == ELEM_TO_SET) return strdup("(set)ELEM");
+    return strdup("??");
 }
 
 char *getExternalCastString(int castCode){
@@ -214,17 +215,26 @@ char *getExternalCastString(int castCode){
     if(castCode == FLOAT_TO_ELEM) return strdup("elem");
     if(castCode == SET_TO_ELEM) return strdup("elem");
     if(castCode == ELEM_TO_SET) return strdup("set");
+    return strdup("??");
 }
 
 void checkMissType(int typeL, int typeR, int line, int column, char* body) {
     if(typeL != typeR){
-        throwError(newError(line, column, body, getIDType(typeL), getIDType(typeR), MISS_TYPE));
+        char* strTypeL = getIDType(typeL);
+        char* strTypeR = getIDType(typeR);
+        pushGarbageCollector(NULL, strTypeL);
+        pushGarbageCollector(NULL, strTypeR);
+        throwError(newError(line, column, body, strTypeL, strTypeR, MISS_TYPE));
     }
 }
 
 void checkMissTypeReturn(int typeL, int typeR, int line, int column, char* body) {
     if(typeL != typeR){
-        throwError(newError(line, column, body, getIDType(typeL), getIDType(typeR), MISS_TYPE_RETURN));
+        char* strTypeL = getIDType(typeL);
+        char* strTypeR = getIDType(typeR);
+        pushGarbageCollector(NULL, strTypeL);
+        pushGarbageCollector(NULL, strTypeR);
+        throwError(newError(line, column, body, strTypeL, strTypeR, MISS_TYPE_RETURN));
     }
 }
 

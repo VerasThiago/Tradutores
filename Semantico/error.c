@@ -77,5 +77,10 @@ Error newError(int l, int c, char *m, char *ex, char *g, int code){
     e.expected = strdup(ex);
     e.got = strdup(g);
     e.code = code;
+
+    pushGarbageCollector(NULL, e.message);
+    pushGarbageCollector(NULL, e.expected);
+    pushGarbageCollector(NULL, e.got);
+
     return e;
 }
