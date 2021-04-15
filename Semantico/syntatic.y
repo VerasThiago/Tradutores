@@ -1226,8 +1226,6 @@ function_call:
             checkArgsParms(argsAsString, funcParams, $1.line, $1.column, $1.tokenBody);
         }
         
-        if(s) free(s);
-        
     }
     | ID '(' ')' {
         // printf("[SYNTATIC] (function_call) ID(%s) '(' ')'\n", $1.tokenBody);
@@ -1244,8 +1242,6 @@ function_call:
             char argsAsString[] = "";
             checkArgsParms(argsAsString, getSymbol(&tableList, $1.tokenBody, 0)->paramsType, $1.line, $1.column, $1.tokenBody);
         }
-
-        if(s) free(s);
     }
 ;
 
