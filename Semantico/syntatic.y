@@ -820,7 +820,7 @@ expression_relational:
         $1->nxt = $3;
 
         if(checkCast($1, $3)) execCast($1, $3);
-        $$->type = $1->type;
+        $$->type = getTypeID("INT");
         checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
         $$->symbol = createSymbol($2.line, $2.column, "relational operator", "", getCastExpression($1, $3, $2.tokenBody), $2.scope);
         
@@ -950,6 +950,16 @@ expression_value:
     | set_statement_exists {
         // printf("[SYNTATIC] (expression_value) set_statement_exists\n");
 
+        if(verbose){
+            $$ = createNode("expression_value");
+            $$->children = $1;  
+            
+            push_back_node(&treeNodeList, $$);
+        } else {
+            $$ = $1;   
+        }
+    }
+    | set_statement_add_remove {
         if(verbose){
             $$ = createNode("expression_value");
             $$->children = $1;  
