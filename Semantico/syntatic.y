@@ -1213,8 +1213,7 @@ function_call:
         $$->symbol = s ? createSymbol($1.line, $1.column, "function_call", s->type, $1.tokenBody, $1.scope) :
                          createSymbol($1.line, $1.column, "function_call", "??", $1.tokenBody, $1.scope);
 
-
-        if(strcmp(s->classType, "function") == 0){
+        if(s && strcmp(s->classType, "function") == 0){
             $$->type = getTypeID($$->symbol->type);
 
             int x = 0;
@@ -1227,6 +1226,7 @@ function_call:
             checkArgsParms(argsAsString, funcParams, $1.line, $1.column, $1.tokenBody);
         }
         
+        if(s) free(s);
         
     }
     | ID '(' ')' {
@@ -1239,13 +1239,13 @@ function_call:
         $$->symbol = s ? createSymbol($1.line, $1.column, "function_call", s->type, $1.tokenBody, $1.scope) :
                          createSymbol($1.line, $1.column, "function_call", "??", $1.tokenBody, $1.scope);
 
-
-        if(strcmp(s->classType, "function_call") == 0) {
+        if(s && strcmp(s->classType, "function_call") == 0) {
             $$->type = getTypeID($$->symbol->type);
             char argsAsString[] = "";
             checkArgsParms(argsAsString, getSymbol(&tableList, $1.tokenBody, 0)->paramsType, $1.line, $1.column, $1.tokenBody);
         }
-       
+
+        if(s) free(s);
     }
 ;
 
