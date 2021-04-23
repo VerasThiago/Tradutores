@@ -4,6 +4,9 @@
 #include "tree.h"
 #include "semantic.h"
 
+TreeNode* root;
+GarbageCollector garbageCollector;
+
 TreeNode* createNode(char* rule){
     TreeNode* node = (TreeNode*) malloc(sizeof(TreeNode));
     node->rule = strdup(rule);

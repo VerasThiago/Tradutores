@@ -7,6 +7,8 @@
 #include "table.h"
 #include "semantic.h"
 
+extern TableList tableList;
+
 void checkArgsParms(char* args, char* params, int line, int column, char* body){
     if(strlen(args) < strlen(params)){
         throwError(newError(line, column, body, params, args, FEW_ARGS));

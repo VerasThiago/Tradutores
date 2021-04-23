@@ -5,6 +5,9 @@
 #include "tree.h"
 #include "stack.h"
 
+extern int errors;
+extern char fileName[200];
+
 void throwError(Error e){
     char* expected;
     char* got;

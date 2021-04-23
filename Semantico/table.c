@@ -4,6 +4,9 @@
 #include "stack.h"
 #include<string.h>
 
+TableList tableList;
+extern Stack stackScope;
+
 void push_back(TableList* tl, Symbol* val){
     tl->arr[++tl->size] = val;
 }

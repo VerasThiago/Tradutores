@@ -53,10 +53,6 @@ void checkAndExecForceCastArgs(TreeNode* root, char argsType[], int *idx);
 
 void checkAndExecForceCast(TreeNode* L, int type);
 
-TreeNode* root;
-
-GarbageCollector garbageCollector;
-
 enum TYPE_CODE {
     T_INT,
     T_SET,

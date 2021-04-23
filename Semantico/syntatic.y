@@ -21,6 +21,21 @@
     extern int yylex_destroy();
     extern FILE* yyin;
 
+    // Tree
+    extern TreeNode* root;
+    extern GarbageCollector garbageCollector;
+
+    // Table
+    extern TableList tableList;
+
+    // Stack
+    extern Stack stackScope;
+    extern int errors;
+    extern int verbose;
+    extern char lastType[200];
+    extern char fileName[200];
+
+
 %}
 
 %union {

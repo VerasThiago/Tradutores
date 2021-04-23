@@ -28,6 +28,4 @@ Symbol* getClosestFunctionFromLine(TableList* tl, int line);
 Symbol* getSymbolRecursive(TableList* tl, char *body, int scope, int func);
 Symbol* createSymbol(int line, int column ,char* classType, char* type, char* body, int scope);
 
-TableList tableList;
-
 #endif
