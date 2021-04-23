@@ -1,46 +1,34 @@
 #ifndef SEMANTIC
 #define SEMANTIC
 
-void checkArgsParms(char*, char*, int, int, char*);
-
-Symbol* checkVarExist(TableList*, int, int, char*, int);
-
 int checkCast(TreeNode*, TreeNode*);
-
 int checkCastSymbol(Symbol*, TreeNode*);
-
 int checkSingleCastSymbol(Symbol*, int);
 
 void execCast(TreeNode*, TreeNode*);
-
+void execSingleCast(TreeNode*, int );
+void execSingleForceCast(TreeNode*, int);
 void execForceCastSymbol(Symbol*, TreeNode*);
 
-void execSingleForceCast(TreeNode*, int);
-
 int checkSingleCast(TreeNode*, int );
-
-void execSingleCast(TreeNode*, int );
-
 void checkStructureBoolINSet(int , int , int , int , int , int , char*);
 
 Symbol* checkFuncExist(TableList*, int , int , char*, int );
-
 Symbol* checkDuplicatedFunc(TableList*, int , int , char*, int );
-
 Symbol* checkDuplicatedVar(TableList*, int , int , char*, int );
 
-char *getCastString(int);
-
 void checkMissType(int, int, int, int, char*);
-
 void checkMissTypeReturn(int, int, int, int, char*);
+
+void checkArgsParms(char*, char*, int, int, char*);
+Symbol* checkVarExist(TableList*, int, int, char*, int);
 
 void checkMainFunc();
 
+char *getCastString(int);
 char *getExternalCastString(int);
 
 void checkAndExecForceCastArgs(TreeNode*, char[], int * );
-
 void checkAndExecForceCast(TreeNode*, int);
 
 enum CAST_CODE {

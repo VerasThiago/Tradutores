@@ -33,7 +33,7 @@ TreeNode* createIDNode(Symbol*, int, int, char*, int);
 
 void printTree(TreeNode*, int, int*);
 void freeTree(TreeNode*);
-void printToken(Symbol* s, int, int *);
+void printToken(Symbol*, int, int *);
 
 void getTreeTypeList(TreeNode*, char*);
 
