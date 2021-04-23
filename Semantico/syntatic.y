@@ -370,17 +370,6 @@ statements:
              $$ = $1;
         }
     }
-    | statements_braced {
-        // printf("[SYNTATIC] (statements) statements_braced\n");
-
-        if(verbose){
-            $$ = createNode("statements");
-            $$->children = $1;
-            
-        } else {
-            $$ = $1;
-        }
-    }
 ;
 
 statements_braced:
@@ -699,23 +688,6 @@ expression_assignment:
         $$->symbol = createSymbol($1.line, $1.column, "expression_assignment", "", body, $1.scope);
         pushGarbageCollector(NULL, body);
     }
-    | ID '=' set_boolean_expression {
-        // printf("[SYNTATIC] (expression_assignment) ID(%s) '='  set_boolean_expression\n", $1.tokenBody);
-        $$ = createNode("expression_assignment");
-        $$->children = $3;
-        
-        Symbol* s = checkVarExist(&tableList, $1.line, $1.column, $1.tokenBody, $1.scope);
-        if(s){
-            if(checkCastSymbol(s, $3)) execForceCastSymbol(s, $3);
-            checkMissType(getTypeID(s->type), $3->type, $1.line, $1.column, "=");
-        }
-
-        char *body =  getCastExpressionSymbol(s, $3, "=");
-        $$->symbol = createSymbol($1.line, $1.column, "expression_assignment", "", body, $1.scope);
-        pushGarbageCollector(NULL, body);
-    }
-
-    
 ;
 
 expression_logical:
@@ -752,7 +724,7 @@ expression_logical:
             $$ = $1;   
         }
     }
-    | expression_logical AND_OP expression_logical {
+    | expression_logical AND_OP expression_relational {
         // printf("[SYNTATIC] (expression_logical) expression_logical AND_OP(&&) expression_logical\n");
 
         $$ = createNode("expression_logical");
@@ -768,7 +740,7 @@ expression_logical:
         pushGarbageCollector(NULL, body);
 
     }
-    | expression_logical OR_OP expression_logical {
+    | expression_logical OR_OP expression_relational {
         // printf("[SYNTATIC] (expression_logical) expression_logical OR_OP(||) expression_logical\n");
 
         $$ = createNode("expression_logical");
@@ -797,7 +769,7 @@ expression_relational:
             $$ = $1;   
         }
     }
-    | expression_relational RELATIONAL_OP expression_relational {
+    | expression_relational RELATIONAL_OP expression_additive {
         // printf("[SYNTATIC] (expression_relational) expression_relational RELATIONAL_OP(%s) expression_relational\n", $2.tokenBody);
 
         $$ = createNode("expression_relational");
@@ -826,7 +798,7 @@ expression_additive:
             $$ = $1;   
         }
     }
-    | expression_additive ADDITIVE_OP expression_additive {
+    | expression_additive ADDITIVE_OP expression_multiplicative {
         // printf("[SYNTATIC] (expression_additive) expression_additive ADDITIVE_OP(%s) expression_additive \n", $2.tokenBody);
 
         $$ = createNode("expression_additive");
@@ -856,7 +828,7 @@ expression_multiplicative:
             $$ = $1;   
         }
     }
-    | expression_multiplicative MULTIPLICATIVE_OP expression_multiplicative {
+    | expression_multiplicative MULTIPLICATIVE_OP expression_value {
         // printf("[SYNTATIC] (expression_multiplicative)  expression_multiplicative MULTIPLICATIVE_OP(%s) expression_multiplicative \n", $2.tokenBody);
         
         $$ = createNode("expression_multiplicative");

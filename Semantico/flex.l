@@ -16,10 +16,6 @@
     extern TableList tableList;
     extern TreeNode* root;
 
-    extern int verbose;
-    extern char lastType[200];
-    extern char fileName[200];
-
     int lines = 1;
     int columns = 1;
     extern int errors;
