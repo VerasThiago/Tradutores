@@ -7,8 +7,8 @@ typedef struct st {
     int nxtScope;
 } Stack;
 
-void push(Stack* scope);
-void pop(Stack* scope);
-int top(Stack* scope);
+void push(Stack*);
+void pop(Stack*);
+int top(Stack*);
 
 #endif

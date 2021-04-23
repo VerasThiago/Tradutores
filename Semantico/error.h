@@ -1,6 +1,7 @@
 #ifndef ERROR
 #define ERROR
 
+
 typedef struct er {
     int line;
     int column;
@@ -9,10 +10,6 @@ typedef struct er {
     char *got;
     int code;
 } Error;
-
-void throwError(Error e);
-
-Error newError(int l, int c, char *m, char *ex, char *g, int code);
 
 enum ERR_CODE {
     FEW_ARGS,
@@ -28,5 +25,8 @@ enum ERR_CODE {
     WRONG_SET_ARGS,
     MISSING_MAIN,
 };
+
+void throwError(Error);
+Error newError(int , int , char*, char*, char*, int );
 
 #endif

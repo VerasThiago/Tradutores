@@ -4,6 +4,7 @@
 #include "error.h"
 #include "tree.h"
 #include "stack.h"
+#include "utils.h"
 
 extern int errors;
 extern char fileName[200];

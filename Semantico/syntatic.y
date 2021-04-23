@@ -14,6 +14,7 @@
     #include "tree.h"
     #include "error.h"
     #include "semantic.h"
+    #include "utils.h"
 
     extern int yylex();
     extern int yyparse();
@@ -23,17 +24,19 @@
 
     // Tree
     extern TreeNode* root;
-    extern GarbageCollector garbageCollector;
 
     // Table
     extern TableList tableList;
 
     // Stack
     extern Stack stackScope;
+
+    // Utils
     extern int errors;
     extern int verbose;
     extern char lastType[200];
     extern char fileName[200];
+    extern GarbageCollector garbageCollector;
 
 
 %}

@@ -6,6 +6,7 @@
 #include "stack.h"
 #include "table.h"
 #include "semantic.h"
+#include "utils.h"
 
 extern TableList tableList;
 
@@ -121,6 +122,53 @@ void execForceCastSymbol(Symbol* L, TreeNode* R){
     } else if (getTypeID(L->type) == T_ELEM && R->type == T_SET){
         R->type = T_ELEM;
         R->cast = SET_TO_ELEM;
+    }
+}
+
+void checkAndExecForceCastArgs(TreeNode* root, char argsType[], int *idx){
+    if(!root) return;
+
+    if(root->type != -1){
+        if(checkSingleCast(root, argsType[*idx] - '0')) execSingleForceCast(root, argsType[*idx] - '0');
+        (*idx)++;
+        if(root->cast != -1){
+            if(strcmp(root->symbol->type, "") == 0){
+                char newCastStr[50];
+                char* externalCast = getExternalCastString(root->cast);
+                sprintf(newCastStr, "(%s)(%s)", externalCast, root->symbol->body);
+                pushGarbageCollector(NULL, root->symbol->body);
+                root->symbol->body = strdup(newCastStr);
+
+                pushGarbageCollector(NULL, externalCast);
+            } else {
+                pushGarbageCollector(NULL, root->symbol->type);
+                root->symbol->type = getCastString(root->cast);
+            }
+        }
+    }
+    
+    if(!startsWith(root->rule, "expression")){
+        checkAndExecForceCastArgs(root->children, argsType, idx);
+    }
+    checkAndExecForceCastArgs(root->nxt, argsType, idx);
+}
+
+void checkAndExecForceCast(TreeNode* L, int type){
+    if(!L || L->type == -1) return;
+    if(checkSingleCast(L, type)) execSingleForceCast(L, type);
+    if(L->cast != -1){
+        if(strcmp(L->symbol->type, "") == 0){
+            char newCastStr[50];
+            char* externalCast = getExternalCastString(L->cast);
+            sprintf(newCastStr, "(%s)(%s)", externalCast, L->symbol->body);
+            pushGarbageCollector(NULL, L->symbol->body);
+            L->symbol->body = strdup(newCastStr);
+
+            pushGarbageCollector(NULL, externalCast);
+        } else {
+            pushGarbageCollector(NULL, L->symbol->type);
+            L->symbol->type = getCastString(L->cast);
+        }
     }
 }
 

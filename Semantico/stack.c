@@ -4,13 +4,6 @@
 
 Stack stackScope;
 
-int errors;
-int verbose;
-
-char lastType[200];
-char fileName[200];
-
-
 void push(Stack* scope){
     scope->st[++scope->size] = ++scope->nxtScope;
 }

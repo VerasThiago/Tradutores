@@ -1,43 +1,47 @@
 #ifndef SEMANTIC
 #define SEMANTIC
 
-void checkArgsParms(char* args, char* params, int line, int column, char* body);
+void checkArgsParms(char*, char*, int, int, char*);
 
-Symbol* checkVarExist(TableList *tableList, int line, int column, char* body, int scope);
+Symbol* checkVarExist(TableList*, int, int, char*, int);
 
-int checkCast(TreeNode* L, TreeNode* R);
+int checkCast(TreeNode*, TreeNode*);
 
-int checkCastSymbol(Symbol* L, TreeNode* R);
+int checkCastSymbol(Symbol*, TreeNode*);
 
-int checkSingleCastSymbol(Symbol* L, int expected);
+int checkSingleCastSymbol(Symbol*, int);
 
-void execCast(TreeNode* L, TreeNode* R);
+void execCast(TreeNode*, TreeNode*);
 
-void execForceCastSymbol(Symbol* L, TreeNode* R);
+void execForceCastSymbol(Symbol*, TreeNode*);
 
-void execSingleForceCast(TreeNode* L, int castType);
+void execSingleForceCast(TreeNode*, int);
 
-int checkSingleCast(TreeNode* L, int expected);
+int checkSingleCast(TreeNode*, int );
 
-void execSingleCast(TreeNode* L, int castType);
+void execSingleCast(TreeNode*, int );
 
-void checkStructureBoolINSet(int left, int right, int expectedLeft, int expectedRight, int line, int column, char* body);
+void checkStructureBoolINSet(int , int , int , int , int , int , char*);
 
-Symbol* checkFuncExist(TableList *tableList, int line, int column, char* body, int scope);
+Symbol* checkFuncExist(TableList*, int , int , char*, int );
 
-Symbol* checkDuplicatedFunc(TableList *tableList, int line, int column, char* body, int scope);
+Symbol* checkDuplicatedFunc(TableList*, int , int , char*, int );
 
-Symbol* checkDuplicatedVar(TableList *tableList, int line, int column, char* body, int scope);
+Symbol* checkDuplicatedVar(TableList*, int , int , char*, int );
 
-char *getCastString(int castCode);
+char *getCastString(int);
 
-void checkMissType(int typeL, int typeR, int line, int column, char* body);
+void checkMissType(int, int, int, int, char*);
 
-void checkMissTypeReturn(int typeL, int typeR, int line, int column, char* body);
+void checkMissTypeReturn(int, int, int, int, char*);
 
 void checkMainFunc();
 
-char *getExternalCastString(int castCode);
+char *getExternalCastString(int);
+
+void checkAndExecForceCastArgs(TreeNode*, char[], int * );
+
+void checkAndExecForceCast(TreeNode*, int);
 
 enum CAST_CODE {
     INT_TO_FLOAT,
