@@ -278,7 +278,8 @@ void checkMissType(int typeL, int typeR, int line, int column, char* body) {
     }
     else if(typeL == getTypeID("SET") && 
             strcmp(body, "!=") != 0   &&
-            strcmp(body, "==") != 0
+            strcmp(body, "==") != 0   &&
+            strcmp(body, "=") != 0
     ) {
         throwError(newError(line, column, body, "SET", "SET", INVALID_SET_OPERATION));
     }
