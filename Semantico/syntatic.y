@@ -109,6 +109,7 @@
 %type <node> set_boolean_expression
 %type <node> set_assignment_expression
 %type <node> expression_statement
+%type <node> expression_or_empty
 %type <node> expression
 %type <node> expression_assignment
 %type <node> expression_logical
@@ -610,6 +611,16 @@ expression_statement:
     }
 ;
 
+expression_or_empty:
+    expression {
+        $$ = $1;   
+    }
+    | %empty {
+        $$ = createNode("expression_or_empty");
+        $$->type = getTypeID("INT");
+    }
+;
+
 expression:
     expression_assignment {
         // printf("[SYNTATIC] (expression) expression_assignment\n");
@@ -914,15 +925,12 @@ for:
 ;
 
 for_expression:
-    expression_assignment ';' expression_logical ';' expression_assignment {
+    expression_or_empty ';' expression_or_empty ';' expression_or_empty {
         // printf("[SYNTATIC] (for_expression) expression_assignment ';' expression_logical ';' expression_assignment\n");
-        
         $$ = createNode("for_expression");
         $$->children = $1;
         $1->nxt = $3;  
-        
         $3->nxt = $5;  
-        
     }
 ;
 
