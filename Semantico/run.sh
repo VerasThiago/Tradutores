@@ -1,4 +1,4 @@
-bison -d syntatic.y
+bison -d -Wcounterexamples syntatic.y
 flex flex.l
 gcc -c -g -std=gnu99 utils.c
 gcc -c -g -std=gnu99 table.c

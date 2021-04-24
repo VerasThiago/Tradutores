@@ -1,9 +1,7 @@
 %define lr.type canonical-lr
 %define parse.error verbose
-%debug
-%locations
 
-
+%defines
 
 %{
     #include <stdlib.h>
@@ -64,7 +62,7 @@
 
 %token ELEM
 %left IF
-%left ELSE
+%right THEN ELSE
 %token SET
 %token FOR
 %token WRITE
@@ -118,17 +116,14 @@
 %type <node> expression_additive
 %type <node> expression_multiplicative
 %type <node> expression_value
-%type <node> is_set_statement
 %type <node> is_set_expression
 %type <node> for
 %type <node> for_expression
 %type <node> io_statement
 %type <node> arguments_list
 %type <node> conditional
-%type <node> conditional_expression
 %type <node> return
 %type <node> value
-%type <node> function_call_statement
 %type <node> function_call
 %type <node> variables_declaration
 %type <node> const
@@ -358,7 +353,6 @@ statements:
         $1->nxt = $2;
         
     }
-
 	| statement {
         // printf("[SYNTATIC] (statements) statement\n");   
 
@@ -375,7 +369,6 @@ statements:
 statements_braced:
     '{' statements '}' {
         // printf("[SYNTATIC] (statements_braced) '{' statements '}'\n");
-
         if(verbose){
             $$ = createNode("statements_braced");
             $$->children = $2;
@@ -443,27 +436,6 @@ statement:
             $$ = $1;   
         }
     }
-    | is_set_statement {
-        // printf("[SYNTATIC] (statement) is_set_statement\n"); 
-        if(verbose){
-            $$ = createNode("statement");
-            $$->children = $1;  
-            
-        } else {
-            $$ = $1;   
-        }
-    }
-    | function_call_statement {
-        // printf("[SYNTATIC] (statement) function_call_statement\n"); 
-
-        if(verbose){
-            $$ = createNode("statement");
-            $$->children = $1; 
-            
-        } else {
-            $$ = $1;   
-        }
-    }
 	| expression_statement {
         // printf("[SYNTATIC] (statement) expression_statement \n");
         if(verbose){
@@ -497,18 +469,7 @@ statement:
 ;
 
 set_pre_statement:
-    set_statement_add_remove ';' {
-        // printf("[SYNTATIC] (set_pre_statement) set_statement_add_remove ';'\n");  
-
-        if(verbose){
-            $$ = createNode("set_pre_statement");
-            $$->children = $1;
-            
-        } else {
-            $$ = $1;   
-        }
-    }
-    | set_statement_for_all {
+    set_statement_for_all {
         // printf("[SYNTATIC] (set_pre_statement) set_statement_for_all\n");  
 
         if(verbose){
@@ -541,7 +502,7 @@ set_statement_add_remove:
 ;
 
 set_statement_for_all:
-    FOR_ALL '(' set_assignment_expression ')' statements {
+    FOR_ALL '(' set_assignment_expression ')' statement {
         // printf("[SYNTATIC] (set_statement_for_all) FOR_ALL '(' set_assignment_expression ')' statements\n"); 
 
         $$ = createNode("set_statement_for_all");
@@ -704,17 +665,6 @@ expression_logical:
     }
     | set_boolean_expression {
         // printf("[SYNTATIC] (expression_logical) set_expression\n");
-
-        if(verbose){
-            $$ = createNode("expression_logical");
-            $$->children = $1;   
-            
-        } else {
-            $$ = $1;   
-        }
-    }
-    | is_set_expression {
-        // printf("[SYNTATIC] (is_set_expression) is_set_expression\n");
 
         if(verbose){
             $$ = createNode("expression_logical");
@@ -901,6 +851,17 @@ expression_value:
         // printf("[SYNTATIC] (expression_value) ADDITIVE_OP(%s) value \n", $1.tokenBody);
         $$ = $2;
     }
+    | is_set_expression {
+        // printf("[SYNTATIC] (is_set_expression) is_set_expression\n");
+
+        if(verbose){
+            $$ = createNode("expression_logical");
+            $$->children = $1;   
+            
+        } else {
+            $$ = $1;   
+        }
+    }
     | set_statement_exists {
         // printf("[SYNTATIC] (expression_value) set_statement_exists\n");
 
@@ -915,20 +876,6 @@ expression_value:
     | set_statement_add_remove {
         if(verbose){
             $$ = createNode("expression_value");
-            $$->children = $1;  
-            
-        } else {
-            $$ = $1;   
-        }
-    }
-;
-
-is_set_statement:
-    is_set_expression ';' {
-        // printf("[SYNTATIC] (is_set_statement) is_set_expression ';'\n");
-
-        if(verbose){
-            $$ = createNode("is_set_statement");
             $$->children = $1;  
             
         } else {
@@ -952,44 +899,11 @@ is_set_expression:
         $$->symbol = createSymbol($2.line, $2.column, "set function", "", $2.tokenBody, $2.scope);
         $$->children = $4;
         $$->type = getTypeID("INT");    
-    } 
-    | IS_SET '(' set_statement_add_remove ')' {
-        // printf("[SYNTATIC] (is_set_expression) IS_SET '(' set_statement_add_remove ')' ';'\n");
-        $$ = createNode("is_set_expression");
-        $$->symbol = createSymbol($1.line, $1.column, "set function", "", $1.tokenBody, $1.scope);
-        $$->children = $3;  
-        $$->type = getTypeID("INT");    
-         
-    }
-    | '!' IS_SET '(' set_statement_add_remove ')' {
-        // printf("[SYNTATIC] (is_set_expression) ! IS_SET '(' set_statement_add_remove ')' ';'\n");
-        $$ = createNode("is_set_expression");
-        $$->symbol = createSymbol($2.line, $2.column, "set function", "", $2.tokenBody, $2.scope);
-        $$->children = $4;  
-        $$->type = getTypeID("INT");    
-
-    }
-    | IS_SET '(' set_statement_exists ')' {
-        // printf("[SYNTATIC] (is_set_expression) IS_SET '(' set_statement_exists ')' ';'\n");
-
-        $$ = createNode("is_set_expression");
-        $$->symbol = createSymbol($1.line, $1.column, "set function", "", $1.tokenBody, $1.scope);
-        $$->type = getTypeID("INT");    
-        $$->children = $3;  
-
-         
-    }
-    | '!' IS_SET '(' set_statement_exists ')' {
-        // printf("[SYNTATIC] (is_set_expression) ! IS_SET '(' set_statement_exists ')' ';'\n");
-        $$ = createNode("is_set_expression");
-        $$->symbol = createSymbol($2.line, $2.column, "set function", "", $2.tokenBody, $2.scope);
-        $$->type = getTypeID("INT");    
-        $$->children = $4;  
     }
 ;   
 
 for:
-    FOR '(' for_expression ')' statements {
+    FOR '(' for_expression ')' statement {
         // printf("[SYNTATIC] (for) FOR '(' for_expression ')' statement\n");
 
         $$ = createNode("for");
@@ -1079,40 +993,21 @@ arguments_list:
 ;
 
 conditional:
-    IF conditional_expression statements {
+    IF '(' expression ')' statement %prec THEN{
         // printf("[SYNTATIC] (conditional) IF conditional_expression statements\n");
-
         $$ = createNode("conditional");
-        $$->children = $2;
-        $2->nxt = $3;
- 
-    }
-    | IF conditional_expression statements ELSE statements {
-        // printf("[SYNTATIC] (conditional) IF conditional_expression statements_braced ELSE statements_braced\n");
-
-        $$ = createNode("conditional");
-        $$->children = $2;
-        $2->nxt = $3;
+        $$->children = $3;
         $3->nxt = $5;
-        
-        
+    }
+    | IF '(' expression ')' statement ELSE statement {
+        // printf("[SYNTATIC] (conditional) IF conditional_expression statements_braced ELSE statements_braced\n");
+        $$ = createNode("conditional");
+        $$->children = $3;
+        $3->nxt = $5;
+        $5->nxt = $7;
     }
 ;
 
-conditional_expression:
-    '(' expression ')' {
-        // printf("[SYNTATIC] (conditional_expression) '(' expression ')'\n");
-
-        if(verbose){
-            $$ = createNode("conditional_expression");
-            $$->children = $2;
-            
-        } else {
-            $$ = $2;  
-        }
-        
-    }
-;
 
 return:
     RETURN expression ';' {
@@ -1167,21 +1062,6 @@ value:
 
         if(verbose){
             $$ = createNode("value");
-            $$->children = $1;
-           
-        } else {
-            $$ = $1;  
-        }
-        
-    }
-;
-
-function_call_statement:
-    function_call ';' {
-        // printf("[SYNTATIC] (function_call_statement) function_call ';'\n");
-        
-        if(verbose){
-            $$ = createNode("function_call_statement");
             $$->children = $1;
            
         } else {
