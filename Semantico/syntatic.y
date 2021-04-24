@@ -612,7 +612,7 @@ expression_assignment:
         }
 
         char *body =  getCastExpressionSymbol(s, $3, "=");
-        $$->symbol = createSymbol($1.line, $1.column, "expression_assignment", "", body, $1.scope);
+        $$->symbol = createSymbol($1.line, $1.column, "assignment operator", "", body, $1.scope);
         pushGarbageCollector(NULL, body);
     }
 ;

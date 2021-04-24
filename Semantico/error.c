@@ -72,7 +72,11 @@ void throwError(Error e){
         case MISSING_MAIN:
             printf("%s:?:?: undefined reference to ‘main’\n\n", fileName);
         break;
-        
+
+        case INVALID_SET_OPERATION:
+            printf("%s:%d:%d: error: invalid operands to binary %s (have ‘%s’ and ‘%s’)\n\n",fileName, e.line, e.column, e.message, e.expected, e.got);
+        break; 
+
         default:
             printf("Unhandled ERROR\n");
         break;
