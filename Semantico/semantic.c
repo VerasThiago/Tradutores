@@ -147,7 +147,7 @@ void checkAndExecForceCastArgs(TreeNode* root, char argsType[], int *idx){
         }
     }
     
-    if(!startsWith(root->rule, "expression")){
+    if(!startsWith(root->rule, "expression") && strcmp(root->rule, "function_call") != 0){
         checkAndExecForceCastArgs(root->children, argsType, idx);
     }
     checkAndExecForceCastArgs(root->nxt, argsType, idx);
