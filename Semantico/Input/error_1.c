@@ -11,3 +11,5 @@ int naoEhMain(){
         funcSuave(10, globalSet, 10); // erro pois não da pra converter int pra set e nem set pra int (args 1 e 2);
     }
 }
+
+// error pois falta func main
