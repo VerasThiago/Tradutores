@@ -1,9 +1,12 @@
 int x;
 
-set funcRepetido(float h, float h) {
+set funcRepetido(float h, float h) { // erro variável duplicada
     set s;
     if (h == s) { // erro no compare
         return h; // erro no return
+    } else if(s == s) return s; // erro no compare
+    else {
+        writeln("Hello amigos");
     }
 }
 int x;
