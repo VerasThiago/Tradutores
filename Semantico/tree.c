@@ -72,7 +72,7 @@ void getTreeTypeList(TreeNode* root, char ans[]){
         strcat(ans, aux);
     }
     
-    if(!startsWith(root->rule, "expression")){
+    if(!startsWith(root->rule, "expression") && strcmp(root->rule, "function_call") != 0){
         getTreeTypeList(root->children, ans);
     }
     getTreeTypeList(root->nxt, ans);
