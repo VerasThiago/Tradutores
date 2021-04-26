@@ -3,6 +3,7 @@
 #include "string.h"
 #include "tree.h"
 #include "semantic.h"
+#include "error.h"
 
 int errors;
 int verbose;
@@ -71,51 +72,38 @@ int startsWith(char* a, char* b){
 /*** Args number list to name list ***/
 
 char* getArgsList(char *args){
-    char* argsList;
+    char argsList[50] = "";
     char* curr;
-    char* tmp;
-    argsList = "";
 
     for(int i = 0; i < strlen(args); i++){
         curr = getIDType(args[i] - '0');
         pushGarbageCollector(NULL, curr); 
-        if(i){
-            tmp = (char *) malloc(3 + strlen(argsList)+ strlen(curr) );
-            strcpy(tmp, argsList);
-            strcat(tmp, ", ");
-        } else {
-            tmp = (char *) malloc(1 + strlen(argsList)+ strlen(curr) );
-            strcpy(tmp, argsList);
-        }
-        strcat(tmp, curr);
-        argsList = tmp;
+        if(i) strcat(argsList, ", ");
+        strcat(argsList, curr);
     }
-    return argsList;
+
+    char* ret = strdup(argsList);
+    pushGarbageCollector(NULL, ret);
+    return ret;
 }
 
 char* getArgsListSetIn(char *args){
-    char* argsList;
-    char* curr;
-    char* tmp;
-    argsList = "";
-
-    for(int i = 0; i < strlen(args); i++){
-        curr = getIDType(args[i] - '0');
-        pushGarbageCollector(NULL, curr);
-        
-        if(i){
-            tmp = (char *) malloc(3 + strlen(argsList)+ strlen(curr) );
-            strcpy(tmp, argsList);
-            strcat(tmp, " IN ");
-        } else {
-            tmp = (char *) malloc(1 + strlen(argsList)+ strlen(curr) );
-            strcpy(tmp, argsList);
-        }
-
-        strcat(tmp, curr);
-        argsList = tmp;
+    if(strlen(args)!= 2) {
+        throwError(newError(0, 0, NULL, NULL, NULL, -1));
+        return NULL;
     }
-    return argsList;
+    char fullExpression[50];
+
+    char *left = getIDType(args[0] - '0');
+    char *right = getIDType(args[0] - '1');
+
+    sprintf(fullExpression, "%s %s %s", left, "IN", right);
+    pushGarbageCollector(NULL, left);
+    pushGarbageCollector(NULL, right);
+
+    char *ret = strdup(fullExpression);
+    pushGarbageCollector(NULL, ret);
+    return ret;
 }
 
 /*** Cast expression ***/

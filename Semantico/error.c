@@ -25,10 +25,6 @@ void throwError(Error e){
         case WRONG_ARGS:
             expected = getArgsList(e.expected);
             got = getArgsList(e.got);
-
-            pushGarbageCollector(NULL, expected);
-            pushGarbageCollector(NULL, got);
-
             printf("%s:%d:%d: error: incompatible types for argument of ‘%s’\n Expected: %s(%s)\n Got: %s(%s)\n\n",fileName, e.line, e.column, e.message, e.message, expected, e.message, got);
         break;
 
