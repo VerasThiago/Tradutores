@@ -1,0 +1,1 @@
+rm -f a.out syntatic.output syntatic.tab.c syntatic.tab.h lex.yy.c *.o
