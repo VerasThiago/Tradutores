@@ -2,6 +2,8 @@
 #include "stdlib.h"
 #include "stack.h"
 
+Stack stackScope;
+
 void push(Stack* scope){
     scope->st[++scope->size] = ++scope->nxtScope;
 }
@@ -13,4 +15,3 @@ void pop(Stack* scope){
 int top(Stack* scope){
     return scope->st[scope->size];
 }
-

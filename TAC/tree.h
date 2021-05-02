@@ -8,27 +8,33 @@ typedef struct TreeNode {
     struct TreeNode* nxt;
     char* rule;
     Symbol* symbol;
+    int type;
+    int cast;
 } TreeNode;
 
-typedef struct TreeNodeList {
-    struct TreeNode* arr[10000];
-    int size;
-} TreeNodeList;
+typedef struct GarbageCollector {
+    struct TreeNode* nodeArr[1000];
+    char* strArr[1000];
+    int nodeSize;
+    int strSize;
+} GarbageCollector;
 
-void push_back_node(TreeNodeList* tnl, TreeNode* node);
 
-void freeNodeList(TreeNodeList* tnl);
+enum TYPE_CODE {
+    T_INT,
+    T_SET,
+    T_FLOAT,
+    T_ELEM,
+    T_EMPTY,
+};
 
-TreeNode* createNode(char* rule);
+TreeNode* createNode(char*);
+TreeNode* createIDNode(Symbol*, int, int, char*, int);
 
-void printTree(TreeNode* root, int ident,int *ok);
+void printTree(TreeNode*, int, int*);
+void freeTree(TreeNode*);
+void printToken(Symbol*, int, int *);
 
-void freeTree(TreeNode* root);
-
-void printToken(Symbol* s, int ident,int *ok);
-
-TreeNode* root;
-
-TreeNodeList treeNodeList;
+void getTreeTypeList(TreeNode*, char*);
 
 #endif

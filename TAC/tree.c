@@ -2,6 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include "tree.h"
+#include "utils.h"
+#include "semantic.h"
+
+TreeNode* root;
+GarbageCollector garbageCollector;
 
 TreeNode* createNode(char* rule){
     TreeNode* node = (TreeNode*) malloc(sizeof(TreeNode));
@@ -9,13 +14,27 @@ TreeNode* createNode(char* rule){
     node->children = NULL;
     node->nxt = NULL;
     node->symbol = NULL;
+    node->type = -1;
+    node->cast = -1;
+    pushGarbageCollector(node, NULL);
+    return node;
+}
+
+TreeNode* createIDNode(Symbol* s, int line, int column, char* body, int scope){
+    TreeNode* node = createNode("value");
+    node->symbol = s ? createSymbol(line, column, "variable", s->type, body, scope) :
+                       createSymbol(line, column, "variable", "??", body, scope);
+    node->type = getTypeID(node->symbol->type);
     return node;
 }
 
 void printToken(Symbol* s, int ident, int *ok){
-    printf(" ── [%d:%d] %s", s->line, s->colum, s->classType);
-    if(strcmp(s->classType, s->body))
+    printf(" ── [%d:%d] %s", s->line, s->column, s->classType);
+    if(strcmp(s->classType, "variable") == 0){
+        printf(" : %s %s", s->type, s->body);
+    } else if(strcmp(s->classType, s->body) != 0){
         printf(" : %s", s->body);
+    }
 }
 
 void printRule(char* s, int ident, int *ok){
@@ -44,6 +63,22 @@ void printTree(TreeNode* root, int ident, int *ok){
     
 }
 
+void getTreeTypeList(TreeNode* root, char ans[]){
+    if(!root) return;
+
+    if(root->type != -1){
+        char aux[] = "0";
+        aux[0] += root->type;
+        strcat(ans, aux);
+    }
+    
+    if(!startsWith(root->rule, "expression") && strcmp(root->rule, "function_call") != 0){
+        getTreeTypeList(root->children, ans);
+    }
+    getTreeTypeList(root->nxt, ans);
+}
+
+
 void freeTree(TreeNode* root){
     if(!root) return;
 
@@ -60,27 +95,4 @@ void freeTree(TreeNode* root){
         free(root->rule);
     }
     free(root);
-
-    
-}
-
-void freeNodeList(TreeNodeList* tnl) {
-    for(int i = 0; i <= tnl->size; i++){
-        if(!tnl->arr[i]) continue;
-        TreeNode* root = tnl->arr[i];
-        if(root->symbol){
-            free(root->symbol->classType);
-            free(root->symbol->type);
-            free(root->symbol->body);
-            free(root->symbol);
-        }
-        if(root->rule){
-            free(root->rule);
-        }
-        free(root);
-    }
-}
-
-void push_back_node(TreeNodeList* tnl, TreeNode* node){
-    tnl->arr[++tnl->size] = node;
 }
