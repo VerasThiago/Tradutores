@@ -54,6 +54,12 @@ void printRule(char* s, int ident, int *ok){
 void printTree(TreeNode* root, int ident, int *ok){
     if(!root) return;
 
+    if(strcmp(root->rule, "TAC") == 0) { // Change to TAC to not display on tree
+        printTree(root->children, ident + 2, ok); 
+        printTree(root->nxt, ident, ok); 
+        return;
+    }
+
     printRule(root->rule, ident, ok);
     ok[ident] = 1;
 
@@ -137,6 +143,8 @@ TreeNode* createTACNode(TAC *codeLine){
 }
 
 void buildIfTAC(TreeNode* root, TreeNode* expression, TreeNode* statements){
+    if(!expression->codeLine) return;
+
     char *freeLabel = getFreeLabel("if");
     char *freeEndLabel = getEndLabel(freeLabel);
 
@@ -155,6 +163,8 @@ void buildIfTAC(TreeNode* root, TreeNode* expression, TreeNode* statements){
 }
 
 void buildIfElseTAC(TreeNode* root, TreeNode* expression, TreeNode* ifStatements, TreeNode* elseStatements){
+    if(!expression->codeLine) return;
+
     char *freeIfLabel = getFreeLabel("if");
     char *freeElseLabel = getFreeLabel("else");
     char *freeElseEndLabel = getEndLabel(freeElseLabel);
@@ -178,4 +188,53 @@ void buildIfElseTAC(TreeNode* root, TreeNode* expression, TreeNode* ifStatements
 
     elseEndLabelNode->nxt = elseStatements->nxt;
     elseStatements->nxt = elseEndLabelNode;
+}
+
+void buildForTAC(TreeNode* root, TreeNode* forExpression, TreeNode* statement){
+    if(!forExpression->children->nxt->codeLine) return;
+
+    char *freeForLabel = getFreeLabel("for");
+    char *freeForEndLabel = getEndLabel(freeForLabel);
+    char *freeForPreCheckLabel = getFreeLabel("for_pre_check");
+    char *freeForCheckLabel = getFreeLabel("for_check");
+    char *freeForAfterStatementLabel = getFreeLabel("for_after_statement");
+    char *freeForStatementLabel = getFreeLabel("for_statement");
+
+    TreeNode* forLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeForLabel));
+    TreeNode* forEndLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeForEndLabel));
+    TreeNode* forPreCheckLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeForPreCheckLabel));
+    TreeNode* forCheckLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeForCheckLabel));
+    TreeNode* forAfterStatementLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeForAfterStatementLabel));
+    TreeNode* forStatementLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeForStatementLabel));
+
+    TreeNode* pre = forExpression->children;
+    TreeNode* check = pre->nxt;
+    TreeNode* after = check->nxt;
+
+    TreeNode* brzNode = createTACNode(createTAC("brz", freeForEndLabel, check->codeLine->dest, NULL, NULL));
+    TreeNode* jumpNodeStatement = createTACNode(createTAC("jump", NULL, freeForStatementLabel, NULL, NULL));
+    TreeNode* jumpNodeCheck = createTACNode(createTAC("jump", NULL, freeForCheckLabel, NULL, NULL));
+    TreeNode* jumpNodeAfterStatement = createTACNode(createTAC("jump", NULL, freeForAfterStatementLabel, NULL, NULL));
+
+    forLabelNode->nxt = root->children;
+    root->children = forLabelNode;
+
+    forExpression->children = forPreCheckLabelNode;
+    forPreCheckLabelNode->nxt = pre;
+
+    pre->nxt = forCheckLabelNode;
+    forCheckLabelNode->nxt = check;
+
+    check->nxt = brzNode;
+    brzNode->nxt = jumpNodeStatement;
+    jumpNodeStatement->nxt = forAfterStatementLabelNode;
+    forAfterStatementLabelNode->nxt = after;
+
+    after->nxt = jumpNodeCheck;
+
+    forExpression->nxt = forStatementLabelNode;
+    forStatementLabelNode->nxt = statement;
+
+    statement->nxt = jumpNodeAfterStatement;
+    jumpNodeAfterStatement->nxt = forEndLabelNode;
 }

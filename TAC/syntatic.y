@@ -574,6 +574,7 @@ expression_or_empty:
     | %empty {
         $$ = createNode("expression_or_empty");
         $$->type = getTypeID("INT");
+        $$->codeLine = createTAC(NULL, "1", NULL, NULL, NULL);
     }
 ;
 
@@ -868,6 +869,8 @@ for:
         $$ = createNode("for");
         $$->children = $3;
         $3->nxt = $5;  
+
+        buildForTAC($$, $3, $5);
     }
 ;
 
@@ -939,7 +942,7 @@ conditional:
         $$->children = $3;
         $3->nxt = $5;
         
-        if($3->codeLine) buildIfTAC($$, $3, $5);
+        buildIfTAC($$, $3, $5);
     }
     | IF '(' expression ')' statement ELSE statement {
         // printf("[SYNTATIC] (conditional) IF conditional_expression statements_braced ELSE statements_braced\n");
@@ -948,7 +951,7 @@ conditional:
         $3->nxt = $5;
         $5->nxt = $7;
 
-        if($3->codeLine) buildIfElseTAC($$, $3, $5, $7);
+        buildIfElseTAC($$, $3, $5, $7);
     }
 ;
 

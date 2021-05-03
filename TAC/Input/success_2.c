@@ -1,13 +1,17 @@
 int main(){
+    int n;
+    read(n);
     int x;
-    int y;
-    read(x);
-    read(y);
-    if(x < y){
-        writeln(x + 90000);
-    } else if(y < x) {
-        writeln(y - 350000);
-    } else {
-        writeln(157);
+    int sum;
+    sum = 0;
+    int i;
+    for(i = 0; i < n ; i = i + 1){
+        read(x);
+        if(x < 0){
+            sum = sum - x;
+        } else {
+            sum = sum + x;
+        }
     }
+    writeln(sum);
 }
