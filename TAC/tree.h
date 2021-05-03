@@ -40,8 +40,8 @@ void printTree(TreeNode* root, int ident, int *ok);
 
 void freeTree(TreeNode* root);
 
-void getTreeTypeList(TreeNode* root, char ans[]);
-
+void getTreeArgs(TreeNode* root, char ans[]);
+void getTreeParamsAndAssignPos(TreeNode* root, char ans[], int *idx);
 
 TreeNode* createTACNode(TAC *codeLine);
 void generateTACCode(TreeNode* root);

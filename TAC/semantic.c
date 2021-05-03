@@ -10,7 +10,7 @@
 
 extern TableList tableList;
 
-void checkArgsParms(char* args, char* params, int line, int column, char* body){
+void checkArgsParmsUtil(char* args, char* params, int line, int column, char* body){
     if(strlen(args) < strlen(params)){
         throwError(newError(line, column, body, params, args, FEW_ARGS));
     } else if(strlen(args) > strlen(params)) {
@@ -18,6 +18,38 @@ void checkArgsParms(char* args, char* params, int line, int column, char* body){
     } else if(strcmp(args, params) != 0) {
         throwError(newError(line, column, body, params, args, WRONG_ARGS));
     }
+}
+
+void checkArgsParms(TreeNode* root, Symbol* functionSymbol, TreeNode* argumentsList){
+    if(!functionSymbol || strcmp(functionSymbol->classType, "function") != 0) return;
+
+    root->codeLine = createTAC(NULL, getFreeRegister(), NULL, NULL, NULL);
+    root->type = getTypeID(root->symbol->type);
+
+    int x = 0;
+    char *funcParams;
+    char argsAsString[100] = "";
+
+    if(functionSymbol->paramsType) {
+        funcParams = functionSymbol->paramsType;
+    } else {
+        funcParams = strdup("");
+        pushGarbageCollector(NULL, funcParams);
+    }
+
+    checkAndExecForceCastArgs(argumentsList, funcParams, &x);
+    getTreeArgs(argumentsList, argsAsString);
+    checkArgsParmsUtil(argsAsString, funcParams, functionSymbol->line, functionSymbol->column, functionSymbol->body);
+
+    if(functionSymbol){
+        TreeNode* paramNode = createTACNode(createTAC("call", functionSymbol->body, getArgsCount(argsAsString), NULL, NULL));
+        TreeNode* popNode = createTACNode(createTAC("pop", NULL, root->codeLine->dest, NULL, NULL));
+        paramNode->nxt = root->children;
+        root->children = paramNode;
+        root->nxt = popNode;
+    }
+
+    
 }
 
 void checkStructureBoolINSet(int left, int right, int expectedLeft, int expectedRight, int line, int column, char* body){
@@ -125,8 +157,8 @@ void execForceCastSymbol(Symbol* L, TreeNode* R){
     }
 }
 
-void checkAndExecForceCastArgs(TreeNode* root, char argsType[], int *idx){
-    if(!root) return;
+void checkAndExecForceCastArgs(TreeNode* root, char* argsType, int *idx){
+    if(!root || !argsType) return;
 
     if(root->type != -1){
         if(checkSingleCast(root, argsType[*idx] - '0')) execSingleForceCast(root, argsType[*idx] - '0');

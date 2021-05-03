@@ -13,6 +13,8 @@ typedef struct TAC {
 
 TAC* createTAC(char* func, char* dest, char* arg1, char* arg2, char* label);
 char* getRegisterFromId(int id);
+char* getParamFromPos(int id);
+char* getArgsCount(char *args);
 char* getFreeRegister();
 int getFreeLabelId();
 char* getFreeLabel(char* name, int id);

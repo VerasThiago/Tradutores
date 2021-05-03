@@ -29,7 +29,7 @@ void printTable(TableList* tl){
     }
 }
 
-Symbol* createSymbol(int line, int column, char* classType, char* type, char* body, int scope){
+Symbol* createSymbol(int line, int column, char* classType, char* type, char* body, int scope, int id){
     Symbol* ret = (Symbol*) malloc(sizeof(Symbol));
     ret->scope = scope;
     ret->line = line;
@@ -38,7 +38,8 @@ Symbol* createSymbol(int line, int column, char* classType, char* type, char* bo
     ret->type = strdup(type);
     ret->body = strdup(body);
     ret->paramsType = NULL;
-    ret->id = -1;
+    ret->id = id;
+    ret->paramPos = -1;
     return ret;
 }
 

@@ -179,8 +179,9 @@ function_definition:
         push(&stackScope);
 
     } parameters {
+        int x = 0;
         char paramsAsString[100] = "";
-        getTreeTypeList($4, paramsAsString);
+        getTreeParamsAndAssignPos($4, paramsAsString, &x);
         $1->symbol->paramsType = strdup(paramsAsString);
 
         pop(&stackScope);
@@ -220,8 +221,9 @@ function_declaration:
             strcat(aux , $1->symbol->body);
             $$ = createNode(aux);
         }
-
-        $$->symbol = createSymbol($2.line, $2.column, "function", lastType, $2.tokenBody, $2.scope);
+        
+        $$->codeLine = createTAC(NULL, NULL, NULL, NULL, getFreeLabel($2.tokenBody, -2));
+        $$->symbol = createSymbol($2.line, $2.column, "function", lastType, $2.tokenBody, $2.scope, -1);
         $$->type = getTypeID($1->symbol->body);
 
         pushTable(&tableList, $$->symbol);
@@ -293,7 +295,7 @@ parameter:
         }
         checkDuplicatedVar(&tableList, $2.line, $2.column, $2.tokenBody, $2.scope);
         $$->type = getTypeID($1->symbol->body);
-        $$->symbol = createSymbol($2.line, $2.column, "param variable", lastType, $2.tokenBody, $2.scope);
+        $$->symbol = createSymbol($2.line, $2.column, "param variable", lastType, $2.tokenBody, $2.scope, -1);
         pushTable(&tableList, $$->symbol);
     }
 ;
@@ -302,25 +304,25 @@ type_identifier:
 	INT {
         // printf("[SYNTATIC] (type_identifier) INT\n");
         $$ = createNode("type_identifier");
-        $$->symbol = createSymbol(-1 , -1, "Type", lastType, "INT", -1);
+        $$->symbol = createSymbol(-1 , -1, "Type", lastType, "INT", -1, -1);
         strcpy(lastType, "INT");
     }
     | FLOAT {
         // printf("[SYNTATIC] (type_identifier) FLOAT\n");
         $$ = createNode("type_identifier");
-        $$->symbol = createSymbol(-1 , -1, "Type", lastType, "FLOAT", -1);
+        $$->symbol = createSymbol(-1 , -1, "Type", lastType, "FLOAT", -1, -1);
         strcpy(lastType, "FLOAT");
     }
 	| ELEM {
         // printf("[SYNTATIC] (type_identifier) ELEM\n");
         $$ = createNode("type_identifier");
-        $$->symbol = createSymbol(-1 , -1, "Type", lastType, "ELEM", -1);
+        $$->symbol = createSymbol(-1 , -1, "Type", lastType, "ELEM", -1, -1);
         strcpy(lastType, "ELEM");
     }
     | SET{
         // printf("[SYNTATIC] (type_identifier) SET\n");
         $$ = createNode("type_identifier");
-        $$->symbol = createSymbol(-1 , -1, "Type", lastType, "SET", -1);
+        $$->symbol = createSymbol(-1 , -1, "Type", lastType, "SET", -1, -1);
         strcpy(lastType, "SET");
     }
 ;
@@ -451,13 +453,13 @@ set_statement_add_remove:
         // printf("[SYNTATIC] (set_statement_add_remove) ADD '(' set_boolean_expression ')'\n"); 
         $$ = createNode("set_statement_add_remove");
         $$->children = $3;
-        $$->symbol = createSymbol($1.line, $1.column, "set function", "", $1.tokenBody, $1.scope);
+        $$->symbol = createSymbol($1.line, $1.column, "set function", "", $1.tokenBody, $1.scope, -1);
         $$->type = getTypeID("SET");
     }
     | REMOVE '(' set_boolean_expression ')' {
         // printf("[SYNTATIC] (set_statement_add_remove) REMOVE '(' set_boolean_expression ')'\n"); 
         $$ = createNode("set_statement_add_remove");
-        $$->symbol = createSymbol($1.line, $1.column, "set function", "", $1.tokenBody, $1.scope);
+        $$->symbol = createSymbol($1.line, $1.column, "set function", "", $1.tokenBody, $1.scope, -1);
         $$->children = $3;
         $$->type = getTypeID("SET");   
     }
@@ -476,7 +478,7 @@ set_statement_exists:
     EXISTS '(' set_assignment_expression ')' {
         // printf("[SYNTATIC] (set_statement_exists) EXISTS '(' set_assignment_expression ')'\n"); 
         $$ = createNode("set_statement_exists");
-        $$->symbol = createSymbol($1.line, $1.column, "set function", "", $1.tokenBody, $1.scope);
+        $$->symbol = createSymbol($1.line, $1.column, "set function", "", $1.tokenBody, $1.scope, -1);
         $$->children = $3;
         $$->type = getTypeID("ELEM");
     }
@@ -494,7 +496,7 @@ set_boolean_expression:
         $$->type = getTypeID("INT");
 
         char *body = getCastExpression($1, $3, $2.tokenBody);
-        $$->symbol = createSymbol($2.line, $2.column, "boolean operator", "", body, $2.scope);
+        $$->symbol = createSymbol($2.line, $2.column, "boolean operator", "", body, $2.scope, -1);
         pushGarbageCollector(NULL, body);
     }
     | expression IN ID {
@@ -511,7 +513,7 @@ set_boolean_expression:
         $$->type = getTypeID("INT");
 
         char *body = getCastExpression($1, nodeID, $2.tokenBody);
-        $$->symbol = createSymbol($2.line, $2.column, "boolean operator", "", body, $2.scope);
+        $$->symbol = createSymbol($2.line, $2.column, "boolean operator", "", body, $2.scope, -1);
         pushGarbageCollector(NULL, body);
     }
 ;
@@ -530,7 +532,7 @@ set_assignment_expression:
         $$->type = getTypeID("ELEM");   
 
         char *body =  getCastExpressionSymbol(s, $3, $2.tokenBody);
-        $$->symbol = createSymbol($2.line, $2.column, "assignment operator", "", body, $2.scope);
+        $$->symbol = createSymbol($2.line, $2.column, "assignment operator", "", body, $2.scope, -1);
         pushGarbageCollector(NULL, body);
     }
     | ID IN ID {
@@ -550,7 +552,7 @@ set_assignment_expression:
         $$->type = getTypeID("ELEM");
 
         char *body =  getCastExpression(nodeID1, nodeID2, $2.tokenBody);
-        $$->symbol = createSymbol($2.line, $2.column, "assignment operator", "", body, $2.scope);
+        $$->symbol = createSymbol($2.line, $2.column, "assignment operator", "", body, $2.scope, -1);
         pushGarbageCollector(NULL, body);
     }
 ;
@@ -615,7 +617,7 @@ expression_assignment:
         }
 
         char *body =  getCastExpressionSymbol(s, $3, "=");
-        $$->symbol = createSymbol($1.line, $1.column, "assignment operator", "", body, $1.scope);
+        $$->symbol = createSymbol($1.line, $1.column, "assignment operator", "", body, $1.scope, -1);
         pushGarbageCollector(NULL, body);
     }
 ;
@@ -654,7 +656,7 @@ expression_logical:
         $$->codeLine = createTAC(getFuncFromOperator($2.tokenBody), getFreeRegister(), $1->codeLine->dest, $3->codeLine->dest, NULL);
 
         char* body = getCastExpression($1, $3, $2.tokenBody);
-        $$->symbol = createSymbol($2.line, $2.column, "logical operator", "", body, $2.scope);
+        $$->symbol = createSymbol($2.line, $2.column, "logical operator", "", body, $2.scope, -1);
         pushGarbageCollector(NULL, body);
     }
     | expression_logical OR_OP expression_relational {
@@ -670,7 +672,7 @@ expression_logical:
         $$->codeLine = createTAC(getFuncFromOperator($2.tokenBody), getFreeRegister(), $1->codeLine->dest, $3->codeLine->dest, NULL);
 
         char* body = getCastExpression($1, $3, $2.tokenBody);
-        $$->symbol = createSymbol($2.line, $2.column, "logical operator", "", body, $2.scope);
+        $$->symbol = createSymbol($2.line, $2.column, "logical operator", "", body, $2.scope, -1);
         pushGarbageCollector(NULL, body);
     }
 ;
@@ -699,7 +701,7 @@ expression_relational:
         $$->codeLine = createTAC(getFuncFromOperator($2.tokenBody), getFreeRegister(), $1->codeLine->dest, $3->codeLine->dest, NULL);
 
         char *body =  getCastExpression($1, $3, $2.tokenBody);
-        $$->symbol = createSymbol($2.line, $2.column, "relational operator", "", body, $2.scope);
+        $$->symbol = createSymbol($2.line, $2.column, "relational operator", "", body, $2.scope, -1);
         pushGarbageCollector(NULL, body);
     }
 ;
@@ -728,7 +730,7 @@ expression_additive:
         $$->codeLine = createTAC(getFuncFromOperator($2.tokenBody), getFreeRegister(), $1->codeLine->dest, $3->codeLine->dest, NULL);
 
         char *body = getCastExpression($1, $3, $2.tokenBody);
-        $$->symbol = createSymbol($2.line, $2.column, "additive operator", "", body, $2.scope);
+        $$->symbol = createSymbol($2.line, $2.column, "additive operator", "", body, $2.scope, -1);
         pushGarbageCollector(NULL, body);
     }
 ;
@@ -757,7 +759,7 @@ expression_multiplicative:
         $$->codeLine = createTAC(getFuncFromOperator($2.tokenBody), getFreeRegister(), $1->codeLine->dest, $3->codeLine->dest, NULL);
 
         char *body = getCastExpression($1, $3, $2.tokenBody);
-        $$->symbol = createSymbol($2.line, $2.column, "multiplicative operator", "", body, $2.scope);
+        $$->symbol = createSymbol($2.line, $2.column, "multiplicative operator", "", body, $2.scope, -1);
         pushGarbageCollector(NULL, body);
     }
 ;
@@ -787,7 +789,7 @@ expression_value:
         // printf("[SYNTATIC] (expression_value) ADDITIVE_OP(%s) '(' expression ')' \n", $1.tokenBody);
         $$ = createNode("expression_value");
         $$->children = $3;
-        $$->symbol = createSymbol($1.line, $1.column, "additive operator", "", $1.tokenBody, $1.scope); 
+        $$->symbol = createSymbol($1.line, $1.column, "additive operator", "", $1.tokenBody, $1.scope, -1); 
         $$->type = $3->type;
     }
     | value {
@@ -850,14 +852,14 @@ is_set_expression:
     IS_SET '(' expression ')' {
         // printf("[SYNTATIC] (is_set_expression) IS_SET '(' expression ')' ';'\n");
         $$ = createNode("is_set_expression");
-        $$->symbol = createSymbol($1.line, $1.column, "set function", "", $1.tokenBody, $1.scope);
+        $$->symbol = createSymbol($1.line, $1.column, "set function", "", $1.tokenBody, $1.scope, -1);
         $$->children = $3;
         $$->type = getTypeID("INT");  
     }
     | '!' IS_SET '(' expression ')' {
         // printf("[SYNTATIC] (is_set_expression) ! IS_SET '(' expression ')' ';'\n");
         $$ = createNode("is_set_expression");
-        $$->symbol = createSymbol($2.line, $2.column, "set function", "", $2.tokenBody, $2.scope);
+        $$->symbol = createSymbol($2.line, $2.column, "set function", "", $2.tokenBody, $2.scope, -1);
         $$->children = $4;
         $$->type = getTypeID("INT");    
     }
@@ -889,13 +891,13 @@ io_statement:
         // printf("[SYNTATIC] (io_statement) READ '(' ID(%s) ')' ';'\n", $3.tokenBody);
         Symbol* s = checkVarExist(&tableList, $3.line, $3.column, $3.tokenBody, $3.scope);
         $$ = createNode("io_statement - READ");
-        $$->symbol = createSymbol($3.line, $3.column, "variable", lastType, $3.tokenBody, $3.scope);
+        $$->symbol = createSymbol($3.line, $3.column, "variable", lastType, $3.tokenBody, $3.scope, -1);
         if(s) $$->codeLine = createTAC(getFuncFromOperator("read"), NULL, getRegisterFromId(s->id), NULL, NULL);
     }
     | WRITE '(' STRING ')' ';' {
         // printf("[SYNTATIC] (io_statement) WRITE '(' STRING(%s) ')' ';'\n", $3.tokenBody);
         $$ = createNode("io_statement - WRITE");
-        $$->symbol = createSymbol($3.line, $3.column, "string", "", $3.tokenBody, $3.scope);
+        $$->symbol = createSymbol($3.line, $3.column, "string", "", $3.tokenBody, $3.scope, -1);
     }
     | WRITE '(' expression ')' ';' {
         // printf("[SYNTATIC] (io_statement) WRITE '(' expression ')' ';'\n");
@@ -906,7 +908,7 @@ io_statement:
     | WRITELN '(' STRING ')' ';' {
         // printf("[SYNTATIC] (io_statement) WRITELN '(' STRING(%s) ')' ';'\n", $3.tokenBody);
         $$ = createNode("io_statement - WRITELN");
-        $$->symbol = createSymbol($3.line, $3.column, "string", "", $3.tokenBody, $3.scope);
+        $$->symbol = createSymbol($3.line, $3.column, "string", "", $3.tokenBody, $3.scope, -1);
     }
     | WRITELN '(' expression ')' ';' {
         // printf("[SYNTATIC] (io_statement) WRITELN '(' expression ')' ';'\n");
@@ -959,6 +961,10 @@ conditional:
 return:
     RETURN expression ';' {
         // printf("[SYNTATIC] (return) RETURN expression ';'\n");
+        $$ = createNode("return");
+        $$->children = $2;
+        if($2->codeLine) $$->codeLine = createTAC("return", NULL, $2->codeLine->dest, NULL, NULL);
+
         Symbol* s = getClosestFunctionFromLine(&tableList, $1.line);
         
         if(s){
@@ -966,8 +972,6 @@ return:
             checkMissTypeReturn(getTypeID(s->type), $2->type, $1.line, $1.column, s->body);
         }
 
-        $$ = createNode("return");
-        $$->children = $2;
     }
     | RETURN ';' {
         // printf("[SYNTATIC] (return) RETURN ';'\n");
@@ -981,10 +985,13 @@ value:
         $$ = createNode("value");
         Symbol* s = checkVarExist(&tableList, $1.line, $1.column, $1.tokenBody, $1.scope);
 
-        $$->symbol = createSymbol($1.line, $1.column, "variable", s ? s->type:"??", $1.tokenBody, $1.scope);
+        $$->symbol = createSymbol($1.line, $1.column, "variable", s ? s->type:"??", $1.tokenBody, $1.scope, s ? s->id:-1);
 
         $$->type = getTypeID($$->symbol->type);
-        if(s) $$->codeLine = createTAC(NULL, getRegisterFromId(s->id), NULL, NULL, NULL); 
+        if(s) {
+            if(strcmp(s->classType, "param variable") == 0) $$->codeLine = createTAC(NULL, getParamFromPos(s->paramPos), NULL, NULL, NULL); 
+            else $$->codeLine = createTAC(NULL, getRegisterFromId(s->id), NULL, NULL, NULL); 
+        }
     }
     | const {
         // printf("[SYNTATIC] (value) const\n");
@@ -1010,27 +1017,16 @@ value:
 function_call:
     ID '(' arguments_list ')' {
         // printf("[SYNTATIC] (function_call) ID(%s) '(' arguments_list ')'\n", $1.tokenBody);
-
         $$ = createNode("function_call");
         $$->children = $3;
 
         Symbol* s = checkFuncExist(&tableList, $1.line, $1.column, $1.tokenBody, $1.scope);
 
-        $$->symbol = s ? createSymbol($1.line, $1.column, "function_call", s->type, $1.tokenBody, $1.scope) :
-                         createSymbol($1.line, $1.column, "function_call", "??", $1.tokenBody, $1.scope);
+        $$->symbol = s ? createSymbol($1.line, $1.column, "function_call", s->type, $1.tokenBody, $1.scope, -1) :
+                         createSymbol($1.line, $1.column, "function_call", "??", $1.tokenBody, $1.scope, -1);
 
-        if(s && strcmp(s->classType, "function") == 0){
-            $$->type = getTypeID($$->symbol->type);
+        checkArgsParms($$, s, $3);
 
-            int x = 0;
-            char argsAsString[100] = "";
-            char *funcParams = getSymbol(&tableList, $1.tokenBody, 0)->paramsType;
-            
-            checkAndExecForceCastArgs($3, funcParams, &x);
-
-            getTreeTypeList($3, argsAsString);
-            checkArgsParms(argsAsString, funcParams, $1.line, $1.column, $1.tokenBody);
-        }
     }
     | ID '(' ')' {
         // printf("[SYNTATIC] (function_call) ID(%s) '(' ')'\n", $1.tokenBody);
@@ -1039,13 +1035,10 @@ function_call:
 
         Symbol* s = checkFuncExist(&tableList, $1.line, $1.column, $1.tokenBody, $1.scope);
 
-        $$->symbol = createSymbol($1.line, $1.column, "function_call", s ? s->type:"??", $1.tokenBody, $1.scope);
+        $$->symbol = createSymbol($1.line, $1.column, "function_call", s ? s->type:"??", $1.tokenBody, $1.scope, -1);
+        if($$->symbol) $$->type = getTypeID($$->symbol->type);
 
-        if(s && strcmp(s->classType, "function_call") == 0) {
-            $$->type = getTypeID($$->symbol->type);
-            char argsAsString[] = "";
-            checkArgsParms(argsAsString, getSymbol(&tableList, $1.tokenBody, 0)->paramsType, $1.line, $1.column, $1.tokenBody);
-        }
+        checkArgsParms($$, s, NULL);
     }
 ;
 
@@ -1059,7 +1052,7 @@ variables_declaration:
         strcat(aux , $1->symbol->body);
         $$ = createNode(aux);
 
-        $$->symbol = createSymbol($2.line, $2.column, "variable", lastType, $2.tokenBody, $2.scope);
+        $$->symbol = createSymbol($2.line, $2.column, "variable", lastType, $2.tokenBody, $2.scope, -1);
         $$->type = getTypeID($$->symbol->type);
 
         pushTable(&tableList, $$->symbol);
@@ -1070,21 +1063,21 @@ const:
     INT_VALUE {
         // printf("[SYNTATIC] (const) INT_VALUE = %s\n", $1.tokenBody);
         $$ = createNode("const");
-        $$->symbol = createSymbol($1.line, $1.column, "INT", "INT", $1.tokenBody, $1.scope);
+        $$->symbol = createSymbol($1.line, $1.column, "INT", "INT", $1.tokenBody, $1.scope, -1);
         $$->type = getTypeID("INT");
         $$->codeLine = createTAC(NULL, $1.tokenBody, NULL, NULL, NULL);
     }
     | FLOAT_VALUE {
         // printf("[SYNTATIC] (const) FLOAT_VALUE = %s\n", $1.tokenBody);
         $$ = createNode("const");
-        $$->symbol = createSymbol($1.line, $1.column, "FLOAT", "FLOAT", $1.tokenBody, $1.scope);
+        $$->symbol = createSymbol($1.line, $1.column, "FLOAT", "FLOAT", $1.tokenBody, $1.scope, -1);
         $$->type = getTypeID("FLOAT");
         $$->codeLine = createTAC(NULL, $1.tokenBody, NULL, NULL, NULL);
     }
     | EMPTY {
         // printf("[SYNTATIC] (const) EMPTY\n");
         $$ = createNode("const");
-        $$->symbol = createSymbol($1.line, $1.column, "EMPTY", "EMPTY", $1.tokenBody, $1.scope);
+        $$->symbol = createSymbol($1.line, $1.column, "EMPTY", "EMPTY", $1.tokenBody, $1.scope, -1);
         $$->type = getTypeID("EMPTY");
         $$->codeLine = createTAC(NULL, $1.tokenBody, NULL, NULL, NULL);
     }

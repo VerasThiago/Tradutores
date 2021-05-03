@@ -20,7 +20,8 @@ Symbol* checkDuplicatedVar(TableList*, int , int , char*, int );
 void checkMissType(int, int, int, int, char*);
 void checkMissTypeReturn(int, int, int, int, char*);
 
-void checkArgsParms(char*, char*, int, int, char*);
+void checkArgsParmsUtil(char* args, char* params, int line, int column, char* body);
+void checkArgsParms(TreeNode* root, Symbol* functionSymbol, TreeNode* argumentsList);
 Symbol* checkVarExist(TableList*, int, int, char*, int);
 
 void checkMainFunc();

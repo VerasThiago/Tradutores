@@ -34,6 +34,7 @@ int getFreeLabelId(){
 char* getFreeLabel(char* name, int id){
     char buffer[20];
     if(name) {
+        if(strcmp(name, "main") == 0 || id == -2) return name;
         if(id != -1) sprintf(buffer, "__%d_%s", id, name);
         else sprintf(buffer, "__%d_%s", freeLabel++, name);
     } else {
@@ -56,6 +57,22 @@ char* getEndLabel(char* label){
 char* getRegisterFromId(int id){
     char buffer[5];
     sprintf(buffer, "$%d", id);
+    char* ret = strdup(buffer);
+    pushGarbageCollector(NULL, ret);
+    return ret;
+}
+
+char* getArgsCount(char *args){
+    char buffer[5];
+    sprintf(buffer, "%d", (int)strlen(args));
+    char* ret = strdup(buffer);
+    pushGarbageCollector(NULL, ret);
+    return ret;
+}
+
+char* getParamFromPos(int id){
+    char buffer[5];
+    sprintf(buffer, "#%d", id);
     char* ret = strdup(buffer);
     pushGarbageCollector(NULL, ret);
     return ret;
@@ -103,14 +120,19 @@ void insertFile(TAC* codeLine){
         strcmp(codeLine->func, "minus") == 0    ||
         strcmp(codeLine->func, "not") == 0      ||
         strcmp(codeLine->func, "mov") == 0      ||
+        strcmp(codeLine->func, "call") == 0     ||
         strcmp(codeLine->func, "brz") == 0 
     ) {
         fprintf(out, "\t%s %s, %s\n", codeLine->func, codeLine->dest, codeLine->arg1); 
     } else if(
         strcmp(codeLine->func, "print") == 0    ||
         strcmp(codeLine->func, "println") == 0  ||
-        strcmp(codeLine->func, "jump") == 0  ||
-        strcmp(codeLine->func, "scani") == 0
+        strcmp(codeLine->func, "jump") == 0     ||
+        strcmp(codeLine->func, "return") == 0   ||
+        strcmp(codeLine->func, "scani") == 0    ||
+        strcmp(codeLine->func, "pop") == 0      ||
+        strcmp(codeLine->func, "param") == 0    
+        
     ){
         fprintf(out, "\t%s %s\n", codeLine->func, codeLine->arg1); 
     }

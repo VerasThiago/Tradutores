@@ -23,8 +23,8 @@ TreeNode* createNode(char* rule){
 
 TreeNode* createIDNode(Symbol* s, int line, int column, char* body, int scope){
     TreeNode* node = createNode("value");
-    node->symbol = s ? createSymbol(line, column, "variable", s->type, body, scope) :
-                       createSymbol(line, column, "variable", "??", body, scope);
+    node->symbol = s ? createSymbol(line, column, "variable", s->type, body, scope, -1) :
+                       createSymbol(line, column, "variable", "??", body, scope, -1);
     node->type = getTypeID(node->symbol->type);
     return node;
 }
@@ -69,7 +69,7 @@ void printTree(TreeNode* root, int ident, int *ok){
     }
 
     // Change to 0 to not display on tree or 1 to display
-    if(0 && root->codeLine && (root->codeLine->func || root->codeLine->label) ){ 
+    if(0 && root->codeLine && (root->codeLine->func || root->codeLine->label || root->codeLine->dest) ){ 
         printCodeLine(root->codeLine, ident + 1);
     }
 
@@ -80,7 +80,8 @@ void printTree(TreeNode* root, int ident, int *ok){
     
 }
 
-void getTreeTypeList(TreeNode* root, char ans[]){
+
+void getTreeArgs(TreeNode* root, char ans[]){
     if(!root) return;
 
     if(root->type != -1){
@@ -89,10 +90,35 @@ void getTreeTypeList(TreeNode* root, char ans[]){
         strcat(ans, aux);
     }
     
-    if(!startsWith(root->rule, "expression") && strcmp(root->rule, "function_call") != 0){
-        getTreeTypeList(root->children, ans);
+    if(!startsWith(root->rule, "expression") && !startsWith(root->rule, "function_call")){
+        getTreeArgs(root->children, ans);
     }
-    getTreeTypeList(root->nxt, ans);
+    getTreeArgs(root->nxt, ans);
+
+    if(root->type != -1){
+        TreeNode* paramNode;
+        if(root->symbol->id != -1) paramNode = createTACNode(createTAC("param", NULL, getRegisterFromId(root->symbol->id), NULL, NULL));
+        else paramNode = createTACNode(createTAC("param", NULL, root->codeLine->dest, NULL, NULL));
+        paramNode->nxt = root->nxt;
+        root-> nxt = paramNode;
+    }
+}
+
+void getTreeParamsAndAssignPos(TreeNode* root, char ans[], int *idx){
+    if(!root) return;
+
+    if(root->type != -1){
+        char aux[] = "0";
+        aux[0] += root->type;
+        strcat(ans, aux);
+        root->symbol->paramPos = *idx;
+        (*idx)++;
+    }
+    
+    if(!startsWith(root->rule, "expression") && !startsWith(root->rule, "function_call")){
+        getTreeParamsAndAssignPos(root->children, ans, idx);
+    }
+    getTreeParamsAndAssignPos(root->nxt, ans, idx);
 }
 
 
@@ -116,11 +142,11 @@ void freeTree(TreeNode* root){
 
 void generateTACCodeUtil(TreeNode* root){
     if(!root) return;
-
     if(root->codeLine && root->codeLine->label) insertFile(root->codeLine);
     generateTACCodeUtil(root->children);
-    if(root->codeLine && root->codeLine->func) insertFile(root->codeLine);
+    if(root->codeLine && root->codeLine->func && strcmp(root->codeLine->func, "call") != 0) insertFile(root->codeLine);
     generateTACCodeUtil(root->nxt);
+    if(root->codeLine && root->codeLine->func && strcmp(root->codeLine->func, "call") == 0) insertFile(root->codeLine);
 }
 
 void generateTACCode(TreeNode* root){
@@ -128,7 +154,7 @@ void generateTACCode(TreeNode* root){
     fclose(fopen(cExtensionToTACExtension(), "w"));
 
     FILE *out = fopen(cExtensionToTACExtension(), "a");
-    fprintf(out, ".table\n.code\nmain:\n"); 
+    fprintf(out, ".table\n.code\n"); 
     fclose(out);
 
     generateTACCodeUtil(root);
@@ -150,18 +176,18 @@ void buildIfTAC(TreeNode* root, TreeNode* expression, TreeNode* statements){
     char *freeLabel = getFreeLabel("if", -1);
     char *freeEndLabel = getEndLabel(freeLabel);
 
-    root->codeLine = createTAC(NULL, NULL, NULL, NULL, freeLabel);
-
+    TreeNode* freeLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeLabel));
+    TreeNode* freeEndLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeEndLabel));
     TreeNode* brzNode = createTACNode(createTAC("brz", freeEndLabel, expression->codeLine->dest, NULL, NULL));
+
+    freeLabelNode->nxt = root->children;
+    root->children = freeLabelNode;
+
     expression->nxt = brzNode;
     brzNode->nxt = statements;
 
-    TreeNode* tmp = statements->nxt;
-
-    TreeNode* endLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeEndLabel));
-    statements->nxt = endLabelNode;
-
-    endLabelNode->nxt = tmp;
+    freeEndLabelNode->nxt = statements->nxt;
+    statements->nxt = freeEndLabelNode;
 }
 
 void buildIfElseTAC(TreeNode* root, TreeNode* expression, TreeNode* ifStatements, TreeNode* elseStatements){
@@ -194,6 +220,7 @@ void buildIfElseTAC(TreeNode* root, TreeNode* expression, TreeNode* ifStatements
 
 void buildForTAC(TreeNode* root, TreeNode* forExpression, TreeNode* statement){
     if(!forExpression->children->nxt->codeLine) return;
+    
     int forLabelId = getFreeLabelId();
     char *freeForLabel = getFreeLabel("for", forLabelId);
     char *freeForEndLabel = getEndLabel(freeForLabel);
