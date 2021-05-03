@@ -54,7 +54,8 @@ void printRule(char* s, int ident, int *ok){
 void printTree(TreeNode* root, int ident, int *ok){
     if(!root) return;
 
-    if(strcmp(root->rule, "TAC") == 0) { // Change to TAC to not display on tree
+    // Change to TAC to not display on tree or TAX to display
+    if(strcmp(root->rule, "TAC") == 0) {
         printTree(root->children, ident + 2, ok); 
         printTree(root->nxt, ident, ok); 
         return;
@@ -67,7 +68,8 @@ void printTree(TreeNode* root, int ident, int *ok){
         printToken(root->symbol, ident + 1);
     }
 
-    if(root->codeLine && (root->codeLine->func || root->codeLine->label) ){
+    // Change to 0 to not display on tree or 1 to display
+    if(0 && root->codeLine && (root->codeLine->func || root->codeLine->label) ){ 
         printCodeLine(root->codeLine, ident + 1);
     }
 
@@ -145,7 +147,7 @@ TreeNode* createTACNode(TAC *codeLine){
 void buildIfTAC(TreeNode* root, TreeNode* expression, TreeNode* statements){
     if(!expression->codeLine) return;
 
-    char *freeLabel = getFreeLabel("if");
+    char *freeLabel = getFreeLabel("if", -1);
     char *freeEndLabel = getEndLabel(freeLabel);
 
     root->codeLine = createTAC(NULL, NULL, NULL, NULL, freeLabel);
@@ -165,8 +167,8 @@ void buildIfTAC(TreeNode* root, TreeNode* expression, TreeNode* statements){
 void buildIfElseTAC(TreeNode* root, TreeNode* expression, TreeNode* ifStatements, TreeNode* elseStatements){
     if(!expression->codeLine) return;
 
-    char *freeIfLabel = getFreeLabel("if");
-    char *freeElseLabel = getFreeLabel("else");
+    char *freeIfLabel = getFreeLabel("if", -1);
+    char *freeElseLabel = getFreeLabel("else", -1);
     char *freeElseEndLabel = getEndLabel(freeElseLabel);
     
     TreeNode* ifLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeIfLabel));
@@ -192,13 +194,13 @@ void buildIfElseTAC(TreeNode* root, TreeNode* expression, TreeNode* ifStatements
 
 void buildForTAC(TreeNode* root, TreeNode* forExpression, TreeNode* statement){
     if(!forExpression->children->nxt->codeLine) return;
-
-    char *freeForLabel = getFreeLabel("for");
+    int forLabelId = getFreeLabelId();
+    char *freeForLabel = getFreeLabel("for", forLabelId);
     char *freeForEndLabel = getEndLabel(freeForLabel);
-    char *freeForPreCheckLabel = getFreeLabel("for_pre_check");
-    char *freeForCheckLabel = getFreeLabel("for_check");
-    char *freeForAfterStatementLabel = getFreeLabel("for_after_statement");
-    char *freeForStatementLabel = getFreeLabel("for_statement");
+    char *freeForPreCheckLabel = getFreeLabel("for_pre_check", forLabelId);
+    char *freeForCheckLabel = getFreeLabel("for_check", forLabelId);
+    char *freeForAfterStatementLabel = getFreeLabel("for_after_statement", forLabelId);
+    char *freeForStatementLabel = getFreeLabel("for_statement", forLabelId);
 
     TreeNode* forLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeForLabel));
     TreeNode* forEndLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeForEndLabel));

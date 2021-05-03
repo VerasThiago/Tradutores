@@ -27,10 +27,19 @@ char* getFreeRegister(){
     return ret;
 }
 
-char* getFreeLabel(char* name){
+int getFreeLabelId(){
+    return freeLabel++;
+}
+
+char* getFreeLabel(char* name, int id){
     char buffer[20];
-    if(name) sprintf(buffer, "__%d_%s", freeLabel++, name);
-    else sprintf(buffer, "__%d", freeLabel++);
+    if(name) {
+        if(id != -1) sprintf(buffer, "__%d_%s", id, name);
+        else sprintf(buffer, "__%d_%s", freeLabel++, name);
+    } else {
+        if(id != -1) sprintf(buffer, "__%d", id);
+        else sprintf(buffer, "__%d", freeLabel++);
+    }
     char* ret = strdup(buffer);
     pushGarbageCollector(NULL, ret);
     return ret;
