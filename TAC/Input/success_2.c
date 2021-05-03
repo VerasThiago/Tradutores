@@ -5,8 +5,9 @@ int main(){
     read(y);
     if(x < y){
         writeln(x + 90000);
-    }
-    if(y <= x){
+    } else if(y < x) {
         writeln(y - 350000);
+    } else {
+        writeln(157);
     }
 }

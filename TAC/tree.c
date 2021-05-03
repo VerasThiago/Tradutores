@@ -39,7 +39,7 @@ void printToken(Symbol* s, int ident){
 }
 
 void printCodeLine(TAC* codeLine, int ident){    
-    printf(" ── %s %s %s %s", codeLine->func, codeLine->dest, codeLine->arg1, codeLine->arg2);
+    printf(" ── %s %s %s %s %s", codeLine->func, codeLine->dest, codeLine->arg1, codeLine->arg2, codeLine->label);
 }
 
 void printRule(char* s, int ident, int *ok){
@@ -61,7 +61,7 @@ void printTree(TreeNode* root, int ident, int *ok){
         printToken(root->symbol, ident + 1);
     }
 
-    if(root->codeLine && root->codeLine->func){
+    if(root->codeLine && (root->codeLine->func || root->codeLine->label) ){
         printCodeLine(root->codeLine, ident + 1);
     }
 
@@ -126,7 +126,7 @@ void generateTACCode(TreeNode* root){
     generateTACCodeUtil(root);
     
     out = fopen(cExtensionToTACExtension(), "a");
-    fprintf(out, "\treturn 0\n"); 
+    fprintf(out, "\tnop\n"); 
     fclose(out);
 }
 
@@ -137,7 +137,7 @@ TreeNode* createTACNode(TAC *codeLine){
 }
 
 void buildIfTAC(TreeNode* root, TreeNode* expression, TreeNode* statements){
-    char *freeLabel = getFreeLabel();
+    char *freeLabel = getFreeLabel("if");
     char *freeEndLabel = getEndLabel(freeLabel);
 
     root->codeLine = createTAC(NULL, NULL, NULL, NULL, freeLabel);
@@ -155,54 +155,27 @@ void buildIfTAC(TreeNode* root, TreeNode* expression, TreeNode* statements){
 }
 
 void buildIfElseTAC(TreeNode* root, TreeNode* expression, TreeNode* ifStatements, TreeNode* elseStatements){
-    /*
-    TODO	
+    char *freeIfLabel = getFreeLabel("if");
+    char *freeElseLabel = getFreeLabel("else");
+    char *freeElseEndLabel = getEndLabel(freeElseLabel);
+    
+    TreeNode* ifLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeIfLabel));
+    TreeNode* elseLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeElseLabel));
+    TreeNode* elseEndLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeElseEndLabel));
 
-    Before:
+    TreeNode* brzNode = createTACNode(createTAC("brz", freeElseLabel, expression->codeLine->dest, NULL, NULL));
+    TreeNode* jumpNode = createTACNode(createTAC("jump", NULL, freeElseEndLabel, NULL, NULL));
+    
+    ifLabelNode->nxt = root->children;
+    root->children = ifLabelNode;
 
-    ├─ conditional
-    |   ├─ expression_relational  ── [6:10] relational operator : INT < INT ── slt $1023 $0 $1
-    |   |   ├─ value  ── [6:8] variable : INT x
-    |   |   ├─ value  ── [6:12] variable : INT y
-    |   ├─ expression_additive  ── [7:12] additive operator : INT + INT ── add $1022 10 20
-    |   |   ├─ const  ── [7:9] INT : 10
-    |   |   ├─ const  ── [7:14] INT : 20
-    |   ├─ expression_additive  ── [9:11] additive operator : INT + INT ── add $1021 1 1
-    |   |   ├─ const  ── [9:9] INT : 1
-    |   |   ├─ const  ── [9:13] INT : 1
+    expression->nxt = brzNode;
+    brzNode->nxt = ifStatements;
 
-    After
+    ifStatements->nxt = jumpNode;
+    jumpNode->nxt = elseLabelNode;
+    elseLabelNode->nxt = elseStatements;
 
-    ├─ conditional - TAC (null) (null) (null) (null) __0
-    |   ├─ expression_relational  ── [6:10] relational operator : INT < INT ── slt $1023 $0 $1
-    |   |   ├─ value  ── [6:8] variable : INT x
-    |   |   ├─ value  ── [6:12] variable : INT y
-    |   ├─ TAC brz __0_if_end $1023 (null)  
-    |   ├─ expression_additive  ── [7:12] additive operator : INT + INT ── add $1022 10 20
-    |   |   ├─ const  ── [7:9] INT : 10
-    |   |   ├─ const  ── [7:14] INT : 20
-    |   ├─ TAC jump __0_else_end
-    |   ├─ TAC (null) (null) (null) (null) __0_if_end
-    |   ├─ expression_additive  ── [9:11] additive operator : INT + INT ── add $1021 1 1
-    |   |   ├─ const  ── [9:9] INT : 1
-    |   |   ├─ const  ── [9:13] INT : 1
-    |   ├─ TAC (null) (null) (null) (null) __0_else_end
-
-    */
-
-    // char *freeLabel = getFreeLabel();
-    // char *freeEndLabel = getEndLabel(freeLabel);
-
-    // root->codeLine = createTAC(NULL, NULL, NULL, NULL, freeLabel);
-
-    // TreeNode* brzNode = createTACNode(createTAC("brz", freeEndLabel, expression->codeLine->dest, NULL, NULL));
-    // expression->nxt = brzNode;
-    // brzNode->nxt = statements;
-
-    // TreeNode* tmp = statements->nxt;
-
-    // TreeNode* endLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeEndLabel));
-    // statements->nxt = endLabelNode;
-
-    // endLabelNode->nxt = tmp;
+    elseEndLabelNode->nxt = elseStatements->nxt;
+    elseStatements->nxt = elseEndLabelNode;
 }

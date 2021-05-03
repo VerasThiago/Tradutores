@@ -27,16 +27,17 @@ char* getFreeRegister(){
     return ret;
 }
 
-char* getFreeLabel(){
-    char buffer[7];
-    sprintf(buffer, "__%d", freeLabel++);
+char* getFreeLabel(char* name){
+    char buffer[20];
+    if(name) sprintf(buffer, "__%d_%s", freeLabel++, name);
+    else sprintf(buffer, "__%d", freeLabel++);
     char* ret = strdup(buffer);
     pushGarbageCollector(NULL, ret);
     return ret;
 }
 
 char* getEndLabel(char* label){
-    char buffer[10];
+    char buffer[20];
     sprintf(buffer, "%s_end", label);
     char* ret = strdup(buffer);
     pushGarbageCollector(NULL, ret);
@@ -99,6 +100,7 @@ void insertFile(TAC* codeLine){
     } else if(
         strcmp(codeLine->func, "print") == 0    ||
         strcmp(codeLine->func, "println") == 0  ||
+        strcmp(codeLine->func, "jump") == 0  ||
         strcmp(codeLine->func, "scani") == 0
     ){
         fprintf(out, "\t%s %s\n", codeLine->func, codeLine->arg1); 

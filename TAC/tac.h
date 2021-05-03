@@ -14,7 +14,7 @@ typedef struct TAC {
 TAC* createTAC(char* func, char* dest, char* arg1, char* arg2, char* label);
 char* getRegisterFromId(int id);
 char* getFreeRegister();
-char* getFreeLabel();
+char* getFreeLabel(char* name);
 char* getEndLabel(char* label);
 char* getFuncFromOperator(char* operator);
 void insertFile(TAC* codeLine);
