@@ -42,6 +42,10 @@ void freeTree(TreeNode* root);
 
 void getTreeTypeList(TreeNode* root, char ans[]);
 
+
+TreeNode* createTACNode(TAC *codeLine);
 void generateTACCode(TreeNode* root);
+void buildIfTAC(TreeNode* root, TreeNode* expression, TreeNode* statements);
+void buildIfElseTAC(TreeNode* root, TreeNode* expression, TreeNode* ifStatements, TreeNode* elseStatements);
 
 #endif

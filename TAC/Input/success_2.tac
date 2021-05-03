@@ -1,17 +1,18 @@
 .table
 .code
 main:
-	mov $0, 20
-	add $1023, 10, 502
-	mov $0, $1023
-	add $1022, 10, $0
-	add $1021, $1022, 30
-	add $1020, $1021, 40
-	mov $0, $1020
-	println $0
-	slt $1019, $0, 900
-	println $1019
+	scani $0
 	scani $1
-	sub $1018, $0, $1
-	mov $1, $1018
-	println $1
+__0:
+	slt $1023, $0, $1
+	brz __0_end, $1023
+	add $1022, $0, 90000
+	println $1022
+__0_end:
+__1:
+	sleq $1021, $1, $0
+	brz __1_end, $1021
+	sub $1020, $1, 350000
+	println $1020
+__1_end:
+	return 0

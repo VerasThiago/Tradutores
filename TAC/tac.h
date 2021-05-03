@@ -8,11 +8,14 @@ typedef struct TAC {
     char* arg1;
     char* arg2;
     char* dest;
+    char* label;
 } TAC;
 
-TAC* createTAC(char* func, char* dest, char* arg1, char* arg2);
+TAC* createTAC(char* func, char* dest, char* arg1, char* arg2, char* label);
 char* getRegisterFromId(int id);
 char* getFreeRegister();
+char* getFreeLabel();
+char* getEndLabel(char* label);
 char* getFuncFromOperator(char* operator);
 void insertFile(TAC* codeLine);
 

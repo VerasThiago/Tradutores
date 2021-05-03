@@ -30,6 +30,7 @@ void freeGarbageCollector() {
             free(root->codeLine->arg1);
             free(root->codeLine->arg2);
             free(root->codeLine->dest);
+            free(root->codeLine->label);
             free(root->codeLine);
         }
         if(root->rule){

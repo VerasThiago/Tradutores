@@ -5,21 +5,39 @@
 #include "utils.h"
 #include "tree.h"
 
+int freeLabel = 0;
 int freeIdx = 1023;
 extern TreeNode* root;
 
-TAC* createTAC(char* func, char* dest, char* arg1, char* arg2){
+TAC* createTAC(char* func, char* dest, char* arg1, char* arg2, char* label){
     TAC* codeLine = (TAC*) malloc(sizeof(TAC));
     codeLine->func = func ? strdup(func):NULL;
     codeLine->arg1 = arg1 ? strdup(arg1):NULL;
     codeLine->arg2 = arg2 ? strdup(arg2):NULL;
     codeLine->dest = dest ? strdup(dest):NULL;
+    codeLine->label = label ? strdup(label):NULL;
     return codeLine;
 }
 
 char* getFreeRegister(){
     char buffer[5];
     sprintf(buffer, "$%d", freeIdx--);
+    char* ret = strdup(buffer);
+    pushGarbageCollector(NULL, ret);
+    return ret;
+}
+
+char* getFreeLabel(){
+    char buffer[7];
+    sprintf(buffer, "__%d", freeLabel++);
+    char* ret = strdup(buffer);
+    pushGarbageCollector(NULL, ret);
+    return ret;
+}
+
+char* getEndLabel(char* label){
+    char buffer[10];
+    sprintf(buffer, "%s_end", label);
     char* ret = strdup(buffer);
     pushGarbageCollector(NULL, ret);
     return ret;
@@ -57,7 +75,10 @@ char* getFuncFromOperator(char* operator){
 
 void insertFile(TAC* codeLine){
     FILE *out = fopen(cExtensionToTACExtension(), "a");
-    if(strcmp(codeLine->func, "seq") == 0       ||
+    if(codeLine->label){
+        fprintf(out, "%s:\n", codeLine->label); 
+    } else if(
+        strcmp(codeLine->func, "seq") == 0       ||
         strcmp(codeLine->func, "slt") == 0      ||
         strcmp(codeLine->func, "sleq") == 0     ||
         strcmp(codeLine->func, "add") == 0      ||
@@ -71,7 +92,8 @@ void insertFile(TAC* codeLine){
     } else if(
         strcmp(codeLine->func, "minus") == 0    ||
         strcmp(codeLine->func, "not") == 0      ||
-        strcmp(codeLine->func, "mov") == 0
+        strcmp(codeLine->func, "mov") == 0      ||
+        strcmp(codeLine->func, "brz") == 0 
     ) {
         fprintf(out, "\t%s %s, %s\n", codeLine->func, codeLine->dest, codeLine->arg1); 
     } else if(
