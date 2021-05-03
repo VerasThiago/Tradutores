@@ -4,10 +4,12 @@
 #include "stack.h"
 #include<string.h>
 
+int id = 0;
 TableList tableList;
 extern Stack stackScope;
 
-void push_back(TableList* tl, Symbol* val){
+void pushTable(TableList* tl, Symbol* val){
+    if(strcmp(val->classType, "function") != 0) val->id = id++;
     tl->arr[++tl->size] = val;
 }
 
@@ -36,6 +38,7 @@ Symbol* createSymbol(int line, int column, char* classType, char* type, char* bo
     ret->type = strdup(type);
     ret->body = strdup(body);
     ret->paramsType = NULL;
+    ret->id = -1;
     return ret;
 }
 

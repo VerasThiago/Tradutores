@@ -1,9 +1,10 @@
-#include "stdio.h"
+#include <stdio.h>
 #include "stdlib.h"
 #include "string.h"
 #include "tree.h"
 #include "semantic.h"
 #include "error.h"
+#include "tac.h"
 
 int errors;
 int verbose;
@@ -23,6 +24,13 @@ void freeGarbageCollector() {
             free(root->symbol->body);
             free(root->symbol->paramsType);
             free(root->symbol);
+        }
+        if(root->codeLine){
+            free(root->codeLine->func);
+            free(root->codeLine->arg1);
+            free(root->codeLine->arg2);
+            free(root->codeLine->dest);
+            free(root->codeLine);
         }
         if(root->rule){
             free(root->rule);
@@ -66,6 +74,17 @@ int startsWith(char* a, char* b){
     if(strlen(a) < strlen(b)) return 0;
     for(int i = 0; i < strlen(b); i++) if(a[i] != b[i]) return 0;
     return 1;
+}
+
+char* cExtensionToTACExtension(){
+    char* aux = strdup(fileName);
+    aux[strlen(fileName) - 2] = '\0';
+    char newFileName[100];
+    sprintf(newFileName, "%s.tac", aux);
+    char* ret = strdup(newFileName);
+    pushGarbageCollector(NULL, aux);
+    pushGarbageCollector(NULL, ret);
+    return ret;
 }
 
 

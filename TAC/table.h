@@ -10,6 +10,7 @@ typedef struct Symbol {
     char* body;
     int scope;
     char* paramsType; // 0 INT 1 FLOAT 2 SET 3 ELEM
+    int id;
 } Symbol;
 
 typedef struct TableList {
@@ -20,7 +21,7 @@ typedef struct TableList {
 
 void freeTable(TableList*);
 void printTable(TableList*);
-void push_back(TableList*, Symbol*);
+void pushTable(TableList*, Symbol*);
 
 Symbol* getSymbolStack(TableList*, char*);
 Symbol* getSymbol(TableList*, char*, int);

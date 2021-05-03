@@ -1,8 +1,13 @@
-float letsSeeTheCasts(int x){
-    elem el;
-    return 1 + x / 14.0 > el;
-    
-}
+int x;
+int y;
 int main(){
-   letsSeeTheCasts(10 + 4.0);
+    x = 20;
+    x = 10 + 502;
+    x = 10 + x + 30 + 40;
+    writeln(x);
+    writeln(x < 900);
+    read(y);
+    y = x - y;
+    writeln(y);
+
 }

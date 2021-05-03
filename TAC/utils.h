@@ -17,4 +17,6 @@ char* getCastExpressionSymbol(Symbol*, TreeNode*, char*);
 void freeGarbageCollector();
 void pushGarbageCollector(TreeNode*, char*);
 
+char* cExtensionToTACExtension();
+
 #endif

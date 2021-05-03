@@ -2,6 +2,7 @@
 #define TREE
 
 #include "table.h"
+#include "tac.h"
 
 typedef struct TreeNode {
     struct TreeNode* children;
@@ -10,6 +11,7 @@ typedef struct TreeNode {
     Symbol* symbol;
     int type;
     int cast;
+    struct TAC* codeLine;
 } TreeNode;
 
 typedef struct GarbageCollector {
@@ -28,13 +30,18 @@ enum TYPE_CODE {
     T_EMPTY,
 };
 
-TreeNode* createNode(char*);
-TreeNode* createIDNode(Symbol*, int, int, char*, int);
+TreeNode* createNode(char* rule);
+TreeNode* createIDNode(Symbol* s, int line, int column, char* body, int scope);
 
-void printTree(TreeNode*, int, int*);
-void freeTree(TreeNode*);
-void printToken(Symbol*, int, int *);
+void printToken(Symbol* s, int ident);
+void printCodeLine(TAC* codeLine, int ident);
+void printRule(char* s, int ident, int *ok);
+void printTree(TreeNode* root, int ident, int *ok);
 
-void getTreeTypeList(TreeNode*, char*);
+void freeTree(TreeNode* root);
+
+void getTreeTypeList(TreeNode* root, char ans[]);
+
+void generateTACCode(TreeNode* root);
 
 #endif

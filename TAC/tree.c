@@ -14,6 +14,7 @@ TreeNode* createNode(char* rule){
     node->children = NULL;
     node->nxt = NULL;
     node->symbol = NULL;
+    node->codeLine = NULL;
     node->type = -1;
     node->cast = -1;
     pushGarbageCollector(node, NULL);
@@ -28,13 +29,17 @@ TreeNode* createIDNode(Symbol* s, int line, int column, char* body, int scope){
     return node;
 }
 
-void printToken(Symbol* s, int ident, int *ok){
+void printToken(Symbol* s, int ident){
     printf(" ── [%d:%d] %s", s->line, s->column, s->classType);
     if(strcmp(s->classType, "variable") == 0){
         printf(" : %s %s", s->type, s->body);
     } else if(strcmp(s->classType, s->body) != 0){
         printf(" : %s", s->body);
     }
+}
+
+void printCodeLine(TAC* codeLine, int ident){    
+    printf(" ── %s %s %s %s", codeLine->func, codeLine->dest, codeLine->arg1, codeLine->arg2);
 }
 
 void printRule(char* s, int ident, int *ok){
@@ -53,7 +58,11 @@ void printTree(TreeNode* root, int ident, int *ok){
     ok[ident] = 1;
 
     if(root->symbol){
-        printToken(root->symbol, ident + 1, ok);
+        printToken(root->symbol, ident + 1);
+    }
+
+    if(root->codeLine && root->codeLine->func){
+        printCodeLine(root->codeLine, ident + 1);
     }
 
     printf("\n");
@@ -95,4 +104,22 @@ void freeTree(TreeNode* root){
         free(root->rule);
     }
     free(root);
+}
+
+void generateTACCodeUtil(TreeNode* root){
+    if(!root) return;
+    generateTACCodeUtil(root->children);
+    if(root->codeLine && root->codeLine->func) insertFile(root->codeLine);
+    generateTACCodeUtil(root->nxt);
+}
+
+void generateTACCode(TreeNode* root){
+    if(!root) return;
+    fclose(fopen(cExtensionToTACExtension(), "w"));
+
+    FILE *out = fopen(cExtensionToTACExtension(), "a");
+    fprintf(out, ".table\n.code\nmain:\n"); 
+    fclose(out);
+
+    generateTACCodeUtil(root);
 }
