@@ -46,6 +46,8 @@ void checkArgsParms(TreeNode* root, Symbol* functionSymbol, TreeNode* argumentsL
         TreeNode* popNode = createTACNode(createTAC("pop", NULL, root->codeLine->dest, NULL, NULL));
         paramNode->nxt = root->children;
         root->children = paramNode;
+        
+        popNode->nxt = root->nxt;
         root->nxt = popNode;
     }
 

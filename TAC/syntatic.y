@@ -720,7 +720,10 @@ expression_additive:
     | expression_additive ADDITIVE_OP expression_multiplicative {
         // printf("[SYNTATIC] (expression_additive) expression_additive ADDITIVE_OP(%s) expression_additive \n", $2.tokenBody);
         $$ = createNode("expression_additive");
-        $$->children = $1;   
+        $$->children = $1;
+
+        // TODO: Fix this connection (may have TAC into ->nxt)
+        if($1->nxt) $3->nxt = $1->nxt;    
         $1->nxt = $3;
 
         if(checkCast($1, $3)) execCast($1, $3);
@@ -986,12 +989,11 @@ value:
         Symbol* s = checkVarExist(&tableList, $1.line, $1.column, $1.tokenBody, $1.scope);
 
         $$->symbol = createSymbol($1.line, $1.column, "variable", s ? s->type:"??", $1.tokenBody, $1.scope, s ? s->id:-1);
-
         $$->type = getTypeID($$->symbol->type);
-        if(s) {
-            if(strcmp(s->classType, "param variable") == 0) $$->codeLine = createTAC(NULL, getParamFromPos(s->paramPos), NULL, NULL, NULL); 
-            else $$->codeLine = createTAC(NULL, getRegisterFromId(s->id), NULL, NULL, NULL); 
-        }
+        
+        if(s && strcmp(s->classType, "param variable") == 0) $$->codeLine = createTAC(NULL, getParamFromPos(s->paramPos), NULL, NULL, NULL); 
+        else if(s) $$->codeLine = createTAC(NULL, getRegisterFromId(s->id), NULL, NULL, NULL); 
+        else $$->codeLine = createTAC(NULL, $$->symbol->type , NULL, NULL, NULL);
     }
     | const {
         // printf("[SYNTATIC] (value) const\n");
@@ -1021,22 +1023,19 @@ function_call:
         $$->children = $3;
 
         Symbol* s = checkFuncExist(&tableList, $1.line, $1.column, $1.tokenBody, $1.scope);
-
-        $$->symbol = s ? createSymbol($1.line, $1.column, "function_call", s->type, $1.tokenBody, $1.scope, -1) :
-                         createSymbol($1.line, $1.column, "function_call", "??", $1.tokenBody, $1.scope, -1);
+        $$->symbol = createSymbol($1.line, $1.column, "function_call", s ? s->type:"??", $1.tokenBody, $1.scope, -1);
+        $$->type = getTypeID($$->symbol->type);
 
         checkArgsParms($$, s, $3);
 
     }
     | ID '(' ')' {
         // printf("[SYNTATIC] (function_call) ID(%s) '(' ')'\n", $1.tokenBody);
-
         $$ = createNode("function_call");
 
         Symbol* s = checkFuncExist(&tableList, $1.line, $1.column, $1.tokenBody, $1.scope);
-
         $$->symbol = createSymbol($1.line, $1.column, "function_call", s ? s->type:"??", $1.tokenBody, $1.scope, -1);
-        if($$->symbol) $$->type = getTypeID($$->symbol->type);
+        $$->type = getTypeID($$->symbol->type);
 
         checkArgsParms($$, s, NULL);
     }
