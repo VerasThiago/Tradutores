@@ -87,6 +87,7 @@
 %left <body> RELATIONAL_OP
 %left <body> MULTIPLICATIVE_OP
 %left <body> ADDITIVE_OP
+%left <body> NOT_OP
 %left <body> AND_OP
 %left <body> OR_OP
 
@@ -646,13 +647,21 @@ expression_value:
         // printf("[SYNTATIC] (expression_value) value \n");
         $$ = $1;
     }
-    | '!' value {
+    | NOT_OP value {
         // printf("[SYNTATIC] (expression_value) ! value \n");
-        $$ = $2; 
+        $$ = createNode("expression_value");
+        $$->children = $2;
+        $$->symbol = createSymbol($1.line, $1.column, "not operator", "", $1.tokenBody, $1.scope, -1); 
+        $$->type = $2->type;
+        $$->codeLine = createTAC("not", getFreeRegister(), $2->codeLine->dest, NULL, NULL);
     }
     | ADDITIVE_OP value {
         // printf("[SYNTATIC] (expression_value) ADDITIVE_OP(%s) value \n", $1.tokenBody);
-        $$ = $2;
+        $$ = createNode("expression_value");
+        $$->children = $2;
+        $$->symbol = createSymbol($1.line, $1.column, "additive operator", "", $1.tokenBody, $1.scope, -1); 
+        $$->type = $2->type;
+        $$->codeLine = createTAC("minus", getFreeRegister(), $2->codeLine->dest, NULL, NULL);
     }
     | is_set_expression {
         // printf("[SYNTATIC] (is_set_expression) is_set_expression\n");

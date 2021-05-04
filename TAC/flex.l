@@ -55,6 +55,8 @@ MULTIPLICATIVE_OP               [*/%]
 
 ADDITIVE_OP                     [+-]
 
+NOT_OP                          !
+
 IN                              read
 
 OUT                             write|writeln
@@ -265,10 +267,14 @@ COMMENT                         "//"
     return '=';
 }
 
-"!" {
+{NOT_OP} {
     // printf("[LEXIC] Not operator: %s\n", yytext);
+    strcpy(yylval.body.tokenBody, yytext);
+    yylval.body.line = lines;
+    yylval.body.column = columns;
     columns += yyleng;
-    return '!';
+    yylval.body.scope = top(&stackScope);
+    return NOT_OP;
 }
 
 ";" {

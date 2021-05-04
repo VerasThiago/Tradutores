@@ -137,6 +137,8 @@ void insertFile(TAC* codeLine){
         strcmp(codeLine->func, "scani") == 0    ||
         strcmp(codeLine->func, "scanf") == 0    ||
         strcmp(codeLine->func, "pop") == 0      ||
+        strcmp(codeLine->func, "minus") == 0    ||
+        strcmp(codeLine->func, "not") == 0      ||
         strcmp(codeLine->func, "param") == 0    
         
     ){
