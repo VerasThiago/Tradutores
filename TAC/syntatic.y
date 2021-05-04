@@ -500,7 +500,7 @@ expression_assignment:
         if(s){
             if(checkCastSymbol(s, $3)) execForceCastSymbol(s, $3);
             checkMissType(getTypeID(s->type), $3->type, $1.line, $1.column, "=");
-            $$->codeLine = createTAC(getFuncFromOperator("="), getRegisterFromId(s->id), $3->codeLine->dest, NULL, NULL);
+            $$->codeLine = createTAC(getFuncFromOperator("=", NULL), getRegisterFromId(s->id), $3->codeLine->dest, NULL, NULL);
         }
 
         char *body =  getCastExpressionSymbol(s, $3, "=");
@@ -528,7 +528,7 @@ expression_logical:
         $$->type = $1->type;
         checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
 
-        $$->codeLine = createTAC(getFuncFromOperator($2.tokenBody), getFreeRegister(), $1->codeLine->dest, $3->codeLine->dest, NULL);
+        $$->codeLine = createTAC(getFuncFromOperator($2.tokenBody, NULL), getFreeRegister(), $1->codeLine->dest, $3->codeLine->dest, NULL);
 
         char* body = getCastExpression($1, $3, $2.tokenBody);
         $$->symbol = createSymbol($2.line, $2.column, "logical operator", "", body, $2.scope, -1);
@@ -544,7 +544,7 @@ expression_logical:
         $$->type = $1->type;
         checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
 
-        $$->codeLine = createTAC(getFuncFromOperator($2.tokenBody), getFreeRegister(), $1->codeLine->dest, $3->codeLine->dest, NULL);
+        $$->codeLine = createTAC(getFuncFromOperator($2.tokenBody, NULL), getFreeRegister(), $1->codeLine->dest, $3->codeLine->dest, NULL);
 
         char* body = getCastExpression($1, $3, $2.tokenBody);
         $$->symbol = createSymbol($2.line, $2.column, "logical operator", "", body, $2.scope, -1);
@@ -567,7 +567,11 @@ expression_relational:
         $$->type = getTypeID("INT");
         checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
 
-        $$->codeLine = createTAC(getFuncFromOperator($2.tokenBody), getFreeRegister(), $1->codeLine->dest, $3->codeLine->dest, NULL);
+        int swap = 0;
+        char* tacFunc = getFuncFromOperator($2.tokenBody, &swap);
+        if(swap) $$->codeLine = createTAC(tacFunc, getFreeRegister(), $3->codeLine->dest, $1->codeLine->dest, NULL);
+        else $$->codeLine = createTAC(tacFunc, getFreeRegister(), $1->codeLine->dest, $3->codeLine->dest, NULL);
+
 
         char *body =  getCastExpression($1, $3, $2.tokenBody);
         $$->symbol = createSymbol($2.line, $2.column, "relational operator", "", body, $2.scope, -1);
@@ -591,7 +595,7 @@ expression_additive:
         $$->type = $1->type;
         checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
         
-        $$->codeLine = createTAC(getFuncFromOperator($2.tokenBody), getFreeRegister(), $1->codeLine->dest, $3->codeLine->dest, NULL);
+        $$->codeLine = createTAC(getFuncFromOperator($2.tokenBody, NULL), getFreeRegister(), $1->codeLine->dest, $3->codeLine->dest, NULL);
 
         char *body = getCastExpression($1, $3, $2.tokenBody);
         $$->symbol = createSymbol($2.line, $2.column, "additive operator", "", body, $2.scope, -1);
@@ -614,7 +618,7 @@ expression_multiplicative:
         $$->type = $1->type;
         checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
 
-        $$->codeLine = createTAC(getFuncFromOperator($2.tokenBody), getFreeRegister(), $1->codeLine->dest, $3->codeLine->dest, NULL);
+        $$->codeLine = createTAC(getFuncFromOperator($2.tokenBody, NULL), getFreeRegister(), $1->codeLine->dest, $3->codeLine->dest, NULL);
 
         char *body = getCastExpression($1, $3, $2.tokenBody);
         $$->symbol = createSymbol($2.line, $2.column, "multiplicative operator", "", body, $2.scope, -1);
@@ -707,7 +711,7 @@ io_statement:
         Symbol* s = checkVarExist(&tableList, $3.line, $3.column, $3.tokenBody, $3.scope);
         $$ = createNode("io_statement - READ");
         $$->symbol = createSymbol($3.line, $3.column, "variable", lastType, $3.tokenBody, $3.scope, -1);
-        if(s) $$->codeLine = createTAC(getFuncFromOperator("read"), NULL, getRegisterFromId(s->id), NULL, NULL);
+        if(s) $$->codeLine = createTAC(getFuncFromOperator("read", NULL), NULL, getRegisterFromId(s->id), NULL, NULL);
     }
     | WRITE '(' STRING ')' ';' {
         // printf("[SYNTATIC] (io_statement) WRITE '(' STRING(%s) ')' ';'\n", $3.tokenBody);
@@ -718,7 +722,7 @@ io_statement:
         // printf("[SYNTATIC] (io_statement) WRITE '(' expression ')' ';'\n");
         $$ = createNode("io_statement - WRITE");
         $$->children = $3;
-        if($3->codeLine) $$->codeLine = createTAC(getFuncFromOperator("write"), NULL, $3->codeLine->dest, NULL, NULL);
+        if($3->codeLine) $$->codeLine = createTAC(getFuncFromOperator("write", NULL), NULL, $3->codeLine->dest, NULL, NULL);
     }
     | WRITELN '(' STRING ')' ';' {
         // printf("[SYNTATIC] (io_statement) WRITELN '(' STRING(%s) ')' ';'\n", $3.tokenBody);
@@ -729,7 +733,7 @@ io_statement:
         // printf("[SYNTATIC] (io_statement) WRITELN '(' expression ')' ';'\n");
         $$ = createNode("io_statement - WRITELN");
         $$->children = $3;
-        if($3->codeLine) $$->codeLine = createTAC(getFuncFromOperator("writeln"), NULL, $3->codeLine->dest, NULL, NULL);
+        if($3->codeLine) $$->codeLine = createTAC(getFuncFromOperator("writeln", NULL), NULL, $3->codeLine->dest, NULL, NULL);
     }
 ;
 

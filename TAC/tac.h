@@ -19,7 +19,7 @@ char* getFreeRegister();
 int getFreeLabelId();
 char* getFreeLabel(char* name, int id);
 char* getEndLabel(char* label);
-char* getFuncFromOperator(char* operator);
+char* getFuncFromOperator(char* operator, int* swap);
 void insertFile(TAC* codeLine);
 
 #endif
