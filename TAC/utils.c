@@ -7,7 +7,6 @@
 #include "tac.h"
 
 int errors;
-int verbose;
 char lastType[200];
 char fileName[200];
 extern GarbageCollector garbageCollector;

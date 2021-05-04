@@ -32,7 +32,6 @@
 
     // Utils
     extern int errors;
-    extern int verbose;
     extern char lastType[200];
     extern char fileName[200];
     extern GarbageCollector garbageCollector;
@@ -148,29 +147,19 @@ start:
 program:
 	function_definition {
         // printf("[SYNTATIC] (program) function_definition\n");
-
-        if(verbose){
-            $$ = createNode("program");
-            $$->children = $1;
-        } else {
-            $$ = $1;
-        }
+        $$ = $1;
     }
 	| function_definition program {
         // printf("[SYNTATIC] (program) function_definition program\n");
-
         $$ = createNode("program");
         $$->children = $1;
         $1->nxt = $2;
-        
     }
 	| variables_declaration program {
         // printf("[SYNTATIC] (program) variables_declaration program\n");
-
         $$ = createNode("program");
         $$->children = $1;
         $1->nxt = $2;
-        
     }
 ;
 
@@ -213,14 +202,9 @@ function_declaration:
 
         checkDuplicatedFunc(&tableList, $2.line, $2.column, $2.tokenBody, $2.scope);
 
-        if(verbose){
-            $$ = createNode("function_declaration");
-            $$->children = $1;
-        } else {
-            char aux[] = "function_declaration - ";
-            strcat(aux , $1->symbol->body);
-            $$ = createNode(aux);
-        }
+        char aux[] = "function_declaration - ";
+        strcat(aux , $1->symbol->body);
+        $$ = createNode(aux);
         
         $$->codeLine = createTAC(NULL, NULL, NULL, NULL, getFreeLabel($2.tokenBody, -2));
         $$->symbol = createSymbol($2.line, $2.column, "function", lastType, $2.tokenBody, $2.scope, -1);
@@ -233,18 +217,10 @@ function_declaration:
 function_body:
 	'{' statements '}' {
         // printf("[SYNTATIC] (function_body) '{' statements '}'\n");
-
-        if(verbose){
-            $$ = createNode("function_body");
-            $$->children = $2;
-
-        } else {
-            $$ = $2;
-        }
+        $$ = $2;    
     }
     | '{' '}' {
         // printf("[SYNTATIC] (function_body) '{' '}'\n");
-
         $$ = createNode("function_body");
     }
 ;
@@ -252,14 +228,7 @@ function_body:
 parameters:
 	parameters_list {
         // printf("[SYNTATIC] (parameters)  parameters_list \n");
-
-        if(verbose){
-            $$ = createNode("parameters_list");
-            $$->children = $1;
-
-        } else {
-            $$ = $1;
-        }
+        $$ = $1;
     }
 ;
 
@@ -272,27 +241,18 @@ parameters_list:
     } 
 	| parameter {
         // printf("[SYNTATIC] (parameters_list) parameter\n");
-        if(verbose){
-            $$ = createNode("parameters_list");
-            $$->children = $1;
-            
-        } else {
-            $$ = $1;
-        }
+        $$ = $1;
     }
 ;
 
 parameter:
 	type_identifier ID {
         // printf("[SYNTATIC] (parameter) type_identifier ID(%s)\n", $2.tokenBody);
-        if(verbose){
-            $$ = createNode("parameter");
-            $$->children = $1;
-        } else {
-            char aux[] = "parameter - ";
-            strcat(aux , $1->symbol->body);
-            $$ = createNode(aux);
-        }
+        
+        char aux[] = "parameter - ";
+        strcat(aux , $1->symbol->body);
+        $$ = createNode(aux);
+        
         checkDuplicatedVar(&tableList, $2.line, $2.column, $2.tokenBody, $2.scope);
         $$->type = getTypeID($1->symbol->body);
         $$->symbol = createSymbol($2.line, $2.column, "param variable", lastType, $2.tokenBody, $2.scope, -1);
@@ -336,25 +296,14 @@ statements:
     }
 	| statement {
         // printf("[SYNTATIC] (statements) statement\n");   
-        if(verbose){
-            $$ = createNode("statements");
-            $$->children = $1;
-        } else {
-             $$ = $1;
-        }
+        $$ = $1;
     }
 ;
 
 statements_braced:
     '{' statements '}' {
         // printf("[SYNTATIC] (statements_braced) '{' statements '}'\n");
-        if(verbose){
-            $$ = createNode("statements_braced");
-            $$->children = $2;
-
-        } else{
-            $$ = $2;
-        }
+        $$ = $2;   
     }
     | '{' '}' {
         // printf("[SYNTATIC] (statements_braced) '{' '}'\n");
@@ -365,86 +314,41 @@ statements_braced:
 statement:
 	variables_declaration {
         // printf("[SYNTATIC] (statement) variables_declaration\n");
-        if(verbose){
-            $$ = createNode("statement");
-            $$->children = $1;   
-        } else {
-            $$ = $1;   
-        }
+        $$ = $1;    
     }
     | statements_braced {
-        if(verbose){
-            $$ = createNode("statement");
-            $$->children = $1;   
-        } else {
-            $$ = $1;   
-        }
+        $$ = $1;
     }
 	| return {
         // printf("[SYNTATIC] (statement) return\n");
-        if(verbose){
-            $$ = createNode("statement");
-            $$->children = $1;    
-        } else {
-            $$ = $1;   
-        }
+        $$ = $1;
     }
 	| conditional {
         // printf("[SYNTATIC] (statement) conditional\n");   
-        if(verbose){
-            $$ = createNode("statement");
-            $$->children = $1;  
-        } else {
-            $$ = $1;   
-        }
+        $$ = $1;
     }
 	| for {
         // printf("[SYNTATIC] (statement) for\n");
-        if(verbose){
-            $$ = createNode("statement");
-            $$->children = $1;   
-        } else {
-            $$ = $1;   
-        }
+        $$ = $1;
     }
 	| expression_statement {
         // printf("[SYNTATIC] (statement) expression_statement \n");
-        if(verbose){
-            $$ = createNode("statement");
-            $$->children = $1;   
-        } else {
-            $$ = $1;   
-        }
+        $$ = $1;
     }
 	| io_statement {
         // printf("[SYNTATIC] (statement) io_statement\n");
-        if(verbose){
-            $$ = createNode("statement");
-            $$->children = $1;  
-        } else {
-            $$ = $1;   
-        }
+        $$ = $1;
     }
 	| set_pre_statement {
         // printf("[SYNTATIC] (statement) set_pre_statement\n");
-        if(verbose){
-            $$ = createNode("statement");
-            $$->children = $1;  
-        } else {
-            $$ = $1;   
-        }
+        $$ = $1;
     }
 ;
 
 set_pre_statement:
     set_statement_for_all {
         // printf("[SYNTATIC] (set_pre_statement) set_statement_for_all\n");  
-        if(verbose){
-            $$ = createNode("set_pre_statement");
-            $$->children = $1;
-        } else {
-            $$ = $1;   
-        }
+        $$ = $1;
     }
 ;
 
@@ -560,12 +464,7 @@ set_assignment_expression:
 expression_statement:
     expression ';' {
         // printf("[SYNTATIC] (expression_statement) expression\n");
-        if(verbose){
-            $$ = createNode("expression_statement");
-            $$->children = $1;
-        } else {
-            $$ = $1;   
-        }
+        $$ = $1;
     }
 ;
 
@@ -583,26 +482,14 @@ expression_or_empty:
 expression:
     expression_assignment {
         // printf("[SYNTATIC] (expression) expression_assignment\n");
-        if(verbose){
-            $$ = createNode("expression");
-            $$->children = $1;
-            
-        } else {
-            $$ = $1;   
-        }
+        $$ = $1;
     }
 ;
 
 expression_assignment:
     expression_logical {
         // printf("[SYNTATIC] (expression_assignment) expression_logical\n");
-        if(verbose){
-            $$ = createNode("expression_assignment");
-            $$->children = $1;   
-            
-        } else {
-            $$ = $1;   
-        }
+        $$ = $1;
     }
     | ID '=' expression {
         // printf("[SYNTATIC] (expression_assignment) ID(%s) '='  expression\n", $1.tokenBody);
@@ -625,23 +512,11 @@ expression_assignment:
 expression_logical:
     expression_relational {
         // printf("[SYNTATIC] (expression_logical) expression_relational\n");
-        if(verbose){
-            $$ = createNode("expression_logical");
-            $$->children = $1;   
-            
-        } else {
-            $$ = $1;   
-        }
+        $$ = $1;
     }
     | set_boolean_expression {
         // printf("[SYNTATIC] (expression_logical) set_expression\n");
-        if(verbose){
-            $$ = createNode("expression_logical");
-            $$->children = $1;   
-            
-        } else {
-            $$ = $1;   
-        }
+        $$ = $1;
     }
     | expression_logical AND_OP expression_relational {
         // printf("[SYNTATIC] (expression_logical) expression_logical AND_OP(&&) expression_logical\n");
@@ -680,13 +555,7 @@ expression_logical:
 expression_relational:
     expression_additive {
         // printf("[SYNTATIC] (expression_relational) expression_additive \n");
-        if(verbose){
-            $$ = createNode("expression_relational");
-            $$->children = $1;   
-            
-        } else {
-            $$ = $1;   
-        }
+        $$ = $1;
     }
     | expression_relational RELATIONAL_OP expression_additive {
         // printf("[SYNTATIC] (expression_relational) expression_relational RELATIONAL_OP(%s) expression_relational\n", $2.tokenBody);
@@ -709,13 +578,7 @@ expression_relational:
 expression_additive:
     expression_multiplicative {
         // printf("[SYNTATIC] (expression_additive) expression_multiplicative \n");
-        if(verbose){
-            $$ = createNode("expression_additive");
-            $$->children = $1;   
-            
-        } else {
-            $$ = $1;   
-        }
+        $$ = $1;
     }
     | expression_additive ADDITIVE_OP expression_multiplicative {
         // printf("[SYNTATIC] (expression_additive) expression_additive ADDITIVE_OP(%s) expression_additive \n", $2.tokenBody);
@@ -741,13 +604,7 @@ expression_additive:
 expression_multiplicative:
     expression_value {
         // printf("[SYNTATIC] (expression_multiplicative) expression_value \n");
-        if(verbose){
-            $$ = createNode("expression_multiplicative");
-            $$->children = $1;
-            
-        } else {
-            $$ = $1;   
-        }
+        $$ = $1;
     }
     | expression_multiplicative MULTIPLICATIVE_OP expression_value {
         // printf("[SYNTATIC] (expression_multiplicative)  expression_multiplicative MULTIPLICATIVE_OP(%s) expression_multiplicative \n", $2.tokenBody);
@@ -770,23 +627,11 @@ expression_multiplicative:
 expression_value:
     '(' expression ')' {
         // printf("[SYNTATIC] (expression_value) '(' expression ')' \n");
-        if(verbose){
-            $$ = createNode("expression_value");
-            
-            $$->children = $2;   
-        } else {
-            $$ = $2;   
-        }
+        $$ = $2;
     }
     | '!' '(' expression ')' {
         // printf("[SYNTATIC] (expression_value) ! '(' expression ')' \n");
-        if(verbose){
-            $$ = createNode("expression_value");
-            $$->children = $3;
-            
-        } else {
-            $$ = $3;   
-        }
+        $$ = $3;
     }
     | ADDITIVE_OP '(' expression ')' {
         // printf("[SYNTATIC] (expression_value) ADDITIVE_OP(%s) '(' expression ')' \n", $1.tokenBody);
@@ -797,23 +642,11 @@ expression_value:
     }
     | value {
         // printf("[SYNTATIC] (expression_value) value \n");
-        if(verbose){
-            $$ = createNode("expression_value");
-            $$->children = $1;
-            
-        } else {
-            $$ = $1;   
-        }
+        $$ = $1;
     }
     | '!' value {
         // printf("[SYNTATIC] (expression_value) ! value \n");
-        if(verbose){
-            $$ = createNode("expression_value");
-            
-            $$->children = $2;
-        } else {
-            $$ = $2;   
-        }  
+        $$ = $2; 
     }
     | ADDITIVE_OP value {
         // printf("[SYNTATIC] (expression_value) ADDITIVE_OP(%s) value \n", $1.tokenBody);
@@ -821,33 +654,14 @@ expression_value:
     }
     | is_set_expression {
         // printf("[SYNTATIC] (is_set_expression) is_set_expression\n");
-        if(verbose){
-            $$ = createNode("expression_logical");
-            $$->children = $1;   
-            
-        } else {
-            $$ = $1;   
-        }
+        $$ = $1;
     }
     | set_statement_exists {
         // printf("[SYNTATIC] (expression_value) set_statement_exists\n");
-
-        if(verbose){
-            $$ = createNode("expression_value");
-            $$->children = $1;  
-            
-        } else {
-            $$ = $1;   
-        }
+        $$ = $1;
     }
     | set_statement_add_remove {
-        if(verbose){
-            $$ = createNode("expression_value");
-            $$->children = $1;  
-            
-        } else {
-            $$ = $1;   
-        }
+        $$ = $1;
     }
 ;
 
@@ -930,13 +744,7 @@ arguments_list:
     }
     | expression {
         // printf("[SYNTATIC] (arguments_list) expression\n");
-        if(verbose){
-            $$ = createNode("arguments_list");
-            $$->children = $1;
-           
-        } else {
-            $$ = $1;  
-        }
+        $$ = $1;
     }
 ;
 
@@ -997,22 +805,11 @@ value:
     }
     | const {
         // printf("[SYNTATIC] (value) const\n");
-        if(verbose){
-            $$ = createNode("value");
-            $$->children = $1;
-        } else {
-            $$ = $1;  
-        }
+        $$ = $1;
     }
     | function_call {
         // printf("[SYNTATIC] (value) function_call\n");
-        if(verbose){
-            $$ = createNode("value");
-            $$->children = $1;
-           
-        } else {
-            $$ = $1;  
-        }
+        $$ = $1;
     }
 ;
 
@@ -1098,12 +895,6 @@ int main(int argc, char ** argv) {
     }
     else {
         yyin = stdin;
-    }
-
-    verbose = 0;
-
-    if(argc > 1){
-        verbose = atoi(argv[1]);
     }
 
     stackScope.size = stackScope.nxtScope = -1;
