@@ -42,6 +42,7 @@ void freeTree(TreeNode* root);
 
 void getTreeArgs(TreeNode* root, char ans[]);
 void getTreeParamsAndAssignPos(TreeNode* root, char ans[], int *idx);
+TreeNode* getLatestNxt(TreeNode* curr);
 
 TreeNode* createTACNode(TAC *codeLine);
 void generateTACCode(TreeNode* root);

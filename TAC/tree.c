@@ -170,6 +170,12 @@ TreeNode* createTACNode(TAC *codeLine){
     return node;
 }
 
+TreeNode* getLatestNxt(TreeNode* curr){
+    if(!curr) return curr;
+    while(curr->nxt) curr = curr->nxt;
+    return curr;
+}
+
 void buildIfTAC(TreeNode* root, TreeNode* expression, TreeNode* statements){
     if(!expression->codeLine) return;
 

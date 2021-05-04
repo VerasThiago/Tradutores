@@ -153,13 +153,13 @@ program:
         // printf("[SYNTATIC] (program) function_definition program\n");
         $$ = createNode("program");
         $$->children = $1;
-        $1->nxt = $2;
+        getLatestNxt($1)->nxt = $2;
     }
 	| variables_declaration program {
         // printf("[SYNTATIC] (program) variables_declaration program\n");
         $$ = createNode("program");
         $$->children = $1;
-        $1->nxt = $2;
+        getLatestNxt($1)->nxt = $2;
     }
 ;
 
@@ -182,8 +182,8 @@ function_definition:
         $$ = createNode("function_definition");
 
         $$->children = $1;
-        $1->nxt = $4;
-        $4->nxt = $7;
+        getLatestNxt($1)->nxt = $4;
+        getLatestNxt($4)->nxt = $7;
         
     }
     | function_declaration '(' ')' function_body {
@@ -191,7 +191,7 @@ function_definition:
                
         $$ = createNode("function_definition");
         $$->children = $1;
-        $1->nxt = $4;
+        getLatestNxt($1)->nxt = $4;
         
     }
 ;
@@ -237,7 +237,7 @@ parameters_list:
         // printf("[SYNTATIC] (parameters_list) parameter ',' parameters_list\n");
         $$ = createNode("parameters_list");
         $$->children = $1;
-        $1->nxt = $3;
+        getLatestNxt($1)->nxt = $3;
     } 
 	| parameter {
         // printf("[SYNTATIC] (parameters_list) parameter\n");
@@ -292,7 +292,7 @@ statements:
         // printf("[SYNTATIC] (statements) statement statements\n");
         $$ = createNode("statements");
         $$->children = $1;
-        $1->nxt = $2;
+        getLatestNxt($1)->nxt = $2;
     }
 	| statement {
         // printf("[SYNTATIC] (statements) statement\n");   
@@ -374,7 +374,7 @@ set_statement_for_all:
         // printf("[SYNTATIC] (set_statement_for_all) FOR_ALL '(' set_assignment_expression ')' statements\n"); 
         $$ = createNode("set_statement_for_all");
         $$->children = $3;
-        $3->nxt = $5;
+        getLatestNxt($3)->nxt = $5;
     }
 ;
 
@@ -396,7 +396,7 @@ set_boolean_expression:
 
         $$ = createNode("set_boolean_expression");
         $$->children = $1;
-        $1->nxt = $3;
+        getLatestNxt($1)->nxt = $3;
         $$->type = getTypeID("INT");
 
         char *body = getCastExpression($1, $3, $2.tokenBody);
@@ -413,7 +413,7 @@ set_boolean_expression:
 
         $$ = createNode("set_boolean_expression");
         $$->children = $1;
-        $1->nxt = nodeID;
+        getLatestNxt($1)->nxt = nodeID;
         $$->type = getTypeID("INT");
 
         char *body = getCastExpression($1, nodeID, $2.tokenBody);
@@ -432,7 +432,7 @@ set_assignment_expression:
         
         $$ = createNode("set_assignment_expression");
         $$->children = nodeID;
-        $$->children->nxt = $3;
+        getLatestNxt(nodeID)->nxt = $3;
         $$->type = getTypeID("ELEM");   
 
         char *body =  getCastExpressionSymbol(s, $3, $2.tokenBody);
@@ -452,7 +452,7 @@ set_assignment_expression:
 
         $$ = createNode("set_assignment_expression");
         $$->children = nodeID1;
-        $$->children->nxt = nodeID2;
+        getLatestNxt(nodeID1)->nxt = nodeID2;
         $$->type = getTypeID("ELEM");
 
         char *body =  getCastExpression(nodeID1, nodeID2, $2.tokenBody);
@@ -522,7 +522,7 @@ expression_logical:
         // printf("[SYNTATIC] (expression_logical) expression_logical AND_OP(&&) expression_logical\n");
         $$ = createNode("expression_logical");
         $$->children = $1;
-        $1->nxt = $3;
+        getLatestNxt($1)->nxt = $3;
 
         if(checkCast($1, $3)) execCast($1, $3);
         $$->type = $1->type;
@@ -538,7 +538,7 @@ expression_logical:
         // printf("[SYNTATIC] (expression_logical) expression_logical OR_OP(||) expression_logical\n");
         $$ = createNode("expression_logical");
         $$->children = $1;
-        $1->nxt = $3;
+        getLatestNxt($1)->nxt = $3;
 
         if(checkCast($1, $3)) execCast($1, $3);
         $$->type = $1->type;
@@ -561,7 +561,7 @@ expression_relational:
         // printf("[SYNTATIC] (expression_relational) expression_relational RELATIONAL_OP(%s) expression_relational\n", $2.tokenBody);
         $$ = createNode("expression_relational");
         $$->children = $1;   
-        $1->nxt = $3;
+        getLatestNxt($1)->nxt = $3;
 
         if(checkCast($1, $3)) execCast($1, $3);
         $$->type = getTypeID("INT");
@@ -585,9 +585,7 @@ expression_additive:
         $$ = createNode("expression_additive");
         $$->children = $1;
 
-        // TODO: Fix this connection (may have TAC into ->nxt)
-        if($1->nxt) $3->nxt = $1->nxt;    
-        $1->nxt = $3;
+        getLatestNxt($1)->nxt = $3;
 
         if(checkCast($1, $3)) execCast($1, $3);
         $$->type = $1->type;
@@ -610,7 +608,7 @@ expression_multiplicative:
         // printf("[SYNTATIC] (expression_multiplicative)  expression_multiplicative MULTIPLICATIVE_OP(%s) expression_multiplicative \n", $2.tokenBody);
         $$ = createNode("expression_multiplicative");
         $$->children = $1;   
-        $1->nxt = $3;
+        getLatestNxt($1)->nxt = $3;
 
         if(checkCast($1, $3)) execCast($1, $3);
         $$->type = $1->type;
@@ -687,7 +685,7 @@ for:
         // printf("[SYNTATIC] (for) FOR '(' for_expression ')' statement\n");
         $$ = createNode("for");
         $$->children = $3;
-        $3->nxt = $5;  
+        getLatestNxt($3)->nxt = $5;  
 
         buildForTAC($$, $3, $5);
     }
@@ -698,8 +696,8 @@ for_expression:
         // printf("[SYNTATIC] (for_expression) expression_assignment ';' expression_logical ';' expression_assignment\n");
         $$ = createNode("for_expression");
         $$->children = $1;
-        $1->nxt = $3;  
-        $3->nxt = $5;  
+        getLatestNxt($1)->nxt = $3;  
+        getLatestNxt($3)->nxt = $5;  
     }
 ;
 
@@ -740,7 +738,7 @@ arguments_list:
         // printf("[SYNTATIC] (arguments_list) arguments_list ',' expression\n");
         $$ = createNode("arguments_list");
         $$->children = $1;
-        $1->nxt = $3;
+        getLatestNxt($1)->nxt = $3;
     }
     | expression {
         // printf("[SYNTATIC] (arguments_list) expression\n");
@@ -753,7 +751,7 @@ conditional:
         // printf("[SYNTATIC] (conditional) IF conditional_expression statements\n");
         $$ = createNode("conditional");
         $$->children = $3;
-        $3->nxt = $5;
+        getLatestNxt($3)->nxt = $5;
         
         buildIfTAC($$, $3, $5);
     }
@@ -761,8 +759,8 @@ conditional:
         // printf("[SYNTATIC] (conditional) IF conditional_expression statements_braced ELSE statements_braced\n");
         $$ = createNode("conditional");
         $$->children = $3;
-        $3->nxt = $5;
-        $5->nxt = $7;
+        getLatestNxt($3)->nxt = $5;
+        getLatestNxt($5)->nxt = $7;
 
         buildIfElseTAC($$, $3, $5, $7);
     }
