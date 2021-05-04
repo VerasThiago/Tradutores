@@ -10,6 +10,12 @@
 
 extern TableList tableList;
 
+enum POS{
+    DEST,
+    ARG1,
+    ARG2
+};
+
 void checkArgsParmsUtil(char* args, char* params, int line, int column, char* body){
     if(strlen(args) < strlen(params)){
         throwError(newError(line, column, body, params, args, FEW_ARGS));
@@ -37,7 +43,7 @@ void checkArgsParms(TreeNode* root, Symbol* functionSymbol, TreeNode* argumentsL
         pushGarbageCollector(NULL, funcParams);
     }
 
-    checkAndExecForceCastArgs(argumentsList, funcParams, &x);
+    checkAndExecForceCastArgs(root, argumentsList, funcParams, &x);
     getTreeArgs(argumentsList, argsAsString);
     checkArgsParmsUtil(argsAsString, funcParams, functionSymbol->line, functionSymbol->column, functionSymbol->body);
 
@@ -134,16 +140,32 @@ int checkCastSymbol(Symbol* L, TreeNode* R){
             (getTypeID(L->type) == T_FLOAT && R->type == T_ELEM);
 }
 
-void execForceCastSymbol(Symbol* L, TreeNode* R){
+char* createAndInsertCastNodeUtil(TreeNode* root, char* castFunc){
+    TreeNode* intToFloatCastNode = createTACNode(createTAC(castFunc, getFreeRegister(), root->codeLine->dest, NULL, NULL));
+    intToFloatCastNode->nxt = root->nxt;
+    root->nxt = intToFloatCastNode;
+    return strdup(intToFloatCastNode->codeLine->dest);
+}
+
+void createAndInsertCastNode(TreeNode* root, TreeNode* castNode, char* castFunc, int pos){
+    if(!root) return;
+    if(pos == ARG1) free(root->codeLine->arg1), root->codeLine->arg1 = createAndInsertCastNodeUtil(castNode, castFunc);
+    else if(pos == ARG2) free(root->codeLine->arg2), root->codeLine->arg2 = createAndInsertCastNodeUtil(castNode, castFunc);
+    else if(pos == DEST) free(root->codeLine->dest), root->codeLine->dest = createAndInsertCastNodeUtil(castNode, castFunc);
+}
+
+void execForceCastSymbol(TreeNode* root, Symbol* L, TreeNode* R){
     if(getTypeID(L->type) == T_FLOAT && R->type == T_INT){
         R->type = T_FLOAT;
         R->cast = INT_TO_FLOAT;
+        createAndInsertCastNode(root, R, getCastFunc(INT_TO_FLOAT), ARG1);
     } else if(getTypeID(L->type) == T_FLOAT && R->type == T_ELEM){
         R->type = T_FLOAT;
         R->cast = ELEM_TO_FLOAT;
     } else if(getTypeID(L->type) == T_INT && R->type == T_FLOAT){
         R->type = T_INT;
         R->cast = FLOAT_TO_INT;
+        createAndInsertCastNode(root, R, getCastFunc(FLOAT_TO_INT), ARG1);
     } else if(getTypeID(L->type) == T_INT && R->type == T_ELEM){
         R->type = T_INT;
         R->cast = ELEM_TO_INT;
@@ -159,60 +181,58 @@ void execForceCastSymbol(Symbol* L, TreeNode* R){
     }
 }
 
-void checkAndExecForceCastArgs(TreeNode* root, char* argsType, int *idx){
-    if(!root || !argsType) return;
+void checkAndExecForceCastArgs(TreeNode* root, TreeNode* argumentsList, char* argsType, int *idx){
+    if(!root || !argsType || !argumentsList) return;
 
-    if(root->type != -1){
-        if(checkSingleCast(root, argsType[*idx] - '0')) execSingleForceCast(root, argsType[*idx] - '0');
+    if(argumentsList->type != -1){
+        if(checkSingleCast(argumentsList, argsType[*idx] - '0')) execSingleForceCast(root, argumentsList, argsType[*idx] - '0');
         (*idx)++;
-        if(root->cast != -1){
-            if(strcmp(root->symbol->type, "") == 0){
+        if(argumentsList->cast != -1){
+            if(strcmp(argumentsList->symbol->type, "") == 0){
                 char newCastStr[50];
-                char* externalCast = getExternalCastString(root->cast);
-                sprintf(newCastStr, "(%s)(%s)", externalCast, root->symbol->body);
-                pushGarbageCollector(NULL, root->symbol->body);
-                root->symbol->body = strdup(newCastStr);
-
-                pushGarbageCollector(NULL, externalCast);
+                char* externalCast = getExternalCastString(argumentsList->cast);
+                sprintf(newCastStr, "(%s)(%s)", externalCast, argumentsList->symbol->body);
+                pushGarbageCollector(NULL, argumentsList->symbol->body);
+                argumentsList->symbol->body = strdup(newCastStr);
             } else {
-                pushGarbageCollector(NULL, root->symbol->type);
-                root->symbol->type = getCastString(root->cast);
+                pushGarbageCollector(NULL, argumentsList->symbol->type);
+                argumentsList->symbol->type = getCastString(argumentsList->cast);
             }
         }
     }
     
-    if(!startsWith(root->rule, "expression") && strcmp(root->rule, "function_call") != 0){
-        checkAndExecForceCastArgs(root->children, argsType, idx);
+    if(!startsWith(argumentsList->rule, "expression") && strcmp(argumentsList->rule, "function_call") != 0){
+        checkAndExecForceCastArgs(root, argumentsList->children, argsType, idx);
     }
-    checkAndExecForceCastArgs(root->nxt, argsType, idx);
+    checkAndExecForceCastArgs(root, argumentsList->nxt, argsType, idx);
 }
 
-void checkAndExecForceCast(TreeNode* L, int type){
-    if(!L || L->type == -1) return;
-    if(checkSingleCast(L, type)) execSingleForceCast(L, type);
-    if(L->cast != -1){
-        if(strcmp(L->symbol->type, "") == 0){
+void checkAndExecForceCast(TreeNode* root, TreeNode* expression, int type){
+    if(!expression || expression->type == -1) return;
+    if(checkSingleCast(expression, type)) execSingleForceCast(root, expression, type);
+    if(expression->cast != -1){
+        if(strcmp(expression->symbol->type, "") == 0){
             char newCastStr[50];
-            char* externalCast = getExternalCastString(L->cast);
-            sprintf(newCastStr, "(%s)(%s)", externalCast, L->symbol->body);
-            pushGarbageCollector(NULL, L->symbol->body);
-            L->symbol->body = strdup(newCastStr);
-
-            pushGarbageCollector(NULL, externalCast);
+            char* externalCast = getExternalCastString(expression->cast);
+            sprintf(newCastStr, "(%s)(%s)", externalCast, expression->symbol->body);
+            pushGarbageCollector(NULL, expression->symbol->body);
+            expression->symbol->body = strdup(newCastStr);
         } else {
-            pushGarbageCollector(NULL, L->symbol->type);
-            L->symbol->type = getCastString(L->cast);
+            pushGarbageCollector(NULL, expression->symbol->type);
+            expression->symbol->type = getCastString(expression->cast);
         }
     }
 }
 
-void execCast(TreeNode* L, TreeNode* R){
+void execCast(TreeNode* root, TreeNode* L, TreeNode* R){
     if (L->type == T_INT && R->type == T_FLOAT){
         L->type = T_FLOAT;
         L->cast = INT_TO_FLOAT;
+        createAndInsertCastNode(root, L, getCastFunc(INT_TO_FLOAT), ARG1);
     } else if(L->type == T_FLOAT && R->type == T_INT){
         R->type = T_FLOAT;
         R->cast = INT_TO_FLOAT;
+        createAndInsertCastNode(root, R, getCastFunc(INT_TO_FLOAT), ARG2);
     } else if (L->type == T_ELEM && R->type == T_INT){
         R->type = T_ELEM;
         R->cast = INT_TO_ELEM;
@@ -234,10 +254,11 @@ void execCast(TreeNode* L, TreeNode* R){
     }
 }
 
-void execSingleCast(TreeNode* L, int castType){
+void execSingleCast(TreeNode* root, TreeNode* L, int castType){
     if (L->type == T_INT && castType == T_FLOAT){
         L->type = T_FLOAT;
         L->cast = INT_TO_FLOAT;
+        createAndInsertCastNode(root, L, getCastFunc(INT_TO_FLOAT), ARG1);
     } else if (L->type == T_INT && castType == T_ELEM){
         L->type = T_ELEM;
         L->cast = INT_TO_ELEM;
@@ -250,16 +271,18 @@ void execSingleCast(TreeNode* L, int castType){
     }
 }
 
-void execSingleForceCast(TreeNode* L, int castType){
+void execSingleForceCast(TreeNode* root, TreeNode* L, int castType){
     if(L->type == T_FLOAT && castType == T_INT){
         L->type = T_INT;
         L->cast = FLOAT_TO_INT;
+        createAndInsertCastNode(root, L, getCastFunc(FLOAT_TO_INT), DEST);
     } else if(L->type == T_FLOAT && castType == T_ELEM){
         L->type = T_ELEM;
         L->cast = FLOAT_TO_ELEM;
     } else if(L->type == T_INT && castType == T_FLOAT){
         L->type = T_FLOAT;
         L->cast = INT_TO_FLOAT;
+        createAndInsertCastNode(root, L, getCastFunc(INT_TO_FLOAT), DEST);
     } else if(L->type == T_INT && castType == T_ELEM){
         L->type = T_ELEM;
         L->cast = INT_TO_ELEM;
@@ -278,28 +301,47 @@ void execSingleForceCast(TreeNode* L, int castType){
     }
 }
 
+char *getCastFunc(int castCode){
+    char *castFunc;
+    if(castCode == ELEM_TO_INT) castFunc = strdup("?");
+    if(castCode == FLOAT_TO_INT) castFunc = strdup("fltoint");
+    if(castCode == INT_TO_FLOAT) castFunc = strdup("inttofl");
+    if(castCode == ELEM_TO_FLOAT) castFunc = strdup("?");
+    if(castCode == INT_TO_ELEM) castFunc = strdup("?");
+    if(castCode == FLOAT_TO_ELEM) castFunc = strdup("?");
+    if(castCode == SET_TO_ELEM) castFunc = strdup("?");
+    if(castCode == ELEM_TO_SET) castFunc = strdup("?");
+    castFunc = strdup("??");
+    pushGarbageCollector(NULL, castFunc);
+    return castFunc;
+}
+
+
 char *getCastString(int castCode){
     if(castCode == ELEM_TO_INT) return strdup("(int)ELEM");
-    if(castCode == FLOAT_TO_INT) return strdup("(int)FLOAT");
-    if(castCode == INT_TO_FLOAT) return strdup("(float)INT");
-    if(castCode == ELEM_TO_FLOAT) return strdup("(float)ELEM");
-    if(castCode == INT_TO_ELEM) return strdup("(elem)INT");
-    if(castCode == FLOAT_TO_ELEM) return strdup("(elem)FLOAT");
-    if(castCode == SET_TO_ELEM) return strdup("(elem)SET");
-    if(castCode == ELEM_TO_SET) return strdup("(set)ELEM");
+    else if(castCode == FLOAT_TO_INT) return strdup("(int)FLOAT");
+    else if(castCode == INT_TO_FLOAT) return strdup("(float)INT");
+    else if(castCode == ELEM_TO_FLOAT) return strdup("(float)ELEM");
+    else if(castCode == INT_TO_ELEM) return strdup("(elem)INT");
+    else if(castCode == FLOAT_TO_ELEM) return strdup("(elem)FLOAT");
+    else if(castCode == SET_TO_ELEM) return strdup("(elem)SET");
+    else if(castCode == ELEM_TO_SET) return strdup("(set)ELEM");
     return strdup("??");
 }
 
 char *getExternalCastString(int castCode){
-    if(castCode == ELEM_TO_INT) return strdup("int");
-    if(castCode == FLOAT_TO_INT) return strdup("int");
-    if(castCode == INT_TO_FLOAT) return strdup("float");
-    if(castCode == ELEM_TO_FLOAT) return strdup("float");
-    if(castCode == INT_TO_ELEM) return strdup("elem");
-    if(castCode == FLOAT_TO_ELEM) return strdup("elem");
-    if(castCode == SET_TO_ELEM) return strdup("elem");
-    if(castCode == ELEM_TO_SET) return strdup("set");
-    return strdup("??");
+    char *castStr;
+    if(castCode == ELEM_TO_INT) castStr = strdup("int");
+    else if(castCode == FLOAT_TO_INT) castStr = strdup("int");
+    else if(castCode == INT_TO_FLOAT) castStr = strdup("float");
+    else if(castCode == ELEM_TO_FLOAT) castStr = strdup("float");
+    else if(castCode == INT_TO_ELEM) castStr = strdup("elem");
+    else if(castCode == FLOAT_TO_ELEM) castStr = strdup("elem");
+    else if(castCode == SET_TO_ELEM) castStr = strdup("elem");
+    else if(castCode == ELEM_TO_SET) castStr = strdup("set");
+    else castStr = strdup("??");
+    pushGarbageCollector(NULL, castStr);
+    return castStr;
 }
 
 void checkMissType(int typeL, int typeR, int line, int column, char* body) {

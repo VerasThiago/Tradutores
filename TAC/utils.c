@@ -87,6 +87,12 @@ char* cExtensionToTACExtension(){
     return ret;
 }
 
+char *copyStr(char* str){
+    char* ret = strdup(str);
+    pushGarbageCollector(NULL, ret);
+    return ret;
+}
+
 
 /*** Args number list to name list ***/
 

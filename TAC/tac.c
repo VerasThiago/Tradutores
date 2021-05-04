@@ -96,7 +96,8 @@ char* getFuncFromOperator(char* operator, int *swap){
     else if(strcmp(operator, "=") == 0) func = strdup("mov");
     else if(strcmp(operator, "write") == 0) func = strdup("print");
     else if(strcmp(operator, "writeln") == 0) func = strdup("println");
-    else if(strcmp(operator, "read") == 0) func = strdup("scani");
+    else if(strcmp(operator, "readi") == 0) func = strdup("scani");
+    else if(strcmp(operator, "readf") == 0) func = strdup("scanf");
     else func = strdup("??");
     pushGarbageCollector(NULL, func);
     return func;
@@ -123,6 +124,8 @@ void insertFile(TAC* codeLine){
         strcmp(codeLine->func, "not") == 0      ||
         strcmp(codeLine->func, "mov") == 0      ||
         strcmp(codeLine->func, "call") == 0     ||
+        strcmp(codeLine->func, "inttofl") == 0  ||
+        strcmp(codeLine->func, "fltoint") == 0  ||
         strcmp(codeLine->func, "brz") == 0 
     ) {
         fprintf(out, "\t%s %s, %s\n", codeLine->func, codeLine->dest, codeLine->arg1); 
@@ -132,6 +135,7 @@ void insertFile(TAC* codeLine){
         strcmp(codeLine->func, "jump") == 0     ||
         strcmp(codeLine->func, "return") == 0   ||
         strcmp(codeLine->func, "scani") == 0    ||
+        strcmp(codeLine->func, "scanf") == 0    ||
         strcmp(codeLine->func, "pop") == 0      ||
         strcmp(codeLine->func, "param") == 0    
         

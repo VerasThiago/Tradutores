@@ -18,5 +18,6 @@ void freeGarbageCollector();
 void pushGarbageCollector(TreeNode*, char*);
 
 char* cExtensionToTACExtension();
+char *copyStr(char* str);
 
 #endif

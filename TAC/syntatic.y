@@ -391,7 +391,7 @@ set_statement_exists:
 set_boolean_expression:
     expression IN set_statement_add_remove {
         // printf("[SYNTATIC] (set_boolean_expression) expression IN set_statement_add_remove\n");
-        if(checkSingleCast($1, getTypeID("ELEM"))) execSingleCast($1, getTypeID("ELEM"));
+        if(checkSingleCast($1, getTypeID("ELEM"))) execSingleCast(NULL, $1, getTypeID("ELEM"));
         checkStructureBoolINSet($1->type, $3->type, getTypeID("ELEM"), getTypeID("SET"), $2.line, $2.column, $2.tokenBody);
 
         $$ = createNode("set_boolean_expression");
@@ -408,7 +408,7 @@ set_boolean_expression:
         Symbol* s = checkVarExist(&tableList, $3.line, $3.column, $3.tokenBody, $3.scope);
         TreeNode* nodeID = createIDNode(s, $3.line, $3.column, $3.tokenBody, $3.scope);
 
-        if(checkSingleCast($1, getTypeID("ELEM"))) execSingleCast($1, getTypeID("ELEM"));
+        if(checkSingleCast($1, getTypeID("ELEM"))) execSingleCast(NULL, $1, getTypeID("ELEM"));
         checkStructureBoolINSet($1->type, s ? getTypeID(s->type):9, getTypeID("ELEM"), getTypeID("SET"), $2.line, $2.column, $2.tokenBody);
 
         $$ = createNode("set_boolean_expression");
@@ -428,7 +428,7 @@ set_assignment_expression:
         Symbol* s = checkVarExist(&tableList, $1.line, $1.column, $1.tokenBody, $1.scope);
         TreeNode* nodeID = createIDNode(s, $1.line, $1.column, $1.tokenBody, $1.scope);
 
-        if(checkSingleCast($3, getTypeID("SET"))) execSingleCast($3, getTypeID("SET"));
+        if(checkSingleCast($3, getTypeID("SET"))) execSingleCast(NULL, $3, getTypeID("SET"));
         
         $$ = createNode("set_assignment_expression");
         $$->children = nodeID;
@@ -448,7 +448,7 @@ set_assignment_expression:
         TreeNode* nodeID1 = createIDNode(s1, $1.line, $1.column, $1.tokenBody, $1.scope);
         TreeNode* nodeID2 = createIDNode(s2, $3.line, $3.column, $3.tokenBody, $3.scope);
 
-        if(checkSingleCast(nodeID2, getTypeID("SET"))) execSingleCast(nodeID2, getTypeID("SET"));
+        if(checkSingleCast(nodeID2, getTypeID("SET"))) execSingleCast(NULL, nodeID2, getTypeID("SET"));
 
         $$ = createNode("set_assignment_expression");
         $$->children = nodeID1;
@@ -498,9 +498,9 @@ expression_assignment:
         
         Symbol* s = checkVarExist(&tableList, $1.line, $1.column, $1.tokenBody, $1.scope);
         if(s){
-            if(checkCastSymbol(s, $3)) execForceCastSymbol(s, $3);
-            checkMissType(getTypeID(s->type), $3->type, $1.line, $1.column, "=");
             $$->codeLine = createTAC(getFuncFromOperator("=", NULL), getRegisterFromId(s->id), $3->codeLine->dest, NULL, NULL);
+            if(checkCastSymbol(s, $3)) execForceCastSymbol($$, s, $3);
+            checkMissType(getTypeID(s->type), $3->type, $1.line, $1.column, "=");
         }
 
         char *body =  getCastExpressionSymbol(s, $3, "=");
@@ -524,7 +524,7 @@ expression_logical:
         $$->children = $1;
         getLatestNxt($1)->nxt = $3;
 
-        if(checkCast($1, $3)) execCast($1, $3);
+        if(checkCast($1, $3)) execCast($$, $1, $3);
         $$->type = $1->type;
         checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
 
@@ -540,7 +540,7 @@ expression_logical:
         $$->children = $1;
         getLatestNxt($1)->nxt = $3;
 
-        if(checkCast($1, $3)) execCast($1, $3);
+        if(checkCast($1, $3)) execCast($$, $1, $3);
         $$->type = $1->type;
         checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
 
@@ -563,7 +563,7 @@ expression_relational:
         $$->children = $1;   
         getLatestNxt($1)->nxt = $3;
 
-        if(checkCast($1, $3)) execCast($1, $3);
+        if(checkCast($1, $3)) execCast($$, $1, $3);
         $$->type = getTypeID("INT");
         checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
 
@@ -588,14 +588,14 @@ expression_additive:
         // printf("[SYNTATIC] (expression_additive) expression_additive ADDITIVE_OP(%s) expression_additive \n", $2.tokenBody);
         $$ = createNode("expression_additive");
         $$->children = $1;
+        $$->codeLine = createTAC(getFuncFromOperator($2.tokenBody, NULL), getFreeRegister(), $1->codeLine->dest, $3->codeLine->dest, NULL);
 
         getLatestNxt($1)->nxt = $3;
 
-        if(checkCast($1, $3)) execCast($1, $3);
+        if(checkCast($1, $3)) execCast($$, $1, $3);
         $$->type = $1->type;
         checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
         
-        $$->codeLine = createTAC(getFuncFromOperator($2.tokenBody, NULL), getFreeRegister(), $1->codeLine->dest, $3->codeLine->dest, NULL);
 
         char *body = getCastExpression($1, $3, $2.tokenBody);
         $$->symbol = createSymbol($2.line, $2.column, "additive operator", "", body, $2.scope, -1);
@@ -614,7 +614,7 @@ expression_multiplicative:
         $$->children = $1;   
         getLatestNxt($1)->nxt = $3;
 
-        if(checkCast($1, $3)) execCast($1, $3);
+        if(checkCast($1, $3)) execCast($$, $1, $3);
         $$->type = $1->type;
         checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
 
@@ -711,7 +711,8 @@ io_statement:
         Symbol* s = checkVarExist(&tableList, $3.line, $3.column, $3.tokenBody, $3.scope);
         $$ = createNode("io_statement - READ");
         $$->symbol = createSymbol($3.line, $3.column, "variable", lastType, $3.tokenBody, $3.scope, -1);
-        if(s) $$->codeLine = createTAC(getFuncFromOperator("read", NULL), NULL, getRegisterFromId(s->id), NULL, NULL);
+        if(s && getTypeID($$->symbol->type) == getTypeID("INT")) $$->codeLine = createTAC(getFuncFromOperator("readi", NULL), NULL, getRegisterFromId(s->id), NULL, NULL);
+        else if(s && getTypeID($$->symbol->type) == getTypeID("FLOAT")) $$->codeLine = createTAC(getFuncFromOperator("readf", NULL), NULL, getRegisterFromId(s->id), NULL, NULL);
     }
     | WRITE '(' STRING ')' ';' {
         // printf("[SYNTATIC] (io_statement) WRITE '(' STRING(%s) ')' ';'\n", $3.tokenBody);
@@ -781,7 +782,7 @@ return:
         Symbol* s = getClosestFunctionFromLine(&tableList, $1.line);
         
         if(s){
-            checkAndExecForceCast($2, getTypeID(s->type));
+            checkAndExecForceCast($$, $2, getTypeID(s->type));
             checkMissTypeReturn(getTypeID(s->type), $2->type, $1.line, $1.column, s->body);
         }
 

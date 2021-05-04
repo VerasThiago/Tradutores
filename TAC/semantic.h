@@ -5,10 +5,13 @@ int checkCast(TreeNode*, TreeNode*);
 int checkCastSymbol(Symbol*, TreeNode*);
 int checkSingleCastSymbol(Symbol*, int);
 
-void execCast(TreeNode*, TreeNode*);
-void execSingleCast(TreeNode*, int );
-void execSingleForceCast(TreeNode*, int);
-void execForceCastSymbol(Symbol*, TreeNode*);
+void execCast(TreeNode* root, TreeNode* L, TreeNode* R);
+void execSingleCast(TreeNode* root, TreeNode* L, int castType);
+void execSingleForceCast(TreeNode* root, TreeNode* L, int castType);
+void execForceCastSymbol(TreeNode* root, Symbol* L, TreeNode* R);
+
+void createAndInsertCastNode(TreeNode* root, TreeNode* castNode, char* castFunc, int pos);
+char* createAndInsertCastNodeUtil(TreeNode* root, char* castFunc);
 
 int checkSingleCast(TreeNode*, int );
 void checkStructureBoolINSet(int , int , int , int , int , int , char*);
@@ -28,9 +31,10 @@ void checkMainFunc();
 
 char *getCastString(int);
 char *getExternalCastString(int);
+char *getCastFunc(int castCode);
 
-void checkAndExecForceCastArgs(TreeNode*, char[], int * );
-void checkAndExecForceCast(TreeNode*, int);
+void checkAndExecForceCastArgs(TreeNode* root, TreeNode* argumentsList, char* argsType, int *idx);
+void checkAndExecForceCast(TreeNode* root, TreeNode* expression, int type);
 
 enum CAST_CODE {
     INT_TO_FLOAT,

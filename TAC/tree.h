@@ -15,8 +15,8 @@ typedef struct TreeNode {
 } TreeNode;
 
 typedef struct GarbageCollector {
-    struct TreeNode* nodeArr[1000];
-    char* strArr[1000];
+    struct TreeNode* nodeArr[2000];
+    char* strArr[2000];
     int nodeSize;
     int strSize;
 } GarbageCollector;

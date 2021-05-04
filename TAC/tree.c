@@ -97,10 +97,13 @@ void getTreeArgs(TreeNode* root, char ans[]){
 
     if(root->type != -1){
         TreeNode* paramNode;
-        if(root->symbol->id != -1) paramNode = createTACNode(createTAC("param", NULL, getRegisterFromId(root->symbol->id), NULL, NULL));
+        TreeNode* latstNode = getLatestNxt(root);
+        
+        if(latstNode->codeLine && latstNode->codeLine->dest) paramNode = createTACNode(createTAC("param", NULL, latstNode->codeLine->dest, NULL, NULL));
+        else if(root->symbol->id != -1) paramNode = createTACNode(createTAC("param", NULL, getRegisterFromId(root->symbol->id), NULL, NULL));
         else paramNode = createTACNode(createTAC("param", NULL, root->codeLine->dest, NULL, NULL));
-        paramNode->nxt = root->nxt;
-        root-> nxt = paramNode;
+
+        getLatestNxt(root)-> nxt = paramNode;
     }
 }
 
