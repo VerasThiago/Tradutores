@@ -19,5 +19,6 @@ void pushGarbageCollector(TreeNode*, char*);
 
 char* cExtensionToTACExtension();
 char *copyStr(char* str);
+void swapStr(char* a, char* b);
 
 #endif

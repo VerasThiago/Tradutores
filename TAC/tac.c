@@ -81,10 +81,11 @@ char* getParamFromPos(int id){
 char* getFuncFromOperator(char* operator, int *swap){
     char* func;
     if(strcmp(operator, "==") == 0) func = strdup("seq");
+    else if(strcmp(operator, "!=") == 0) func = strdup("seq");
     else if(strcmp(operator, "<") == 0) func = strdup("slt");
     else if(strcmp(operator, "<=") == 0) func = strdup("sleq");
     else if(strcmp(operator, ">=") == 0) func = strdup("sleq"), *swap = 1;
-    else if(strcmp(operator, ">") == 0) func = strdup("slt"), *swap = 1;
+    else if(strcmp(operator, ">") == 0) func = strdup("slt"),   *swap = 1;
     else if(strcmp(operator, "+") == 0) func = strdup("add");
     else if(strcmp(operator, "-") == 0) func = strdup("sub");
     else if(strcmp(operator, "*") == 0) func = strdup("mul");

@@ -304,14 +304,14 @@ void execSingleForceCast(TreeNode* root, TreeNode* L, int castType){
 char *getCastFunc(int castCode){
     char *castFunc;
     if(castCode == ELEM_TO_INT) castFunc = strdup("?");
-    if(castCode == FLOAT_TO_INT) castFunc = strdup("fltoint");
-    if(castCode == INT_TO_FLOAT) castFunc = strdup("inttofl");
-    if(castCode == ELEM_TO_FLOAT) castFunc = strdup("?");
-    if(castCode == INT_TO_ELEM) castFunc = strdup("?");
-    if(castCode == FLOAT_TO_ELEM) castFunc = strdup("?");
-    if(castCode == SET_TO_ELEM) castFunc = strdup("?");
-    if(castCode == ELEM_TO_SET) castFunc = strdup("?");
-    castFunc = strdup("??");
+    else if(castCode == FLOAT_TO_INT) castFunc = strdup("fltoint");
+    else if(castCode == INT_TO_FLOAT) castFunc = strdup("inttofl");
+    else if(castCode == ELEM_TO_FLOAT) castFunc = strdup("?");
+    else if(castCode == INT_TO_ELEM) castFunc = strdup("?");
+    else if(castCode == FLOAT_TO_ELEM) castFunc = strdup("?");
+    else if(castCode == SET_TO_ELEM) castFunc = strdup("?");
+    else if(castCode == ELEM_TO_SET) castFunc = strdup("?");
+    else castFunc = strdup("??");
     pushGarbageCollector(NULL, castFunc);
     return castFunc;
 }

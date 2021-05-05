@@ -70,6 +70,12 @@ char* getIDType(int type){
 
 /*** Generic Utils ***/
 
+void swapStr(char** a, char** b){
+    char* tmp = *a;
+    *a = *b;
+    *b = tmp;
+}
+
 int startsWith(char* a, char* b){
     if(strlen(a) < strlen(b)) return 0;
     for(int i = 0; i < strlen(b); i++) if(a[i] != b[i]) return 0;

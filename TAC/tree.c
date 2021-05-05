@@ -97,13 +97,13 @@ void getTreeArgs(TreeNode* root, char ans[]){
 
     if(root->type != -1){
         TreeNode* paramNode;
-        TreeNode* latstNode = getLatestNxt(root);
+        TreeNode* latstNode = getLastNodeNxt(root);
         
         if(latstNode->codeLine && latstNode->codeLine->dest) paramNode = createTACNode(createTAC("param", NULL, latstNode->codeLine->dest, NULL, NULL));
         else if(root->symbol->id != -1) paramNode = createTACNode(createTAC("param", NULL, getRegisterFromId(root->symbol->id), NULL, NULL));
         else paramNode = createTACNode(createTAC("param", NULL, root->codeLine->dest, NULL, NULL));
 
-        getLatestNxt(root)-> nxt = paramNode;
+        getLastNodeNxt(root)-> nxt = paramNode;
     }
 }
 
@@ -173,7 +173,7 @@ TreeNode* createTACNode(TAC *codeLine){
     return node;
 }
 
-TreeNode* getLatestNxt(TreeNode* curr){
+TreeNode* getLastNodeNxt(TreeNode* curr){
     if(!curr) return curr;
     while(curr->nxt) curr = curr->nxt;
     return curr;
@@ -185,18 +185,17 @@ void buildIfTAC(TreeNode* root, TreeNode* expression, TreeNode* statements){
     char *freeLabel = getFreeLabel("if", -1);
     char *freeEndLabel = getEndLabel(freeLabel);
 
-    TreeNode* freeLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeLabel));
-    TreeNode* freeEndLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeEndLabel));
-    TreeNode* brzNode = createTACNode(createTAC("brz", freeEndLabel, expression->codeLine->dest, NULL, NULL));
+    TreeNode* ifLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeLabel));
+    TreeNode* endLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeEndLabel));
+    TreeNode* brzNode = createTACNode(createTAC("brz", freeEndLabel, getLastNodeNxt(expression)->codeLine->dest, NULL, NULL));
 
-    freeLabelNode->nxt = root->children;
-    root->children = freeLabelNode;
+    root->children = ifLabelNode;
+    ifLabelNode->nxt = expression;
 
-    expression->nxt = brzNode;
+    getLastNodeNxt(expression)->nxt = brzNode;
     brzNode->nxt = statements;
 
-    freeEndLabelNode->nxt = statements->nxt;
-    statements->nxt = freeEndLabelNode;
+    getLastNodeNxt(statements)->nxt = endLabelNode;
 }
 
 void buildIfElseTAC(TreeNode* root, TreeNode* expression, TreeNode* ifStatements, TreeNode* elseStatements){
@@ -210,21 +209,21 @@ void buildIfElseTAC(TreeNode* root, TreeNode* expression, TreeNode* ifStatements
     TreeNode* elseLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeElseLabel));
     TreeNode* elseEndLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeElseEndLabel));
 
-    TreeNode* brzNode = createTACNode(createTAC("brz", freeElseLabel, expression->codeLine->dest, NULL, NULL));
+    TreeNode* brzNode = createTACNode(createTAC("brz", freeElseLabel, getLastNodeNxt(expression)->codeLine->dest, NULL, NULL));
     TreeNode* jumpNode = createTACNode(createTAC("jump", NULL, freeElseEndLabel, NULL, NULL));
     
-    ifLabelNode->nxt = root->children;
     root->children = ifLabelNode;
+    ifLabelNode->nxt = expression;
 
-    expression->nxt = brzNode;
+    getLastNodeNxt(expression)->nxt = brzNode;
     brzNode->nxt = ifStatements;
 
-    ifStatements->nxt = jumpNode;
+    getLastNodeNxt(ifStatements)->nxt = jumpNode;
     jumpNode->nxt = elseLabelNode;
-    elseLabelNode->nxt = elseStatements;
 
-    elseEndLabelNode->nxt = elseStatements->nxt;
-    elseStatements->nxt = elseEndLabelNode;
+    elseLabelNode->nxt = elseStatements;
+    getLastNodeNxt(elseStatements)->nxt = elseEndLabelNode;
+
 }
 
 void buildForTAC(TreeNode* root, TreeNode* forExpression, TreeNode* statement){
