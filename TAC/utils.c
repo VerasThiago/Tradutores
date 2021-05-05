@@ -70,10 +70,15 @@ char* getIDType(int type){
 
 /*** Generic Utils ***/
 
-void swapStr(char** a, char** b){
-    char* tmp = *a;
-    *a = *b;
-    *b = tmp;
+ void swapTACArgs(TreeNode* root){
+    TAC* codeLine = createTAC(root->codeLine->func, root->codeLine->dest, root->codeLine->arg2, root->codeLine->arg1, root->codeLine->label);
+    free(root->codeLine->func);
+    free(root->codeLine->dest);
+    free(root->codeLine->arg1);
+    free(root->codeLine->arg2);
+    free(root->codeLine->label);
+    free(root->codeLine);
+    root->codeLine = codeLine;
 }
 
 int startsWith(char* a, char* b){
@@ -97,6 +102,45 @@ char *copyStr(char* str){
     char* ret = strdup(str);
     pushGarbageCollector(NULL, ret);
     return ret;
+}
+
+int countlines() {
+    FILE *fp = fopen(cExtensionToTACExtension(),"r");
+    int ch = 0;
+    int lines = 1;
+    
+    if (fp == NULL) 
+        return 0;
+    
+    while ((ch = fgetc(fp)) != EOF)
+        if (ch == '\n') lines++;
+
+    fclose(fp);
+    return lines;
+}
+
+void replaceMainReturn0ToNop(){
+    FILE *curr = fopen(cExtensionToTACExtension(), "r");
+    FILE *tmp = fopen("replace.tmp", "w"); 
+
+    if (curr == NULL || tmp == NULL){
+        printf("[ERROR] Failed to remove 'return 0'\n");
+        return;
+    }
+
+    int count = 0;
+    int line = countlines() - 1;
+    int BUFFER_SIZE = 1000;
+    char buffer[BUFFER_SIZE];
+
+    while ((fgets(buffer, BUFFER_SIZE, curr))) {
+        count++;
+        if (count == line) fputs("\tnop\n", tmp);
+        else fputs(buffer, tmp);
+    }
+
+    fclose(curr), fclose(tmp);
+    remove(cExtensionToTACExtension()), rename("replace.tmp", cExtensionToTACExtension());
 }
 
 

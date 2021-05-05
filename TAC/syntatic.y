@@ -219,10 +219,12 @@ function_body:
 	'{' statements '}' {
         // printf("[SYNTATIC] (function_body) '{' statements '}'\n");
         $$ = $2;    
+        getLastNodeNxt($$->children)->nxt = createTACNode(createTAC("return", NULL, "0", NULL, NULL));
     }
     | '{' '}' {
         // printf("[SYNTATIC] (function_body) '{' '}'\n");
         $$ = createNode("function_body");
+        $$->children = createTACNode(createTAC("return", NULL, "0", NULL, NULL));
     }
 ;
 
@@ -571,7 +573,7 @@ expression_relational:
         $$->type = getTypeID("INT");
         checkMissType($1->type, $3->type, $2.line, $2.column, $2.tokenBody);
 
-        if(needSwap) swapStr($$->codeLine->arg1, $$->codeLine->arg2);
+        if(needSwap) swapTACArgs($$);
         if(strcmp($2.tokenBody, "!=") == 0) {
             TreeNode* notNode = createTACNode(createTAC("not", getFreeRegister(), $$->codeLine->dest, NULL, NULL));
             notNode->nxt = $$->nxt;

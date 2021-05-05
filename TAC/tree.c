@@ -69,7 +69,7 @@ void printTree(TreeNode* root, int ident, int *ok){
     }
 
     // Change to 0 to not display on tree or 1 to display
-    if(0 && root->codeLine && (root->codeLine->func || root->codeLine->label || root->codeLine->dest) ){ 
+    if(1 && root->codeLine && (root->codeLine->func || root->codeLine->label || root->codeLine->dest) ){ 
         printCodeLine(root->codeLine, ident + 1);
     }
 
@@ -161,10 +161,8 @@ void generateTACCode(TreeNode* root){
     fclose(out);
 
     generateTACCodeUtil(root);
-    
-    out = fopen(cExtensionToTACExtension(), "a");
-    fprintf(out, "\tnop\n"); 
-    fclose(out);
+    replaceMainReturn0ToNop();
+
 }
 
 TreeNode* createTACNode(TAC *codeLine){
