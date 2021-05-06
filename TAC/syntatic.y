@@ -580,6 +580,12 @@ expression_relational:
             $$->nxt = notNode;
         }
 
+        if($1->type == getTypeID("FLOAT")) {
+            TreeNode *intCast = createTACNode(createTAC("fltoint", $$->codeLine->dest, $$->codeLine->dest, NULL, NULL));
+            intCast->nxt = $$->children;
+            $$->nxt = intCast;
+        }
+
         char *body =  getCastExpression($1, $3, $2.tokenBody);
         $$->symbol = createSymbol($2.line, $2.column, "relational operator", "", body, $2.scope, -1);
         pushGarbageCollector(NULL, body);

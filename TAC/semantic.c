@@ -142,8 +142,8 @@ int checkCastSymbol(Symbol* L, TreeNode* R){
 
 char* createAndInsertCastNodeUtil(TreeNode* root, char* castFunc){
     TreeNode* intToFloatCastNode = createTACNode(createTAC(castFunc, getFreeRegister(), root->codeLine->dest, NULL, NULL));
-    intToFloatCastNode->nxt = root->nxt;
-    root->nxt = intToFloatCastNode;
+    intToFloatCastNode->nxt = root->children;
+    root->children = intToFloatCastNode;
     return strdup(intToFloatCastNode->codeLine->dest);
 }
 

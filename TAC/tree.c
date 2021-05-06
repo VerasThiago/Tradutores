@@ -94,18 +94,21 @@ void getTreeArgs(TreeNode* root, char ans[]){
     if(!startsWith(root->rule, "expression") && !startsWith(root->rule, "function_call")){
         getTreeArgs(root->children, ans);
     }
-    getTreeArgs(root->nxt, ans);
 
     if(root->type != -1){
         TreeNode* paramNode;
-        TreeNode* latstNode = getLastNodeNxt(root);
+        TreeNode* latstNode = getLastNodeNxt(root->children);
         
-        if(latstNode->codeLine && latstNode->codeLine->dest) paramNode = createTACNode(createTAC("param", NULL, latstNode->codeLine->dest, NULL, NULL));
+        if(latstNode && latstNode->codeLine && latstNode->codeLine->dest) paramNode = createTACNode(createTAC("param", NULL, latstNode->codeLine->dest, NULL, NULL));
         else if(root->symbol->id != -1) paramNode = createTACNode(createTAC("param", NULL, getRegisterFromId(root->symbol->id), NULL, NULL));
         else paramNode = createTACNode(createTAC("param", NULL, root->codeLine->dest, NULL, NULL));
 
-        getLastNodeNxt(root)-> nxt = paramNode;
+        if(latstNode) latstNode->nxt = paramNode;
+        else root->children = paramNode;
     }
+
+    getTreeArgs(root->nxt, ans);
+
 }
 
 void getTreeParamsAndAssignPos(TreeNode* root, char ans[], int *idx){
