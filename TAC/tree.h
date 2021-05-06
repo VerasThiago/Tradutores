@@ -49,5 +49,6 @@ void generateTACCode(TreeNode* root);
 void buildIfTAC(TreeNode* root, TreeNode* expression, TreeNode* statements);
 void buildIfElseTAC(TreeNode* root, TreeNode* expression, TreeNode* ifStatements, TreeNode* elseStatements);
 void buildForTAC(TreeNode* root, TreeNode* forExpression, TreeNode* statement);
+void buildPrintStringTAC(TreeNode* root, char* op);
 
 #endif

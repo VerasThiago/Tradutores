@@ -6,6 +6,7 @@
 #include "semantic.h"
 
 TreeNode* root;
+char tableCode[1000] = "";
 GarbageCollector garbageCollector;
 
 TreeNode* createNode(char* rule){
@@ -55,7 +56,7 @@ void printTree(TreeNode* root, int ident, int *ok){
     if(!root) return;
 
     // Change to TAC to not display on tree or TAX to display
-    if(strcmp(root->rule, "TAC") == 0) {
+    if(strcmp(root->rule, "TAX") == 0) {
         printTree(root->children, ident + 2, ok); 
         printTree(root->nxt, ident, ok); 
         return;
@@ -152,17 +153,38 @@ void generateTACCodeUtil(TreeNode* root){
     if(root->codeLine && root->codeLine->func && strcmp(root->codeLine->func, "call") == 0) insertFile(root->codeLine);
 }
 
+char* printStringTacCode(){
+    char *printCode = strdup( 
+        "__printf:\n"
+        "\tmov $1022, 0\n"
+        "__while:\n"
+        "\tmov $1023, #1\n"
+        "\tmov $1023, $1023[$1022]\n"
+        "\tprint $1023\n"
+        "\tsub $1023, $1022, #0\n"
+        "\tadd $1022, $1022, 1\n"
+        "\tbrnz __while, $1023\n"
+        "\treturn\n"
+        "\t\n"
+        "__printfln:\n"
+        "\tcall __printf, 2\n"
+        "\tprintln\n"
+        "\treturn\n"
+    );
+    pushGarbageCollector(NULL, printCode);
+    return printCode;
+}
+
 void generateTACCode(TreeNode* root){
     if(!root) return;
     fclose(fopen(cExtensionToTACExtension(), "w"));
 
     FILE *out = fopen(cExtensionToTACExtension(), "a");
-    fprintf(out, ".table\n.code\n"); 
+    fprintf(out, ".table\n%s.code\n%s", tableCode, printStringTacCode()); 
     fclose(out);
 
     generateTACCodeUtil(root);
     replaceMainReturn0ToNop();
-
 }
 
 TreeNode* createTACNode(TAC *codeLine){
@@ -177,13 +199,40 @@ TreeNode* getLastNodeNxt(TreeNode* curr){
     return curr;
 }
 
+void buildPrintStringTAC(TreeNode* root, char* op){
+
+
+    if(root->symbol->body[0] == '\''){
+        TreeNode* printNode = createTACNode(createTAC("print", NULL, root->symbol->body, NULL, NULL));
+        root->children = printNode;
+        return;
+    }
+    
+    //TODO: Remove this gambiarra (save to file and concat into TAC code)
+    char aux[300] = "";
+    sprintf(aux, "\tchar %s [] = %s\n", getFreeLabel("str", root->symbol->id), root->symbol->body);
+    strcat(tableCode, aux);
+
+    char *freeRegister = getFreeRegister();
+
+    TreeNode* param1Node = createTACNode(createTAC("param", NULL, intToStr(strlen(root->symbol->body) - 2), NULL, NULL));
+    TreeNode* movNode = createTACNode(createTAC("mov", freeRegister, getLabelAddress(getFreeLabel("str", root->symbol->id)), NULL, NULL));
+    TreeNode* param2Node = createTACNode(createTAC("param", NULL, freeRegister, NULL, NULL));
+    TreeNode* callNode = createTACNode(createTAC("call", op, "2", NULL, NULL));
+
+    root->children = param1Node;
+    param1Node->nxt = movNode;
+    movNode->nxt = param2Node;
+    param2Node->nxt = callNode;
+}
+
 void buildIfTAC(TreeNode* root, TreeNode* expression, TreeNode* statements){
     if(!expression->codeLine) return;
 
-    char *freeLabel = getFreeLabel("if", -1);
-    char *freeEndLabel = getEndLabel(freeLabel);
+    char *freeIfLabel = getFreeLabel("if", -1);
+    char *freeEndLabel = getEndLabel(freeIfLabel);
 
-    TreeNode* ifLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeLabel));
+    TreeNode* ifLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeIfLabel));
     TreeNode* endLabelNode = createTACNode(createTAC(NULL, NULL, NULL, NULL, freeEndLabel));
     TreeNode* brzNode = createTACNode(createTAC("brz", freeEndLabel, getLastNodeNxt(expression)->codeLine->dest, NULL, NULL));
 
@@ -221,7 +270,6 @@ void buildIfElseTAC(TreeNode* root, TreeNode* expression, TreeNode* ifStatements
 
     elseLabelNode->nxt = elseStatements;
     getLastNodeNxt(elseStatements)->nxt = elseEndLabelNode;
-
 }
 
 void buildForTAC(TreeNode* root, TreeNode* forExpression, TreeNode* statement){

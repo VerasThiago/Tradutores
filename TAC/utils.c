@@ -104,6 +104,14 @@ char *copyStr(char* str){
     return ret;
 }
 
+char* intToStr(int num){
+    char buffer[5];
+    sprintf(buffer, "%d", num);
+    char* ret = strdup(buffer);
+    pushGarbageCollector(NULL, ret);
+    return ret;
+}
+
 int countlines() {
     FILE *fp = fopen(cExtensionToTACExtension(),"r");
     int ch = 0;

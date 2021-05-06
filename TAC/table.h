@@ -23,6 +23,7 @@ typedef struct TableList {
 void freeTable(TableList*);
 void printTable(TableList*);
 void pushTable(TableList*, Symbol*);
+int getFreeStrId();
 
 Symbol* getSymbolStack(TableList*, char*);
 Symbol* getSymbol(TableList*, char*, int);

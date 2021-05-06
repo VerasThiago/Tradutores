@@ -5,12 +5,17 @@
 #include<string.h>
 
 int id = 0;
+int strId = 0;
 TableList tableList;
 extern Stack stackScope;
 
 void pushTable(TableList* tl, Symbol* val){
     if(strcmp(val->classType, "function") != 0) val->id = id++;
     tl->arr[++tl->size] = val;
+}
+
+int getFreeStrId(){
+    return strId++;
 }
 
 void printTable(TableList* tl){

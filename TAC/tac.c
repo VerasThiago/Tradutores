@@ -6,7 +6,7 @@
 #include "tree.h"
 
 int freeLabel = 0;
-int freeIdx = 1023;
+int freeIdx = 1021;
 extern TreeNode* root;
 
 TAC* createTAC(char* func, char* dest, char* arg1, char* arg2, char* label){
@@ -41,6 +41,14 @@ char* getFreeLabel(char* name, int id){
         if(id != -1) sprintf(buffer, "__%d", id);
         else sprintf(buffer, "__%d", freeLabel++);
     }
+    char* ret = strdup(buffer);
+    pushGarbageCollector(NULL, ret);
+    return ret;
+}
+
+char* getLabelAddress(char* name){
+    char buffer[50];
+    sprintf(buffer, "&%s", name);
     char* ret = strdup(buffer);
     pushGarbageCollector(NULL, ret);
     return ret;

@@ -63,6 +63,7 @@ char* getIDType(int type){
 /*** Generic Utils ***/
 
 int startsWith(char* a, char* b){
+    if(!a || !b) return 0;
     if(strlen(a) < strlen(b)) return 0;
     for(int i = 0; i < strlen(b); i++) if(a[i] != b[i]) return 0;
     return 1;

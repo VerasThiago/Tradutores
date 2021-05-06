@@ -181,6 +181,7 @@ function_definition:
         // printf("[SYNTATIC] (function_definition) function_declaration '(' parameters ')' function_body\n");
         
         $$ = createNode("function_definition");
+        $$->nxt = createTACNode(createTAC("return", NULL, "0", NULL, NULL));
 
         $$->children = $1;
         getLastNodeNxt($1)->nxt = $4;
@@ -192,6 +193,7 @@ function_definition:
                
         $$ = createNode("function_definition");
         $$->children = $1;
+        $$->nxt = createTACNode(createTAC("return", NULL, "0", NULL, NULL));
         getLastNodeNxt($1)->nxt = $4;
         
     }
@@ -219,12 +221,10 @@ function_body:
 	'{' statements '}' {
         // printf("[SYNTATIC] (function_body) '{' statements '}'\n");
         $$ = $2;    
-        getLastNodeNxt($$->children)->nxt = createTACNode(createTAC("return", NULL, "0", NULL, NULL));
     }
     | '{' '}' {
         // printf("[SYNTATIC] (function_body) '{' '}'\n");
         $$ = createNode("function_body");
-        $$->children = createTACNode(createTAC("return", NULL, "0", NULL, NULL));
     }
 ;
 
@@ -740,7 +740,8 @@ io_statement:
     | WRITE '(' STRING ')' ';' {
         // printf("[SYNTATIC] (io_statement) WRITE '(' STRING(%s) ')' ';'\n", $3.tokenBody);
         $$ = createNode("io_statement - WRITE");
-        $$->symbol = createSymbol($3.line, $3.column, "string", "", $3.tokenBody, $3.scope, -1);
+        $$->symbol = createSymbol($3.line, $3.column, "string", "", $3.tokenBody, $3.scope, getFreeStrId());
+        buildPrintStringTAC($$, "__printf");
     }
     | WRITE '(' expression ')' ';' {
         // printf("[SYNTATIC] (io_statement) WRITE '(' expression ')' ';'\n");
@@ -751,7 +752,8 @@ io_statement:
     | WRITELN '(' STRING ')' ';' {
         // printf("[SYNTATIC] (io_statement) WRITELN '(' STRING(%s) ')' ';'\n", $3.tokenBody);
         $$ = createNode("io_statement - WRITELN");
-        $$->symbol = createSymbol($3.line, $3.column, "string", "", $3.tokenBody, $3.scope, -1);
+        $$->symbol = createSymbol($3.line, $3.column, "string", "", $3.tokenBody, $3.scope, getFreeStrId());
+        buildPrintStringTAC($$, "__printfln");
     }
     | WRITELN '(' expression ')' ';' {
         // printf("[SYNTATIC] (io_statement) WRITELN '(' expression ')' ';'\n");

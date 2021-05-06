@@ -30,5 +30,10 @@ int fibonacciDP(int n){
 int main(){
     int x;
     read(x);
-    writeln(fibonacciDP(x));
+    write("Fibonnaci de ");
+    write(x);
+    write(" = ");
+    write(fibonacciDP(x));
+    write('\n');
+    writeln("Obrigado, xau");
 } 
