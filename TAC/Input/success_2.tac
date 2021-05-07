@@ -26,11 +26,11 @@ __printfln:
 	println
 	return
 fibonacci:
-__0_if:
+__1_if:
 	sleq $0, #0, 1
-	brz __0_if_end, $0
+	brz __1_if_end, $0
 	return #0
-__0_if_end:
+__1_if_end:
 	param 1
 	sub $1, #0, 1
 	call fibonacci, 1
@@ -45,31 +45,31 @@ __0_if_end:
 	return $5
 	return 0
 fibonacciDP:
-__1_if:
+__2_if:
 	sleq $6, #0, 1
-	brz __1_if_end, $6
+	brz __2_if_end, $6
 	return #0
-__1_if_end:
+__2_if_end:
 	mov prev_2, 1
 	mov prevPrev_2, 0
-__2_for:
-__2_for_pre_check:
+__3_for:
+__3_for_pre_check:
 	mov i_2, 2
-__2_for_check:
+__3_for_check:
 	sleq $7, i_2, #0
-	brz __2_for_end, $7
+	brz __3_for_end, $7
 	add $9, prev_2, prevPrev_2
 	mov curr_2, $9
 	mov prevPrev_2, prev_2
 	mov prev_2, curr_2
-__2_for_after_statement:
+__3_for_after_statement:
 	add $8, i_2, 1
 	mov i_2, $8
-	jump __2_for_check
-__2_for_end:
+	jump __3_for_check
+__3_for_end:
 	return curr_2
 	return 0
-main:
+__0_main:
 	param 43
 	mov $10, &__0_str
 	param $10
@@ -88,4 +88,6 @@ main:
 	call fibonacciDP, 1
 	pop $13
 	println $13
-	nop
+	return 0
+main:
+	call __0_main, 0

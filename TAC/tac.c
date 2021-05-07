@@ -5,7 +5,7 @@
 #include "utils.h"
 #include "tree.h"
 
-int freeLabel = 0;
+int freeLabel = 1;
 int freeIdx = 0;
 extern TreeNode* root;
 
@@ -34,8 +34,9 @@ int getFreeLabelId(){
 char* getFreeLabel(char* name, int id){
     char buffer[50];
     if(name) {
-        if(strcmp(name, "main") == 0 || id == -2) return name;
-        if(id != -1) sprintf(buffer, "__%d_%s", id, name);
+        if(strcmp(name, "main") == 0) sprintf(buffer, "__0_%s", name);
+        else if(id == -2) return name;
+        else if(id != -1) sprintf(buffer, "__%d_%s", id, name);
         else sprintf(buffer, "__%d_%s", freeLabel++, name);
     } else {
         if(id != -1) sprintf(buffer, "__%d", id);

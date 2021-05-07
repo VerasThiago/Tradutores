@@ -112,46 +112,6 @@ char* intToStr(int num){
     return ret;
 }
 
-int countlines() {
-    FILE *fp = fopen(cExtensionToTACExtension(),"r");
-    int ch = 0;
-    int lines = 1;
-    
-    if (fp == NULL) 
-        return 0;
-    
-    while ((ch = fgetc(fp)) != EOF)
-        if (ch == '\n') lines++;
-
-    fclose(fp);
-    return lines;
-}
-
-void replaceMainReturn0ToNop(){
-    FILE *curr = fopen(cExtensionToTACExtension(), "r");
-    FILE *tmp = fopen("replace.tmp", "w"); 
-
-    if (curr == NULL || tmp == NULL){
-        printf("[ERROR] Failed to remove 'return 0'\n");
-        return;
-    }
-
-    int count = 0;
-    int line = countlines() - 1;
-    int BUFFER_SIZE = 1000;
-    char buffer[BUFFER_SIZE];
-
-    while ((fgets(buffer, BUFFER_SIZE, curr))) {
-        count++;
-        if (count == line) fputs("\tnop\n", tmp);
-        else fputs(buffer, tmp);
-    }
-
-    fclose(curr), fclose(tmp);
-    remove(cExtensionToTACExtension()), rename("replace.tmp", cExtensionToTACExtension());
-}
-
-
 /*** Args number list to name list ***/
 
 char* getArgsList(char *args){

@@ -28,35 +28,35 @@ calcRaiz:
 	inttofl $0, 0
 	mov L_1, $0
 	mov R_1, #0
-__1_for:
-__1_for_pre_check:
+__2_for:
+__2_for_pre_check:
 	mov i_1, 0
-__1_for_check:
+__2_for_check:
 	slt $1, i_1, 100
-	brz __1_for_end, $1
+	brz __2_for_end, $1
 	add $3, L_1, R_1
 	inttofl $5, 2
 	div $4, $3, $5
 	mov mid_2, $4
-__0_if:
+__1_if:
 	mul $6, mid_2, mid_2
 	sleq $7, $6, #0
 	fltoint $7, $7
-	brz __0_else, $7
+	brz __1_else, $7
 	mov ans_1, mid_2
 	mov L_1, mid_2
-	jump __0_else_end
-__0_else:
+	jump __1_else_end
+__1_else:
 	mov R_1, mid_2
-__0_else_end:
-__1_for_after_statement:
+__1_else_end:
+__2_for_after_statement:
 	add $2, i_1, 1
 	mov i_1, $2
-	jump __1_for_check
-__1_for_end:
+	jump __2_for_check
+__2_for_end:
 	return ans_1
 	return 0
-main:
+__0_main:
 	param 40
 	mov $8, &__0_str
 	param $8
@@ -75,4 +75,6 @@ main:
 	call calcRaiz, 1
 	pop $11
 	println $11
-	nop
+	return 0
+main:
+	call __0_main, 0

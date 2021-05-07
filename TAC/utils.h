@@ -20,7 +20,6 @@ void pushGarbageCollector(TreeNode*, char*);
 char* cExtensionToTACExtension();
 char *copyStr(char* str);
 void swapTACArgs(TreeNode* root);
-void replaceMainReturn0ToNop();
 char* intToStr(int num);
 
 #endif

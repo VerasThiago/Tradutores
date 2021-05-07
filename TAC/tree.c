@@ -187,7 +187,10 @@ void generateTACCode(TreeNode* root){
     fclose(out);
 
     generateTACCodeUtil(root);
-    replaceMainReturn0ToNop();
+
+    out = fopen(cExtensionToTACExtension(), "a");
+    fprintf(out, "main:\n\tcall __0_main, 0\n"); 
+    fclose(out);
 }
 
 TreeNode* createTACNode(TAC *codeLine){
