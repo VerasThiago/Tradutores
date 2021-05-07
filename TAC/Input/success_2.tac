@@ -6,9 +6,9 @@
 	int prev_2
 	int prevPrev_2
 	int x_4
-	char __0_str [] = "Fibonnaci de "
-	char __1_str [] = " = "
-	char __3_str [] = "Obrigado, xau"
+	char __0_str [] = "Digite o valor para encontrar o fibonnaci: "
+	char __1_str [] = "Fibonnaci de "
+	char __2_str [] = " = "
 .code
 __printf:
 	mov $1022, 0
@@ -58,38 +58,34 @@ __2_for_pre_check:
 __2_for_check:
 	sleq $7, i_2, #0
 	brz __2_for_end, $7
-	jump __2_for_statement
-__2_for_after_statement:
-	add $8, i_2, 1
-	mov i_2, $8
-	jump __2_for_check
-__2_for_statement:
 	add $9, prev_2, prevPrev_2
 	mov curr_2, $9
 	mov prevPrev_2, prev_2
 	mov prev_2, curr_2
-	jump __2_for_after_statement
+__2_for_after_statement:
+	add $8, i_2, 1
+	mov i_2, $8
+	jump __2_for_check
 __2_for_end:
 	return curr_2
 	return 0
 main:
-	scani x_4
-	param 13
+	param 43
 	mov $10, &__0_str
 	param $10
 	call __printf, 2
-	print x_4
-	param 3
+	scani x_4
+	param 13
 	mov $11, &__1_str
 	param $11
 	call __printf, 2
+	print x_4
+	param 3
+	mov $12, &__2_str
+	param $12
+	call __printf, 2
 	param x_4
 	call fibonacciDP, 1
-	pop $12
-	print $12
-	print '\n'
-	param 13
-	mov $13, &__3_str
-	param $13
-	call __printfln, 2
+	pop $13
+	println $13
 	nop

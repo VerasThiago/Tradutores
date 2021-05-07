@@ -120,7 +120,6 @@
 %type <node> expression_value
 %type <node> is_set_expression
 %type <node> for
-%type <node> for_expression
 %type <node> io_statement
 %type <node> arguments_list
 %type <node> conditional
@@ -583,7 +582,7 @@ expression_relational:
 
         if($1->type == getTypeID("FLOAT")) {
             TreeNode *intCast = createTACNode(createTAC("fltoint", $$->codeLine->dest, $$->codeLine->dest, NULL, NULL));
-            intCast->nxt = $$->children;
+            intCast->nxt = $$->nxt;
             $$->nxt = intCast;
         }
 
@@ -715,23 +714,10 @@ is_set_expression:
 ;   
 
 for:
-    FOR '(' for_expression ')' statement {
+    FOR '(' expression_or_empty ';' expression_or_empty ';' expression_or_empty ')' statement {
         // printf("[SYNTATIC] (for) FOR '(' for_expression ')' statement\n");
         $$ = createNode("for");
-        $$->children = $3;
-        getLastNodeNxt($3)->nxt = $5;  
-
-        buildForTAC($$, $3, $5);
-    }
-;
-
-for_expression:
-    expression_or_empty ';' expression_or_empty ';' expression_or_empty {
-        // printf("[SYNTATIC] (for_expression) expression_assignment ';' expression_logical ';' expression_assignment\n");
-        $$ = createNode("for_expression");
-        $$->children = $1;
-        getLastNodeNxt($1)->nxt = $3;  
-        getLastNodeNxt($3)->nxt = $5;  
+        buildForTAC($$, $3, $5, $7, $9);
     }
 ;
 

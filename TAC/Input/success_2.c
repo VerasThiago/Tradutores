@@ -29,11 +29,10 @@ int fibonacciDP(int n){
 
 int main(){
     int x;
+    write("Digite o valor para encontrar o fibonnaci: ");
     read(x);
     write("Fibonnaci de ");
     write(x);
     write(" = ");
-    write(fibonacciDP(x));
-    write('\n');
-    writeln("Obrigado, xau");
+    writeln(fibonacciDP(x));
 } 

@@ -48,7 +48,7 @@ TreeNode* createTACNode(TAC *codeLine);
 void generateTACCode(TreeNode* root);
 void buildIfTAC(TreeNode* root, TreeNode* expression, TreeNode* statements);
 void buildIfElseTAC(TreeNode* root, TreeNode* expression, TreeNode* ifStatements, TreeNode* elseStatements);
-void buildForTAC(TreeNode* root, TreeNode* forExpression, TreeNode* statement);
+void buildForTAC(TreeNode* root, TreeNode* pre, TreeNode* check, TreeNode* after, TreeNode* statement);        
 void buildPrintStringTAC(TreeNode* root, char* op);
 void writeTableVar(char* type, int id, char* content);
 
