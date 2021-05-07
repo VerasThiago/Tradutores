@@ -15,6 +15,7 @@
     extern Stack stackScope;
     extern TableList tableList;
     extern TreeNode* root;
+    extern char fileName[200];
 
     int lines = 1;
     int columns = 1;
@@ -323,7 +324,7 @@ COMMENT                         "//"
 
 . {
     errors++;
-    printf("\n[LEXIC] ERROR line: %d columns: %d undentified char: %s \n\n", lines, columns, yytext );
+    printf("%s:%d:%d: error: undentified char: %s\n\n",fileName, lines, columns, yytext);
 }
 
 %%

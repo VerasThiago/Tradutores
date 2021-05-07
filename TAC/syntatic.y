@@ -897,7 +897,7 @@ const:
 %%
 
 int yyerror(const char* message){
-    printf("\n[SYNTATIC] [%d,%d] ERROR %s\n\n", yylval.body.line, yylval.body.column, message);
+    printf("%s:%d:%d: error: %s\n\n",fileName, yylval.body.line, yylval.body.column, message);
     errors++;
     return 0;
 }
