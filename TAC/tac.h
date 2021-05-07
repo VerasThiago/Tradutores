@@ -12,7 +12,7 @@ typedef struct TAC {
 } TAC;
 
 TAC* createTAC(char* func, char* dest, char* arg1, char* arg2, char* label);
-char* getRegisterFromId(int id);
+char* buildVarTacString(char* body, int scope);
 char* getParamFromPos(int id);
 char* getArgsCount(char *args);
 char* getFreeRegister();

@@ -100,7 +100,7 @@ void getTreeArgs(TreeNode* root, char ans[]){
         TreeNode* latstNode = getLastNodeNxt(root->children);
         
         if(latstNode && latstNode->codeLine && latstNode->codeLine->dest) paramNode = createTACNode(createTAC("param", NULL, latstNode->codeLine->dest, NULL, NULL));
-        else if(root->symbol->id != -1) paramNode = createTACNode(createTAC("param", NULL, getRegisterFromId(root->symbol->id), NULL, NULL));
+        else if(root->symbol && root->symbol->body) paramNode = createTACNode(createTAC("param", NULL, buildVarTacString(root->symbol->body, root->symbol->scope), NULL, NULL));
         else paramNode = createTACNode(createTAC("param", NULL, root->codeLine->dest, NULL, NULL));
 
         if(latstNode) latstNode->nxt = paramNode;
@@ -202,6 +202,19 @@ TreeNode* getLastNodeNxt(TreeNode* curr){
     return curr;
 }
 
+//TODO: Remove this gambiarra (save to file and concat into TAC code)
+void writeTableVar(char* type, int id, char* content){
+    char aux[300] = "";
+    if(strcmp(type, "str") == 0){
+        sprintf(aux, "\tchar %s [] = %s\n", getFreeLabel(type, id), content);
+    } else if(strcmp(type, "INT") == 0) {
+        sprintf(aux, "\t%s %s\n", "int", buildVarTacString(content, id));
+    } else if(strcmp(type, "FLOAT") == 0) {
+        sprintf(aux, "\t%s %s\n", "float", buildVarTacString(content, id));
+    } else return;
+    strcat(tableCode, aux);
+}
+
 void buildPrintStringTAC(TreeNode* root, char* op){
 
 
@@ -211,10 +224,7 @@ void buildPrintStringTAC(TreeNode* root, char* op){
         return;
     }
     
-    //TODO: Remove this gambiarra (save to file and concat into TAC code)
-    char aux[300] = "";
-    sprintf(aux, "\tchar %s [] = %s\n", getFreeLabel("str", root->symbol->id), root->symbol->body);
-    strcat(tableCode, aux);
+    writeTableVar("str", root->symbol->id, root->symbol->body);
 
     char *freeRegister = getFreeRegister();
 
