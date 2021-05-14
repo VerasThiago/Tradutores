@@ -501,7 +501,7 @@ expression_assignment:
         
         Symbol* s = checkVarExist(&tableList, $1.line, $1.column, $1.tokenBody, $1.scope);
         if(s){
-            $$->codeLine = createTAC(getFuncFromOperator("=", NULL), buildVarTacString(s->body, s->scope), $3->codeLine->dest, NULL, NULL);
+            $$->codeLine = createTAC(getFuncFromOperator("=", NULL), getRegisterFromId(s->id), $3->codeLine->dest, NULL, NULL);
             if(checkCastSymbol(s, $3)) execForceCastSymbol($$, s, $3);
             checkMissType(getTypeID(s->type), $3->type, $1.line, $1.column, "=");
         }
@@ -727,8 +727,8 @@ io_statement:
         Symbol* s = checkVarExist(&tableList, $3.line, $3.column, $3.tokenBody, $3.scope);
         $$ = createNode("io_statement - READ");
         $$->symbol = createSymbol($3.line, $3.column, "variable", lastType, $3.tokenBody, $3.scope, -1);
-        if(s && getTypeID($$->symbol->type) == getTypeID("INT")) $$->codeLine = createTAC(getFuncFromOperator("readi", NULL), NULL, buildVarTacString(s->body, s->scope), NULL, NULL);
-        else if(s && getTypeID($$->symbol->type) == getTypeID("FLOAT")) $$->codeLine = createTAC(getFuncFromOperator("readf", NULL), NULL, buildVarTacString(s->body, s->scope), NULL, NULL);
+        if(s && getTypeID($$->symbol->type) == getTypeID("INT")) $$->codeLine = createTAC(getFuncFromOperator("readi", NULL), NULL, getRegisterFromId(s->id), NULL, NULL);
+        else if(s && getTypeID($$->symbol->type) == getTypeID("FLOAT")) $$->codeLine = createTAC(getFuncFromOperator("readf", NULL), NULL, getRegisterFromId(s->id), NULL, NULL);
     }
     | WRITE '(' STRING ')' ';' {
         // printf("[SYNTATIC] (io_statement) WRITE '(' STRING(%s) ')' ';'\n", $3.tokenBody);
@@ -814,7 +814,7 @@ value:
         $$->type = getTypeID($$->symbol->type);
         
         if(s && strcmp(s->classType, "param variable") == 0) $$->codeLine = createTAC(NULL, getParamFromPos(s->paramPos), NULL, NULL, NULL); 
-        else if(s) $$->codeLine = createTAC(NULL, buildVarTacString(s->body, s->scope), NULL, NULL, NULL); 
+        else if(s) $$->codeLine = createTAC(NULL, getRegisterFromId(s->id), NULL, NULL, NULL); 
         else $$->codeLine = createTAC(NULL, $$->symbol->type , NULL, NULL, NULL);
     }
     | const {
@@ -864,7 +864,7 @@ variables_declaration:
 
         $$->symbol = createSymbol($2.line, $2.column, "variable", lastType, $2.tokenBody, $2.scope, -1);
         $$->type = getTypeID($$->symbol->type);
-        writeTableVar($$->symbol->type, $$->symbol->scope, $$->symbol->body);
+        // writeTableVar($$->symbol->type, $$->symbol->scope, $$->symbol->body);
         
         pushTable(&tableList, $$->symbol);
     }

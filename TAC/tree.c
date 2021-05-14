@@ -56,7 +56,7 @@ void printTree(TreeNode* root, int ident, int *ok){
     if(!root) return;
 
     // Change to TAC to not display on tree or TAX to display
-    if(strcmp(root->rule, "TAC") == 0) {
+    if(strcmp(root->rule, "TAX") == 0) {
         printTree(root->children, ident + 2, ok); 
         printTree(root->nxt, ident, ok); 
         return;
@@ -70,7 +70,7 @@ void printTree(TreeNode* root, int ident, int *ok){
     }
 
     // Change to 0 to not display on tree or 1 to display
-    if(0 && root->codeLine && (root->codeLine->func || root->codeLine->label || root->codeLine->dest) ){ 
+    if(1 && root->codeLine && (root->codeLine->func || root->codeLine->label || root->codeLine->dest) ){ 
         printCodeLine(root->codeLine, ident + 1);
     }
 
@@ -97,13 +97,13 @@ void getTreeArgs(TreeNode* root, char ans[]){
 
     if(root->type != -1){
         TreeNode* paramNode;
-        TreeNode* latstNode = getLastNodeNxt(root->children);
+        TreeNode* lastNode = getLastNodeNxt(root);
         
-        if(latstNode && latstNode->codeLine && latstNode->codeLine->dest) paramNode = createTACNode(createTAC("param", NULL, latstNode->codeLine->dest, NULL, NULL));
-        else if(root->symbol && root->symbol->body) paramNode = createTACNode(createTAC("param", NULL, buildVarTacString(root->symbol->body, root->symbol->scope), NULL, NULL));
+        if(lastNode && lastNode->codeLine && lastNode->codeLine->dest) paramNode = createTACNode(createTAC("param", NULL, lastNode->codeLine->dest, NULL, NULL));
+        else if(root->symbol->id != -1) paramNode = createTACNode(createTAC("param", NULL, getRegisterFromId(root->symbol->id), NULL, NULL));
         else paramNode = createTACNode(createTAC("param", NULL, root->codeLine->dest, NULL, NULL));
 
-        if(latstNode) latstNode->nxt = paramNode;
+        if(lastNode) lastNode->nxt = paramNode;
         else root->children = paramNode;
     }
 
@@ -210,10 +210,6 @@ void writeTableVar(char* type, int id, char* content){
     char aux[300] = "";
     if(strcmp(type, "str") == 0){
         sprintf(aux, "\tchar %s [] = %s\n", getFreeLabel(type, id), content);
-    } else if(strcmp(type, "INT") == 0) {
-        sprintf(aux, "\t%s %s\n", "int", buildVarTacString(content, id));
-    } else if(strcmp(type, "FLOAT") == 0) {
-        sprintf(aux, "\t%s %s\n", "float", buildVarTacString(content, id));
     } else return;
     strcat(tableCode, aux);
 }
