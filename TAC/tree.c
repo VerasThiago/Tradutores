@@ -56,7 +56,7 @@ void printTree(TreeNode* root, int ident, int *ok){
     if(!root) return;
 
     // Change to TAC to not display on tree or TAX to display
-    if(strcmp(root->rule, "TAX") == 0) {
+    if(strcmp(root->rule, "TAC") == 0) {
         printTree(root->children, ident + 2, ok); 
         printTree(root->nxt, ident, ok); 
         return;
@@ -70,7 +70,7 @@ void printTree(TreeNode* root, int ident, int *ok){
     }
 
     // Change to 0 to not display on tree or 1 to display
-    if(1 && root->codeLine && (root->codeLine->func || root->codeLine->label || root->codeLine->dest) ){ 
+    if(0 && root->codeLine && (root->codeLine->func || root->codeLine->label || root->codeLine->dest) ){ 
         printCodeLine(root->codeLine, ident + 1);
     }
 

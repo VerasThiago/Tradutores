@@ -78,7 +78,7 @@ __0_main:
 	param $1009
 	call __printf, 2
 	param $8
-	call fibonacci, 1
+	call fibonacciDP, 1
 	pop $1008
 	println $1008
 	return 0
