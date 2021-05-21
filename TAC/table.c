@@ -45,6 +45,7 @@ Symbol* createSymbol(int line, int column, char* classType, char* type, char* bo
     ret->paramsType = NULL;
     ret->id = id;
     ret->paramPos = -1;
+    ret->negative = 0;
     return ret;
 }
 

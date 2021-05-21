@@ -35,7 +35,7 @@ void printToken(Symbol* s, int ident){
     if(strcmp(s->classType, "variable") == 0){
         printf(" : %s %s", s->type, s->body);
     } else if(strcmp(s->classType, s->body) != 0){
-        printf(" : %s", s->body);
+        printf(" : %s%s", s->negative ? "-":"", s->body);
     }
 }
 

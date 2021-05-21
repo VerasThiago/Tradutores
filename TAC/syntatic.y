@@ -678,7 +678,7 @@ expression_value:
         } else {
             $$ = createNode("expression_value");
             $$->children = $2;
-            $$->symbol = createSymbol($1.line, $1.column, "additive operator", "", $1.tokenBody, $1.scope, -1); 
+            $2->symbol->negative = 1;
             $$->type = $2->type;
             $$->codeLine = createTAC("minus", getFreeRegister(), $2->codeLine->dest, NULL, NULL);
         }

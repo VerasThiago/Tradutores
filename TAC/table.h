@@ -12,6 +12,7 @@ typedef struct Symbol {
     char* paramsType; // 0 INT 1 FLOAT 2 SET 3 ELEM
     int id;
     int paramPos;
+    int negative;
 } Symbol;
 
 typedef struct TableList {
