@@ -1,28 +1,28 @@
 # Tradutores
 
-- [X] Os tipos de dados da linguagem são int, float, elem e set. Os tipos int e float são simples. A declaração de uma variável do tipo set segue o padrão em C, sem tipo associado aos seus elementos. A declaração de uma variável do tipo elem é polimórfica. Como restrição em relação à sintaxe usual de C, a declaração de variáveis não poderá ser seguida de atribuição.
+- [ ] Os tipos de dados da linguagem são int, float, elem e set. Os tipos int e float são simples. A declaração de uma variável do tipo set segue o padrão em C, sem tipo associado aos seus elementos. A declaração de uma variável do tipo elem é polimórfica. Como restrição em relação à sintaxe usual de C, a declaração de variáveis não poderá ser seguida de atribuição.
 
-- [X] A linguagem contém constantes numéricas (para inteiros e reais) e a constante EMPTY (para conjuntos); constantes para char e string são usadas tão somente para impressão.
+- [ ] A linguagem contém constantes numéricas (para inteiros e reais) e a constante EMPTY (para conjuntos); constantes para char e string são usadas tão somente para impressão.
 
-- [X] As operações aritméticas são adição, subtração, multiplicação e divisão, com regras de precedência e semântica usuais.
+- [ ] As operações aritméticas são adição, subtração, multiplicação e divisão, com regras de precedência e semântica usuais.
 
-- [X] As operações lógicas são negação, disjunção e conjunção, com regras de precedência e semântica usuais. Não há tipo booleano na linguagem: valores diferentes de zero e EMPTY são tratados como verdadeiro.
+- [ ] As operações lógicas são negação, disjunção e conjunção, com regras de precedência e semântica usuais. Não há tipo booleano na linguagem: valores diferentes de zero e EMPTY são tratados como verdadeiro.
 
-- [X] As operações relacionais são as usuais da aritmética: menor, menor ou igual, maior, maior ou igual, igual e diferente, com regras de precedência e semâtnica usuais.
+- [ ] As operações relacionais são as usuais da aritmética: menor, menor ou igual, maior, maior ou igual, igual e diferente, com regras de precedência e semâtnica usuais.
 
 - [ ] Conversões implícitas entre expressões aritméticas devem ser tratadas de forma usual, permitindo tanto a ampliação (no caso de cálculo e comparação aritméticos, passagem de parâmetro por cópia e retorno de função) quanto redução de tipo (no caso de atribuição, passagem de parâmetros por cópia e retorno de função). Não há conversão de tipo entre conjuntos e os demais tipos (ou vice-versa). Se for possível identificar a tentativa de realização de operações entre operandos que não admitem conversão entre si, o tradutor deve emitir aviso de que a operação é indefinida. A conversão de float para int se dá pelo descarte da parte decimal (não pelo arrendondamento).
 
 - [ ] Um programa consiste de uma sequência de declarações de variáveis e funções, onde cada função declarada é seguida de sua definição (ou seja, um bloco de comandos, contendo declarações de variáveis e blocos de comandos). Toda função tem um tipo de retorno declarado que pode ser quaisquer um dos tipos primitivos da nova linguagem (int, float, elem, set).
 
-- [X] Necessariamente, o programa deve conter uma função "main".
+- [ ] Necessariamente, o programa deve conter uma função "main".
 
 - [ ] As regras de escopo são as mesmas de C. Uma variável ou função só podem ser usadas depois de declaradas e em seus respectivos escopos.
 
 - [ ] O comando de atribuição tem a sintaxe usual. No caso da variável ser inteira ou real, a semântica é a usual. Para conjuntos, ver abaixo. Para variáveis do tipo elem, a semântica depende do tipo da expressão sendo atribuída.
 
-- [X] Os comandos da linguagem para controle de fluxo são restritos aos seguintes: condicionais (if, if-else), iteração (for), chamada de função e retorno. Todos os comandos têm a semântica usual para o fragmento da linguagem C.
+- [ ] Os comandos da linguagem para controle de fluxo são restritos aos seguintes: condicionais (if, if-else), iteração (for), chamada de função e retorno. Todos os comandos têm a semântica usual para o fragmento da linguagem C.
 
-- [X] Os comandos da linguagem para entrada e saída são: read, write, writeln. O parâmetro do comando de leitura (read) é uma variável de tipo simples; o parâmetro do comando de escrita (write, writeln) é uma expressão de tipo simples ou uma constante. O comando writeln é equivalente a write seguido da escrita de quebra de linha.
+- [ ] Os comandos da linguagem para entrada e saída são: read, write, writeln. O parâmetro do comando de leitura (read) é uma variável de tipo simples; o parâmetro do comando de escrita (write, writeln) é uma expressão de tipo simples ou uma constante. O comando writeln é equivalente a write seguido da escrita de quebra de linha.
 
 - [ ] Na chamada de funções, tipos inteiros e reais são passados por cópia; o tipo conjunto é passado por referência.
 
